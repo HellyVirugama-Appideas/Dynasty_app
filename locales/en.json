@@ -1,7 +1,8 @@
 {
     "validation": {
         "name": "Please provide name.",
-        "mobile": "Please provide mobile number.",
+        "country_code": "Please provide country code.",
+        "phone": "Please provide mobile number.",
         "mobileInvalid": "Mobile number is invalid.",
         "email": "Please provide email.",
         "emailInvalid": "Please provide a valid email.",
@@ -9,7 +10,7 @@
         "city": "Please provide city.",
         "country": "Please provide country."
     },
-    "mobile": {
+    "phone": {
         "verify": "Please verify mobile number."
     },
     "otp": {

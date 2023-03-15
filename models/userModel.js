@@ -8,14 +8,14 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: [true, 'validation.name'],
     },
-    mobile: {
+    country_code: {
         type: String,
-        required: [true, 'validation.mobile'],
+        required: [true, 'validation.country_code'],
+    },
+    phone: {
+        type: String,
+        required: [true, 'validation.phone'],
         unique: true,
-        validate(value) {
-            if (!validator.isMobilePhone(value, 'any', { strictMode: true }))
-                throw new Error('validation.mobileInvalid');
-        },
     },
     email: {
         type: String,

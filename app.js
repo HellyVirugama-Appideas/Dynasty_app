@@ -2,6 +2,7 @@ const path = require('path');
 const express = require('express');
 const cookieParser = require('cookie-parser');
 const createError = require('http-errors');
+const fileUpload = require('express-fileupload');
 const i18n = require('i18next');
 const i18nFsBackend = require('i18next-fs-backend');
 const i18nMiddleware = require('i18next-http-middleware');
@@ -86,7 +87,8 @@ app.use('/uploads/*', (req, res) => res.status(404).end());
 
 // 2) API ROUTES
 // USER ROUTES
-app.use('/api/user', require('./routes/api/authRoutes'));
+app.use('/api/user', fileUpload(), require('./routes/api/authRoutes'));
+// app.use('/api/user', require('./routes/api/profileRoutes'));
 
 // 404 api
 app.use('/api', (req, res, next) => {

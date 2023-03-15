@@ -25,7 +25,7 @@ exports.checkUser = async (req, res, next) => {
         );
 
         const user = await User.findById(decoded._id).select(
-            '+blocked +password'
+            '+blocked +password -__v'
         );
 
         if (!user) return next(createError.BadRequest('auth.login'));
@@ -38,12 +38,16 @@ exports.checkUser = async (req, res, next) => {
     }
 };
 
-exports.getOTP = async (req, res, next) => {
+exports.sendOTP = async (req, res, next) => {
     try {
-        const mobile = req.body.mobile;
+        const { country_code, phone } = req.body;
 
         // validate mobile
-        if (!mobile) return next(createError.BadRequest('validation.mobile'));
+        if (!country_code)
+            return next(createError.BadRequest('validation.country_code'));
+        if (!phone) return next(createError.BadRequest('validation.phone'));
+
+        const mobile = country_code + phone;
         if (!validator.isMobilePhone(mobile, 'any', { strictMode: true }))
             return next(createError.BadRequest('validation.mobileInvalid'));
 
@@ -58,7 +62,15 @@ exports.getOTP = async (req, res, next) => {
         // send OTP
         // await sendOTP(mobile, otp);
 
-        res.json({ status: 'success', message: req.t('otp.sent'), otp });
+        res.json({
+            code: '1',
+            message: req.t('otp.sent'),
+            result: {
+                otp,
+                country_code,
+                phone,
+            },
+        });
     } catch (error) {
         next(error);
     }
@@ -66,30 +78,33 @@ exports.getOTP = async (req, res, next) => {
 
 exports.verifyOTP = async (req, res, next) => {
     try {
-        const { mobile, otp } = req.body;
+        const { country_code, phone, otp } = req.body;
+        const mobile = country_code + phone;
 
         // verify otp
         const otpVerified = await OTP.findOne({ mobile, otp });
         if (!otpVerified) return next(createError.BadRequest('otp.fail'));
 
         // if userExists, login else send verifyToken
-        const userExists = await User.findOne({ mobile });
+        const userExists = await User.findOne({ country_code, phone });
         if (userExists) {
             const token = await userExists.generateAuthToken();
             return res.json({
-                status: 'success',
+                code: '1',
                 token,
                 user: userExists,
             });
         }
 
         // generate verifyToken
-        const verifyToken = jwt.sign({ mobile }, process.env.JWT_SECRET, {
-            expiresIn: '1d',
-        });
+        const verifyToken = jwt.sign(
+            { country_code, phone },
+            process.env.JWT_SECRET,
+            { expiresIn: '1d' }
+        );
 
         res.json({
-            status: 'success',
+            code: '1',
             message: req.t('otp.verified'),
             verifyToken,
         });
@@ -105,14 +120,14 @@ exports.createProfile = async (req, res, next) => {
             req.body.verifyToken,
             process.env.JWT_SECRET
         );
-        if (!decoded.mobile)
-            return next(createError.BadRequest('mobile.verify'));
+        if (!decoded.phone) return next(createError.BadRequest('phone.verify'));
 
         // create user
         const user = await User.create({
             name: req.body.name,
             email: req.body.email,
-            mobile: decoded.mobile,
+            country_code: decoded.country_code,
+            phone: decoded.phone,
             address: req.body.address,
             city: req.body.city,
             country: req.body.country,
@@ -124,7 +139,7 @@ exports.createProfile = async (req, res, next) => {
 
         const token = await user.generateAuthToken();
 
-        res.status(201).json({ status: 'success', token, user });
+        res.status(201).json({ code: '1', token, user });
     } catch (error) {
         if (error.name == 'JsonWebTokenError')
             return next(createError.BadRequest('token.invalid'));

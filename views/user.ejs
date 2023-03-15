@@ -63,7 +63,7 @@
                                                         <tr>
                                                             <td><%= i+1 %></td>
                                                             <td><%= users[i].name %></td>
-                                                            <td><%= users[i].mobile %></td>
+                                                            <td><%= users[i].country_code + " " + users[i].phone %></td>
                                                             <td><%= users[i].email %></td>
                                                             <td><%= users[i].date.toLocaleDateString('en-GB') %></td>
                                                             <td style="max-width: 50px;"><a href="/user/<%= users[i].id %>"><i class="material-icons">remove_red_eye</i></a></td>
