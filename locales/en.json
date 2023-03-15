@@ -1,0 +1,31 @@
+{
+    "validation": {
+        "name": "Please provide name.",
+        "mobile": "Please provide mobile number.",
+        "mobileInvalid": "Mobile number is invalid.",
+        "email": "Please provide email.",
+        "emailInvalid": "Please provide a valid email.",
+        "address": "Please provide address.",
+        "city": "Please provide city.",
+        "country": "Please provide country."
+    },
+    "mobile": {
+        "verify": "Please verify mobile number."
+    },
+    "otp": {
+        "sent": "OTP sent to your number.",
+        "fail": "Fail to verify OTP.",
+        "verified": "OTP verified."
+    },
+    "token": {
+        "invalid": "Invalid token.",
+        "expired": "Token expired, Verify phone again."
+    },
+    "auth": {
+        "provideToken": "Please provide authentication token.",
+        "login": "Please login first.",
+        "blocked": "Sorry! You are blocked, Please contact Admin."
+    },
+    "deleted": "Profile deleted.",
+    "internal": "Internal server error."
+}

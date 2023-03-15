@@ -3,10 +3,10 @@ const express = require('express');
 const cookieParser = require('cookie-parser');
 const createError = require('http-errors');
 const i18n = require('i18next');
-const i18nFsBackend = require('i18next-node-fs-backend');
+const i18nFsBackend = require('i18next-fs-backend');
 const i18nMiddleware = require('i18next-http-middleware');
 
-// const globalErrorHandler = require('./controllers/errorController');
+const globalErrorHandler = require('./controllers/errorController');
 // const uploadController = require('./controllers/admin/uploadController');
 
 // Start express app
@@ -85,8 +85,8 @@ app.use('/app-assets/*', (req, res) => res.status(404).end());
 app.use('/uploads/*', (req, res) => res.status(404).end());
 
 // 2) API ROUTES
-// app.use('/api', require('./routes/user/authRoutes'));
-// app.use('/api/partner', require('./routes/user/partnerRoutes'));
+// USER ROUTES
+app.use('/api/user', require('./routes/api/authRoutes'));
 
 // 404 api
 app.use('/api', (req, res, next) => {
@@ -107,7 +107,7 @@ app.use(function (req, res, next) {
 });
 
 app.use('/', require('./routes/admin/authRoutes'));
-// app.use('/cms', require('./routes/admin/cmsRoutes'));
+app.use('/user', require('./routes/admin/userRoutes'));
 
 // 404 admin
 app.all('/*', (req, res) => {
@@ -115,6 +115,6 @@ app.all('/*', (req, res) => {
 });
 
 // 4) ERROR HANDLING
-// app.use(globalErrorHandler);
+app.use(globalErrorHandler);
 
 module.exports = app;
