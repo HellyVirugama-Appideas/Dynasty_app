@@ -110,6 +110,8 @@ exports.verifyOTP = async (req, res, next) => {
             code: '1',
             message: req.t('otp.verified'),
             verifyToken,
+            country_code,
+            phone,
         });
     } catch (error) {
         next(error);
