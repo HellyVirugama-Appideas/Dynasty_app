@@ -86,11 +86,14 @@ exports.verifyOTP = async (req, res, next) => {
         if (!otpVerified) return next(createError.BadRequest('otp.fail'));
 
         // if userExists, login else send verifyToken
-        const userExists = await User.findOne({ country_code, phone });
+        const userExists = await User.findOne({ country_code, phone }).select(
+            '-__v'
+        );
         if (userExists) {
             const token = await userExists.generateAuthToken();
             return res.json({
                 code: '1',
+                message: req.t('loggedIn'),
                 token,
                 user: userExists,
             });
