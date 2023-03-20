@@ -109,6 +109,7 @@ app.use(function (req, res, next) {
 
 app.use('/', require('./routes/admin/authRoutes'));
 app.use('/user', require('./routes/admin/userRoutes'));
+app.use('/', require('./routes/admin/adminRoutes'));
 
 // 404 admin
 app.all('/*', (req, res) => {
