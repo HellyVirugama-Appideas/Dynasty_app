@@ -12,9 +12,11 @@ module.exports = (error, req, res, next) => {
 
     if (error.name === 'ValidationError') {
         let errors = {};
-        Object.keys(error.errors).forEach(
-            key => (errors[key] = req.t(error.errors[key].message))
-        );
+        Object.keys(error.errors).forEach(key => {
+            if (error.errors[key].name == 'CastError')
+                errors[key] = `Invalid value for ${error.errors[key].path}`;
+            else errors[key] = req.t(error.errors[key].message);
+        });
         return res.status(400).json({
             code: '0',
             errors,

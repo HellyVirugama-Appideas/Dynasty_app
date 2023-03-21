@@ -2,6 +2,7 @@ const { promisify } = require('util');
 const createError = require('http-errors');
 const validator = require('validator');
 const jwt = require('jsonwebtoken');
+const multilingualUser = require('../../utils/multilingual_user');
 // const { sendOTP } = require('../../utils/sendSMS');
 
 const User = require('../../models/userModel');
@@ -24,9 +25,9 @@ exports.checkUser = async (req, res, next) => {
             process.env.JWT_SECRET
         );
 
-        const user = await User.findById(decoded._id).select(
-            '+blocked +password -__v'
-        );
+        let user = await User.findById(decoded._id)
+            .select('+blocked +password -__v')
+            .populate('city country');
 
         if (!user) return next(createError.BadRequest('auth.login'));
         if (user.blocked) return next(createError.Unauthorized('auth.blocked'));
@@ -107,7 +108,7 @@ exports.verifyOTP = async (req, res, next) => {
         );
 
         res.json({
-            code: '1',
+            code: '001',
             message: req.t('otp.verified'),
             verifyToken,
             country_code,
@@ -128,7 +129,7 @@ exports.createProfile = async (req, res, next) => {
         if (!decoded.phone) return next(createError.BadRequest('phone.verify'));
 
         // create user
-        const user = await User.create({
+        let user = await User.create({
             name: req.body.name,
             email: req.body.email,
             country_code: decoded.country_code,
@@ -138,11 +139,14 @@ exports.createProfile = async (req, res, next) => {
             country: req.body.country,
         });
 
+        const token = await user.generateAuthToken();
+
+        await user.populate('city country');
+        user = multilingualUser(user, req);
+
         // hide fields
         user.password = undefined;
         user.__v = undefined;
-
-        const token = await user.generateAuthToken();
 
         res.status(201).json({ code: '1', token, user });
     } catch (error) {

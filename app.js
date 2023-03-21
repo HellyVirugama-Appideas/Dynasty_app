@@ -88,7 +88,8 @@ app.use('/uploads/*', (req, res) => res.status(404).end());
 // USER ROUTES
 app.use('/api/user', require('./routes/api/authRoutes'));
 app.use('/api/user', require('./routes/api/profileRoutes'));
-app.use('/api', require('./routes/api/userRoutes'));
+
+app.use('/api', require('./routes/api/cityCountryRoutes'));
 
 // 404 api
 app.use('/api', (req, res, next) => {

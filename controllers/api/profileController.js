@@ -1,8 +1,10 @@
+const multilingualUser = require('../../utils/multilingual_user');
+
 const User = require('../../models/userModel');
 
 exports.getProfile = async (req, res, next) => {
     try {
-        const user = { ...req.user._doc };
+        const user = multilingualUser(req.user, req);
 
         // Hide fields
         user.blocked = undefined;
@@ -19,9 +21,11 @@ exports.editProfile = async (req, res, next) => {
         delete req.body.country_code;
         delete req.body.phone;
 
-        const user = await User.findByIdAndUpdate(req.user.id, req.body, {
+        let user = await User.findByIdAndUpdate(req.user.id, req.body, {
             new: true,
-        });
+        }).populate('city country');
+
+        user = multilingualUser(user, req);
 
         res.json({ code: '1', message: req.t('success'), user });
     } catch (error) {

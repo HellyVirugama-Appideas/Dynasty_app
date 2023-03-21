@@ -29,11 +29,13 @@ const userSchema = new mongoose.Schema({
         required: [true, 'validation.address'],
     },
     city: {
-        type: String,
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'City',
         required: [true, 'validation.city'],
     },
     country: {
-        type: String,
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Country',
         required: [true, 'validation.country'],
     },
     blocked: {

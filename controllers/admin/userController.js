@@ -12,7 +12,10 @@ exports.getAllUsers = async (req, res) => {
 
 exports.viewUser = async (req, res) => {
     try {
-        const user = await User.findById(req.params.id);
+        const user = await User.findById(req.params.id)
+            .populate('city', 'en.name')
+            .populate('country', 'en.name');
+
         if (!user) {
             req.flash('red', 'User not found!');
             return res.redirect('/user');
