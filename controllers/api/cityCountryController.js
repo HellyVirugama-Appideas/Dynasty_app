@@ -9,7 +9,7 @@ exports.getCountries = async (req, res, next) => {
 
         countries = countries.map(el => multilingual(el, req));
 
-        res.json({ code: '1', message: req.t('success'), countries });
+        res.json({ code: '1', message: req.t('success'), data: [countries] });
     } catch (error) {
         next(error);
     }
@@ -23,7 +23,7 @@ exports.getCities = async (req, res, next) => {
 
         cities = cities.map(el => multilingual(el, req));
 
-        res.json({ code: '1', message: req.t('success'), cities });
+        res.json({ code: '1', message: req.t('success'), data: [cities] });
     } catch (error) {
         next(error);
     }
