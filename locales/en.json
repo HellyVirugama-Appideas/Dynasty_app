@@ -29,5 +29,6 @@
     },
     "loggedIn": "Login Successful.",
     "deleted": "Profile deleted.",
-    "internal": "Internal server error."
+    "internal": "Internal server error.",
+    "success": "success"
 }

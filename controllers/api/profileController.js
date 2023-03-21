@@ -7,7 +7,7 @@ exports.getProfile = async (req, res, next) => {
         // Hide fields
         user.blocked = undefined;
 
-        res.json({ code: '1', message: 'success', user });
+        res.json({ code: '1', message: req.t('success'), user });
     } catch (error) {
         next(error);
     }
@@ -23,7 +23,7 @@ exports.editProfile = async (req, res, next) => {
             new: true,
         });
 
-        res.json({ code: '1', message: 'success', user });
+        res.json({ code: '1', message: req.t('success'), user });
     } catch (error) {
         next(error);
     }
