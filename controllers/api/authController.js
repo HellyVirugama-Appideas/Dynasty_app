@@ -7,6 +7,7 @@ const multilingualUser = require('../../utils/multilingual_user');
 
 const User = require('../../models/userModel');
 const OTP = require('../../models/otpModel');
+const Address = require('../../models/addressModel');
 
 exports.checkUser = async (req, res, next) => {
     try {
@@ -129,15 +130,30 @@ exports.createProfile = async (req, res, next) => {
         if (!decoded.phone) return next(createError.BadRequest('phone.verify'));
 
         // create user
-        let user = await User.create({
+        let user = new User({
             name: req.body.name,
             email: req.body.email,
             country_code: decoded.country_code,
             phone: decoded.phone,
-            address: req.body.address,
             city: req.body.city,
             country: req.body.country,
         });
+
+        // create address
+        const address = new Address({
+            userId: user.id,
+            flatNo: req.body.flatNo,
+            flat: req.body.flat,
+            street: req.body.street,
+            area: req.body.area,
+            selected: true,
+        });
+
+        // validate
+        await user.validate();
+        await address.validate();
+
+        await Promise.all([user.save(), address.save()]);
 
         const token = await user.generateAuthToken();
 

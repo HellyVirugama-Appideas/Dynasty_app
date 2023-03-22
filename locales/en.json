@@ -8,7 +8,11 @@
         "emailInvalid": "Please provide a valid email.",
         "address": "Please provide address.",
         "city": "Please provide city.",
-        "country": "Please provide country."
+        "country": "Please provide country.",
+        "flatNo": "Please provide flat number.",
+        "flat": "Please provide flat name.",
+        "street": "Please provide street name.",
+        "area": "Please provide area."
     },
     "phone": {
         "verify": "Please verify mobile number."

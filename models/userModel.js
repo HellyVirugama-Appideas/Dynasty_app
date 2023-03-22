@@ -24,10 +24,6 @@ const userSchema = new mongoose.Schema({
         lowercase: true,
         validate: [validator.isEmail, 'validation.emailInvalid'],
     },
-    address: {
-        type: String,
-        required: [true, 'validation.address'],
-    },
     city: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'City',
