@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const AutoIncrement = require('mongoose-sequence')(mongoose);
 
 const countrySchema = new mongoose.Schema({
     en: {
@@ -15,5 +16,7 @@ const countrySchema = new mongoose.Schema({
     },
     image: String,
 });
+
+countrySchema.plugin(AutoIncrement, { inc_field: 'country_id' });
 
 module.exports = new mongoose.model('Country', countrySchema);

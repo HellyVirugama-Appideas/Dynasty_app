@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const AutoIncrement = require('mongoose-sequence')(mongoose);
 
 const citySchema = new mongoose.Schema({
     en: {
@@ -19,5 +20,7 @@ const citySchema = new mongoose.Schema({
         ref: 'Country',
     },
 });
+
+citySchema.plugin(AutoIncrement, { inc_field: 'city_id' });
 
 module.exports = new mongoose.model('City', citySchema);

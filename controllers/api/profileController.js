@@ -36,7 +36,11 @@ exports.editProfile = async (req, res, next) => {
 
 exports.deleteProfile = async (req, res, next) => {
     try {
-        await User.findByIdAndDelete(req.user.id);
+        // Delete user, addresses
+        await Promise.all([
+            User.findByIdAndDelete(req.user.id),
+            Address.deleteMany({ userId: req.user.id }),
+        ]);
 
         res.json({ code: '1', message: req.t('deleted') });
     } catch (error) {

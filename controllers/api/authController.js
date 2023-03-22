@@ -27,7 +27,7 @@ exports.checkUser = async (req, res, next) => {
         );
 
         let user = await User.findById(decoded._id)
-            .select('+blocked +password -__v')
+            .select('+blocked +password')
             .populate('city country');
 
         if (!user) return next(createError.BadRequest('auth.login'));
