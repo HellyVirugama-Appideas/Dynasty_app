@@ -50,7 +50,9 @@ exports.deleteProfile = async (req, res, next) => {
 
 exports.addressList = async (req, res, next) => {
     try {
-        const address_list = await Address.find({ userId: req.user.id });
+        const address_list = await Address.find({ userId: req.user.id }).select(
+            '-__v -userId'
+        );
 
         res.json({ code: '1', message: req.t('success'), address_list });
     } catch (error) {

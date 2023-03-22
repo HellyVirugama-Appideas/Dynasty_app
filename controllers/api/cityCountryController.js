@@ -5,7 +5,7 @@ const City = require('../../models/cityModel');
 
 exports.getCountries = async (req, res, next) => {
     try {
-        let countries = await Country.find().sort('en.name');
+        let countries = await Country.find().sort('en.name').select('-__v');
 
         countries = countries.map(el => multilingual(el, req));
 
@@ -17,9 +17,9 @@ exports.getCountries = async (req, res, next) => {
 
 exports.getCities = async (req, res, next) => {
     try {
-        let cities = await City.find({ country: req.body.country_id }).sort(
-            'en.name'
-        );
+        let cities = await City.find({ country: req.body.country_id })
+            .sort('en.name')
+            .select('-__v');
 
         cities = cities.map(el => multilingual(el, req));
 
