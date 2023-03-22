@@ -1,3 +1,4 @@
+const createError = require('http-errors');
 const multilingual = require('../../utils/multilingual');
 
 const Country = require('../../models/countryModel');
@@ -17,7 +18,11 @@ exports.getCountries = async (req, res, next) => {
 
 exports.getCities = async (req, res, next) => {
     try {
-        let cities = await City.find({ country: req.body.country_id })
+        const { country_id } = req.body;
+        const country = await Country.findOne({ country_id });
+        if (!country) return next(createError.BadRequest('Invalid country_id'));
+
+        let cities = await City.find({ country: country.id })
             .sort('en.name')
             .select('-__v');
 
