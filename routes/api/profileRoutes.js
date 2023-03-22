@@ -19,4 +19,10 @@ router.get('/delete_profile', checkUser, profileController.deleteProfile);
 // address
 router.get('/address_list', checkUser, profileController.addressList);
 
+router.get(
+    '/selected_country_city',
+    checkUser,
+    profileController.selectedCountryCity
+);
+
 module.exports = router;

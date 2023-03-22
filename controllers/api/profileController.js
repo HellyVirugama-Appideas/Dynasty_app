@@ -59,3 +59,17 @@ exports.addressList = async (req, res, next) => {
         next(error);
     }
 };
+
+exports.selectedCountryCity = async (req, res, next) => {
+    try {
+        const user = multilingualUser(req.user, req);
+
+        res.json({
+            code: '1',
+            message: req.t('success'),
+            data: { city: user.city, country: user.country },
+        });
+    } catch (error) {
+        next(error);
+    }
+};
