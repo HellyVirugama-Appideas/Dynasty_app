@@ -8,6 +8,8 @@ const multilingualUser = require('../../utils/multilingual_user');
 const User = require('../../models/userModel');
 const OTP = require('../../models/otpModel');
 const Address = require('../../models/addressModel');
+const City = require('../../models/cityModel');
+const Country = require('../../models/countryModel');
 
 exports.checkUser = async (req, res, next) => {
     try {
@@ -129,14 +131,22 @@ exports.createProfile = async (req, res, next) => {
         );
         if (!decoded.phone) return next(createError.BadRequest('phone.verify'));
 
+        const { city_id, country_id } = req.body;
+        const [city, country] = await Promise.all([
+            City.findOne({ city_id }),
+            Country.findOne({ country_id }),
+        ]);
+        if (!city) return next(createError.BadRequest('Invalid city_id'));
+        if (!country) return next(createError.BadRequest('Invalid country_id'));
+
         // create user
         let user = new User({
             name: req.body.name,
             email: req.body.email,
             country_code: decoded.country_code,
             phone: decoded.phone,
-            city: req.body.city,
-            country: req.body.country,
+            city: city.id,
+            country: country.id,
         });
 
         // create address
