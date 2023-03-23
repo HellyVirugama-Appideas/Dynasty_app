@@ -90,6 +90,7 @@ app.use('/api/user', require('./routes/api/authRoutes'));
 app.use('/api/user', require('./routes/api/profileRoutes'));
 
 app.use('/api', require('./routes/api/cityCountryRoutes'));
+app.use('/api', require('./routes/api/cmsRoutes'));
 
 // 404 api
 app.use('/api', (req, res, next) => {
@@ -110,6 +111,7 @@ app.use(function (req, res, next) {
 });
 
 app.use('/', require('./routes/admin/authRoutes'));
+app.use('/cms', require('./routes/admin/cmsRoutes'));
 app.use('/user', require('./routes/admin/userRoutes'));
 app.use('/', require('./routes/admin/adminRoutes'));
 

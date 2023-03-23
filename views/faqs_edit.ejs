@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html class="loading" lang="en" data-textdirection="ltr">
+<!-- BEGIN: Head-->
+
+<head>
+    <%- include('_layouts/head') %>
+    <title>Edit FAQ | <%= title %></title>
+</head>
+<!-- END: Head-->
+
+<body class="vertical-layout page-header-light vertical-menu-collapsible vertical-dark-menu preload-transitions 2-columns" data-open="click" data-menu="vertical-dark-menu" data-col="2-columns">
+    <%- include('_layouts/sidenavbar') %>
+
+    <!-- BEGIN: Page Main-->
+    <div id="main">
+        <div class="row">
+            <div id="breadcrumbs-wrapper" data-image="/app-assets/images/gallery/breadcrumb-bg.jpg">
+                <div class="container">
+                    <div class="row">
+                        <div class="col s12 m6 l6">
+                            <h5 class="breadcrumbs-title mt-0 mb-0"><span>Edit FAQ</span></h5>
+                        </div>
+                        <div class="col s12 m6 l6 right-align-md">
+                            <ol class="breadcrumbs mb-0">
+                                <li class="breadcrumb-item"><a href="/">Home</a></li>
+                                <li class="breadcrumb-item"><a href="/cms/faqs">FAQs</a></li>
+                                <li class="breadcrumb-item active">Edit FAQ</li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col s12">
+                <div class="container">
+                    <div class="section">
+                        <div class="row">
+                            <div class="col s12">
+                                <div class="card">
+                                    <div class="card-content">
+                                        <div class="row">
+                                            <div class="col s12">
+                                                <%- messages('messages', locals) %>
+                                                <form method="POST" onsubmit="validate()" action="/cms/faqs/edit/<%= faq.id %>" id="form">
+                                                    <h4 class="card-title">English</h4>
+                                                    <div class="input-field col s12">
+                                                        <input placeholder="Question" id="EnQue" name="EnQue" type="text" value="<%= faq.en.question %>">
+                                                        <label for="EnQue">Question</label>
+                                                        <small>
+                                                            <div id="EnQueErr" class="error"></div>
+                                                        </small>
+                                                    </div>
+                                                    <div class="input-field col s12">
+                                                        <textarea class="materialize-textarea" id="EnAns" name="EnAns" placeholder="Answer"><%= faq.en.answer %></textarea>
+                                                        <label for="EnAns">Answer</label>
+                                                        <small>
+                                                            <div id="EnAnsErr" class="error"></div>
+                                                        </small>
+                                                    </div>
+                                                    <h4 class="card-title">Arabic</h4>
+                                                    <div class="input-field col s12">
+                                                        <input placeholder="Question" id="ArQue" name="ArQue" type="text" value="<%= faq.ar.question %>">
+                                                        <label for="ArQue">Question</label>
+                                                        <small>
+                                                            <div id="ArQueErr" class="error"></div>
+                                                        </small>
+                                                    </div>
+                                                    <div class="input-field col s12">
+                                                        <textarea class="materialize-textarea" id="ArAns" name="ArAns" placeholder="Answer"><%= faq.ar.answer %></textarea>
+                                                        <label for="ArAns">Answer</label>
+                                                        <small>
+                                                            <div id="ArAnsErr" class="error"></div>
+                                                        </small>
+                                                    </div>
+                                                    <button type="submit" class="btn purple mt-1" id="submitBtn">Submit</button>
+                                                    <a onclick="history.back()" class="btn btn-danger ml-1 mt-1">Cancel</a>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="content-overlay"></div>
+            </div>
+        </div>
+    </div>
+    <!-- END: Page Main-->
+
+    <script>
+        const formC = document.getElementById('form');
+
+        formC.addEventListener('submit', (e) => {
+            e.preventDefault();
+        })
+
+        function validate() {
+            let returnVal = true;
+
+            const EnQueValue = document.getElementById('EnQue').value.trim();
+            const EnAnsValue = document.getElementById('EnAns').value.trim();
+            const ArQueValue = document.getElementById('ArQue').value.trim();
+            const ArAnsValue = document.getElementById('ArAns').value.trim();
+
+            if (EnQueValue == '') {
+                document.getElementById('EnQueErr').innerText = 'Please enter question.';
+                returnVal = false;
+            } else {
+                document.getElementById('EnQueErr').innerText = '';
+            }
+
+            if (EnAnsValue == '') {
+                document.getElementById('EnAnsErr').innerText = 'Please enter answer.';
+                returnVal = false;
+            } else {
+                document.getElementById('EnAnsErr').innerText = '';
+            }
+
+            if (ArQueValue == '') {
+                document.getElementById('ArQueErr').innerText = 'Please enter question.';
+                returnVal = false;
+            } else {
+                document.getElementById('ArQueErr').innerText = '';
+            }
+
+            if (ArAnsValue == '') {
+                document.getElementById('ArAnsErr').innerText = 'Please enter answer.';
+                returnVal = false;
+            } else {
+                document.getElementById('ArAnsErr').innerText = '';
+            }
+
+            if (returnVal) {
+                document.getElementById('submitBtn').disabled = true;
+                formC.submit();
+            }
+        }
+    </script>
+    <%- include('_layouts/commonJs') %>
+</body>
+
+</html>

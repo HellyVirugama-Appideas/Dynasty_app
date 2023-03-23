@@ -51,6 +51,28 @@
             <a class="navigation-header-text">manage</a>
             <i class="navigation-header-icon material-icons">more_horiz</i>
         </li>
+        <li class="bold <%= url.startsWith('/cms') ? 'active' : '' %>">
+            <a class="collapsible-header waves-effect waves-cyan" href="javascript:void(0);">
+                <i class="material-icons">content_paste</i>
+                <span class="menu-title" data-i18n="Pages">Content Pages</span>
+            </a>
+            <div class="collapsible-body">
+                <ul class="collapsible collapsible-sub" data-collapsible="accordion">
+                    <li>
+                        <a class="<%= url == '/cms/terms' ? 'active' : '' %>" href="/cms/terms">
+                            <i class="material-icons">radio_button_unchecked</i>
+                            <span data-i18n="Blog">Terms & Conditions</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a class="<%= url.startsWith('/cms/faqs') ? 'active' : '' %>" href="/cms/faqs">
+                            <i class="material-icons">radio_button_unchecked</i>
+                            <span data-i18n="Blog">FAQs</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </li>
         <li class="bold <%= url.startsWith('/country') || url.startsWith('/city') ? 'active' : '' %>">
             <a class="collapsible-header waves-effect waves-cyan" href="javascript:void(0);">
                 <i class="material-icons">gps_fixed</i>
