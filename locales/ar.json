@@ -8,11 +8,7 @@
         "emailInvalid": "يرجى تقديم عنوان بريد إلكتروني صالح.",
         "address": "يرجى تقديم العنوان.",
         "city": "يرجى تزويد المدينة.",
-        "country": "يرجى تزويد البلد.",
-        "flatNo": "يرجى تقديم رقم ثابت.",
-        "flat": "يرجى تقديم اسم مسطح.",
-        "street": "يرجى تقديم اسم الشارع.",
-        "area": "يرجى توفير المنطقة."
+        "country": "يرجى تزويد البلد."
     },
     "phone": {
         "verify": "يرجى التحقق من رقم الهاتف المحمول."
@@ -30,6 +26,11 @@
         "provideToken": "يرجى تقديم رمز المصادقة.",
         "login": "الرجاء تسجيل الدخول أولا.",
         "blocked": "آسف! أنت محظور ، يرجى الاتصال المسؤول."
+    },
+    "address": {
+        "added": "Address added successfully.",
+        "edited": "Address edited successfully.",
+        "deleted": "Address deleted successfully."
     },
     "loggedIn": "تسجيل الدخول ناجح.",
     "deleted": "تم حذف الملف الشخصي.",

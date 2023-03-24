@@ -6,21 +6,9 @@ const addressSchema = new mongoose.Schema({
         ref: 'User',
         required: true,
     },
-    flatNo: {
+    address: {
         type: String,
-        required: [true, 'validation.flatNo'],
-    },
-    flat: {
-        type: String,
-        required: [true, 'validation.flat'],
-    },
-    street: {
-        type: String,
-        required: [true, 'validation.street'],
-    },
-    area: {
-        type: String,
-        required: [true, 'validation.area'],
+        required: [true, 'validation.address'],
     },
     selected: {
         type: Boolean,
@@ -30,10 +18,10 @@ const addressSchema = new mongoose.Schema({
 
 // Set isSelected to false for all other addresses belonging to the same user
 addressSchema.pre('save', async function () {
-    if (this.isSelected) {
+    if (this.selected) {
         await this.constructor.updateMany(
             { userId: this.userId, _id: { $ne: this._id } },
-            { $set: { isSelected: false } }
+            { $set: { selected: false } }
         );
     }
 });

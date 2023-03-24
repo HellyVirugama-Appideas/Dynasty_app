@@ -13,13 +13,7 @@ const Country = require('../../models/countryModel');
 
 exports.checkUser = async (req, res, next) => {
     try {
-        let token;
-        if (
-            req.headers.authorization &&
-            req.headers.authorization.startsWith('Bearer')
-        ) {
-            token = req.headers.authorization.split(' ')[1];
-        }
+        const token = req.headers.token;
 
         if (!token) return next(createError.BadRequest('auth.provideToken'));
 
@@ -152,10 +146,7 @@ exports.createProfile = async (req, res, next) => {
         // create address
         const address = new Address({
             userId: user.id,
-            flatNo: req.body.flatNo,
-            flat: req.body.flat,
-            street: req.body.street,
-            area: req.body.area,
+            address: req.body.address,
             selected: true,
         });
 

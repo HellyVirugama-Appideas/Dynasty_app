@@ -1,3 +1,4 @@
+const createError = require('http-errors');
 const multilingualUser = require('../../utils/multilingual_user');
 
 const User = require('../../models/userModel');
@@ -55,6 +56,68 @@ exports.addressList = async (req, res, next) => {
         );
 
         res.json({ code: '1', message: req.t('success'), address_list });
+    } catch (error) {
+        next(error);
+    }
+};
+
+exports.addAddress = async (req, res, next) => {
+    try {
+        const address = await Address.create({
+            userId: req.user.id,
+            address: req.body.address,
+        });
+
+        address.userId = undefined;
+        address.__v = undefined;
+
+        res.json({ code: '1', message: req.t('address.added'), address });
+    } catch (error) {
+        next(error);
+    }
+};
+
+exports.editAddress = async (req, res, next) => {
+    try {
+        const address = await Address.findOneAndUpdate(
+            { _id: req.params.id, userId: req.user.id },
+            { address: req.body.address },
+            { new: true }
+        ).select('-__v -userId');
+
+        if (!address) return next(createError.NotFound('Address not found.'));
+
+        res.json({ code: '1', message: req.t('address.edited'), address });
+    } catch (error) {
+        next(error);
+    }
+};
+
+exports.deleteAddress = async (req, res, next) => {
+    try {
+        await Address.findOneAndDelete({
+            _id: req.params.id,
+            userId: req.user.id,
+        });
+
+        res.json({ code: '1', message: req.t('address.deleted') });
+    } catch (error) {
+        next(error);
+    }
+};
+
+exports.selectAddress = async (req, res, next) => {
+    try {
+        const address = await Address.findOne({
+            _id: req.params.id,
+            userId: req.user.id,
+        });
+        if (!address) return next(createError.NotFound('Address not found.'));
+
+        address.selected = true;
+        await address.save();
+
+        res.json({ code: '1', message: req.t('address.edited'), address });
     } catch (error) {
         next(error);
     }
