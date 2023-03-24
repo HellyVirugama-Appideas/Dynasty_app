@@ -8,6 +8,8 @@ exports.getProfile = async (req, res, next) => {
     try {
         const user = multilingualUser(req.user, req);
 
+        user.address = user.address.address;
+
         // Hide fields
         user.blocked = undefined;
 
@@ -115,7 +117,10 @@ exports.selectAddress = async (req, res, next) => {
         if (!address) return next(createError.NotFound('Address not found.'));
 
         address.selected = true;
-        await address.save();
+        await Promise.all([
+            address.save(),
+            User.findByIdAndUpdate(req.user.id, { address: address.id }),
+        ]);
 
         res.json({ code: '1', message: req.t('address.edited'), address });
     } catch (error) {

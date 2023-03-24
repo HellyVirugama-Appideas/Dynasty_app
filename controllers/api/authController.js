@@ -24,7 +24,7 @@ exports.checkUser = async (req, res, next) => {
 
         let user = await User.findById(decoded._id)
             .select('+blocked +password')
-            .populate('city country');
+            .populate('city country address');
 
         if (!user) return next(createError.BadRequest('auth.login'));
         if (user.blocked) return next(createError.Unauthorized('auth.blocked'));
@@ -154,12 +154,14 @@ exports.createProfile = async (req, res, next) => {
         await user.validate();
         await address.validate();
 
+        user.address = address.id;
         await Promise.all([user.save(), address.save()]);
 
         const token = await user.generateAuthToken();
 
-        await user.populate('city country');
+        await user.populate('city country address');
         user = multilingualUser(user, req);
+        user.address = user.address.address;
 
         // hide fields
         user.password = undefined;

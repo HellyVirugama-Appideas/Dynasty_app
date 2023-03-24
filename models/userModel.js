@@ -34,6 +34,10 @@ const userSchema = new mongoose.Schema({
         ref: 'Country',
         required: [true, 'validation.country'],
     },
+    address: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Address',
+    },
     blocked: {
         type: Boolean,
         default: false,
