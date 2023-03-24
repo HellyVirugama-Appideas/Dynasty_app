@@ -165,7 +165,12 @@ exports.createProfile = async (req, res, next) => {
         user.password = undefined;
         user.__v = undefined;
 
-        res.status(201).json({ code: '1', token, user });
+        res.status(201).json({
+            code: '1',
+            message: req.t('profile'),
+            token,
+            user,
+        });
     } catch (error) {
         if (error.name == 'JsonWebTokenError')
             return next(createError.BadRequest('token.invalid'));

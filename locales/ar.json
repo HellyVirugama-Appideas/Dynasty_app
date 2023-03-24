@@ -33,6 +33,7 @@
         "deleted": "Address deleted successfully."
     },
     "loggedIn": "تسجيل الدخول ناجح.",
+    "profile": "تم إنشاء ملف تعريف بنجاح.",
     "deleted": "تم حذف الملف الشخصي.",
     "internal": "خطأ في الخادم الداخلي.",
     "success": "نجاح"
