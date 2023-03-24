@@ -8,7 +8,7 @@ exports.getTerms = async (req, res, next) => {
         let page = await Page.findOne({ title: 'terms' }).select('-__v -title');
         page = multilingual(page, req);
 
-        res.json({ status: 'success', page });
+        res.json({ status: 'success', data: { content: page.content } });
     } catch (error) {
         next(error);
     }
@@ -19,7 +19,7 @@ exports.getFAQs = async (req, res, next) => {
         let faqs = await FAQs.find().select('-_id -__v');
         faqs = faqs.map(el => multilingual(el, req));
 
-        res.json({ status: 'success', content: faqs });
+        res.json({ status: 'success', data: faqs });
     } catch (error) {
         next(error);
     }
