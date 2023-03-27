@@ -33,11 +33,4 @@ router.post(
 router.get('/delete_address/:id', checkUser, profileController.deleteAddress);
 router.get('/select_address/:id', checkUser, profileController.selectAddress);
 
-// country_city
-router.get(
-    '/selected_country_city',
-    checkUser,
-    profileController.selectedCountryCity
-);
-
 module.exports = router;
