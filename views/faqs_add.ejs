@@ -56,6 +56,21 @@
                                                             <div id="EnAnsErr" class="error"></div>
                                                         </small>
                                                     </div>
+                                                    <h4 class="card-title">French</h4>
+                                                    <div class="input-field col s12">
+                                                        <input placeholder="Question" id="FrQue" name="FrQue" type="text">
+                                                        <label for="FrQue">Question</label>
+                                                        <small>
+                                                            <div id="FrQueErr" class="error"></div>
+                                                        </small>
+                                                    </div>
+                                                    <div class="input-field col s12">
+                                                        <textarea class="materialize-textarea" id="FrAns" name="FrAns" placeholder="Answer"></textarea>
+                                                        <label for="FrAns">Answer</label>
+                                                        <small>
+                                                            <div id="FrAnsErr" class="error"></div>
+                                                        </small>
+                                                    </div>
                                                     <h4 class="card-title">Arabic</h4>
                                                     <div class="input-field col s12">
                                                         <input placeholder="Question" id="ArQue" name="ArQue" type="text">
@@ -100,6 +115,8 @@
 
             const EnQueValue = document.getElementById('EnQue').value.trim();
             const EnAnsValue = document.getElementById('EnAns').value.trim();
+            const FrQueValue = document.getElementById('FrQue').value.trim();
+            const FrAnsValue = document.getElementById('FrAns').value.trim();
             const ArQueValue = document.getElementById('ArQue').value.trim();
             const ArAnsValue = document.getElementById('ArAns').value.trim();
 
@@ -115,6 +132,20 @@
                 returnVal = false;
             } else {
                 document.getElementById('EnAnsErr').innerText = '';
+            }
+
+            if (FrQueValue == '') {
+                document.getElementById('FrQueErr').innerText = 'Please enter question.';
+                returnVal = false;
+            } else {
+                document.getElementById('FrQueErr').innerText = '';
+            }
+
+            if (FrAnsValue == '') {
+                document.getElementById('FrAnsErr').innerText = 'Please enter answer.';
+                returnVal = false;
+            } else {
+                document.getElementById('FrAnsErr').innerText = '';
             }
 
             if (ArQueValue == '') {

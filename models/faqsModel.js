@@ -11,6 +11,16 @@ const faqsSchema = new mongoose.Schema({
             required: [true, 'Answer is required.'],
         },
     },
+    fr: {
+        question: {
+            type: String,
+            required: [true, 'Question is required.'],
+        },
+        answer: {
+            type: String,
+            required: [true, 'Answer is required.'],
+        },
+    },
     ar: {
         question: {
             type: String,

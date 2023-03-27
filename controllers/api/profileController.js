@@ -1,5 +1,5 @@
 const createError = require('http-errors');
-const multilingualUser = require('../../utils/multilingual_user');
+const multilingualUser = require('../../utils/multilingualUser');
 
 const User = require('../../models/userModel');
 const Address = require('../../models/addressModel');

@@ -20,12 +20,10 @@ app.set('views', path.join(__dirname, 'views'));
 i18n.use(i18nFsBackend)
     .use(i18nMiddleware.LanguageDetector)
     .init({
-        backend: {
-            loadPath: __dirname + '/locales/{{lng}}.json',
-        },
+        backend: { loadPath: __dirname + '/locales/{{lng}}.json' },
         fallbackLng: 'en',
         lowerCaseLng: true,
-        preload: ['en', 'ar'],
+        preload: ['en', 'fr', 'ar'],
         saveMissing: true,
     });
 

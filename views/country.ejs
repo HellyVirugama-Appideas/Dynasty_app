@@ -48,6 +48,7 @@
                                                         <tr>
                                                             <th>Sr</th>
                                                             <th>Name (English)</th>
+                                                            <th>Name (French)</th>
                                                             <th>Name (Arabic)</th>
                                                             <th>Image</th>
                                                             <th>Action</th>
@@ -58,6 +59,7 @@
                                                         <tr>
                                                             <td><%= i+1 %></td>
                                                             <td><%= countries[i].en.name %></td>
+                                                            <td><%= countries[i].fr.name %></td>
                                                             <td><%= countries[i].ar.name %></td>
                                                             <td><img src="<%= countries[i].image %>" alt="alt" width="50" onerror="this.onerror=null; this.src='/uploads/no_image_available_3.jpg';"></td>
                                                             <td style="max-width: 70px;">

@@ -16,6 +16,7 @@ exports.postTerms = async (req, res) => {
     try {
         const page = await Page.findOne({ title: 'terms' });
         page.en.content = req.body.EnContent;
+        page.fr.content = req.body.FrContent;
         page.ar.content = req.body.ArContent;
         await page.save();
 
@@ -45,6 +46,10 @@ exports.postAddFAQ = async (req, res) => {
             en: {
                 question: req.body.EnQue,
                 answer: req.body.EnAns,
+            },
+            fr: {
+                question: req.body.FrQue,
+                answer: req.body.FrAns,
             },
             ar: {
                 question: req.body.ArQue,
@@ -90,6 +95,8 @@ exports.postEditFAQ = async (req, res) => {
 
         faq.en.question = req.body.EnQue;
         faq.en.answer = req.body.EnAns;
+        faq.fr.question = req.body.FrQue;
+        faq.fr.answer = req.body.FrAns;
         faq.ar.question = req.body.ArQue;
         faq.ar.answer = req.body.ArAns;
         await faq.save();

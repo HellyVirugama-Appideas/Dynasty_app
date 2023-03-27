@@ -8,6 +8,7 @@ const pageSchema = mongoose.Schema(
             unique: true,
         },
         en: { content: String },
+        fr: { content: String },
         ar: { content: String },
     },
     {

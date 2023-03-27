@@ -6,12 +6,21 @@ const citySchema = new mongoose.Schema({
         name: {
             type: String,
             required: [true, 'City name is required.'],
+            trim: true,
+        },
+    },
+    fr: {
+        name: {
+            type: String,
+            required: [true, 'City name is required.'],
+            trim: true,
         },
     },
     ar: {
         name: {
             type: String,
             required: [true, 'City name is required.'],
+            trim: true,
         },
     },
     country: {

@@ -1,0 +1,40 @@
+{
+    "validation": {
+        "name": "Veuillez fournir le nom.",
+        "country_code": "Veuillez fournir le code du pays.",
+        "phone": "Veuillez fournir un numéro de mobile.",
+        "mobileInvalid": "Le numéro de mobile n'est pas valide.",
+        "email": "Veuillez fournir un e-mail.",
+        "emailInvalid": "Veuillez fournir un e-mail valide.",
+        "address": "Veuillez fournir l'adresse.",
+        "city": "Veuillez fournir la ville.",
+        "country": "Veuillez fournir un pays."
+    },
+    "phone": {
+        "verify": "Veuillez vérifier le numéro de mobile."
+    },
+    "otp": {
+        "sent": "OTP a envoyé à votre numéro.",
+        "fail": "Ne pas vérifier OTP.",
+        "verified": "OTP vérifié."
+    },
+    "token": {
+        "invalid": "Jeton invalide.",
+        "expired": "Jeton expiré, vérifiez à nouveau le téléphone."
+    },
+    "auth": {
+        "provideToken": "Veuillez fournir un jeton d'authentification.",
+        "login": "S'il vous plait Connectez-vous d'abord.",
+        "blocked": "Désolé! Vous êtes bloqué, veuillez contacter l'administrateur."
+    },
+    "address": {
+        "added": "L'adresse ajoutée avec succès.",
+        "edited": "Adresse édité avec succès.",
+        "deleted": "Adresse supprimée avec succès."
+    },
+    "loggedIn": "Connexion réussie.",
+    "profile": "Profil créé avec succès.",
+    "deleted": "Profil supprimé.",
+    "internal": "Erreur interne du serveur.",
+    "success": "succès"
+}

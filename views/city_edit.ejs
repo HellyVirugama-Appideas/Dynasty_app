@@ -51,10 +51,17 @@
                                                 </small>
                                             </div>
                                             <div class="input-field col m6 s12">
+                                                <input placeholder="Name (French)" id="nameFr" name="nameFr" type="text" value="<%= city.fr?.name %>">
+                                                <label for="nameFr">Name</label>
+                                                <small>
+                                                    <div id="error2" class="error"></div>
+                                                </small>
+                                            </div>
+                                            <div class="input-field col m6 s12">
                                                 <input placeholder="Name (Arabic)" id="nameAr" name="nameAr" type="text" value="<%= city.ar?.name %>">
                                                 <label for="nameAr">Name</label>
                                                 <small>
-                                                    <div id="error2" class="error"></div>
+                                                    <div id="error3" class="error"></div>
                                                 </small>
                                             </div>
                                             <div class="input-field col m6 s12">
@@ -66,7 +73,7 @@
                                                 </select>
                                                 <label>Select country</label>
                                                 <small>
-                                                    <div id="error3" class="error"></div>
+                                                    <div id="error4" class="error"></div>
                                                 </small>
                                             </div>
                                             <div class="col s12">
@@ -97,6 +104,7 @@
             let returnVal = true;
 
             const nameEnValue = document.getElementById('nameEn').value.trim();
+            const nameFrValue = document.getElementById('nameFr').value.trim();
             const nameArValue = document.getElementById('nameAr').value.trim();
             const countryValue = document.getElementById('country').value;
 
@@ -107,18 +115,25 @@
                 document.getElementById('error1').innerText = '';
             }
 
-            if (nameArValue == '') {
+            if (nameEnValue == '') {
                 document.getElementById('error2').innerText = 'Please enter city name.';
                 returnVal = false;
             } else {
                 document.getElementById('error2').innerText = '';
             }
 
-            if (countryValue == '') {
-                document.getElementById('error3').innerText = 'Please select country.';
+            if (nameArValue == '') {
+                document.getElementById('error3').innerText = 'Please enter city name.';
                 returnVal = false;
             } else {
                 document.getElementById('error3').innerText = '';
+            }
+
+            if (countryValue == '') {
+                document.getElementById('error4').innerText = 'Please select country.';
+                returnVal = false;
+            } else {
+                document.getElementById('error4').innerText = '';
             }
 
             if (returnVal) {

@@ -1,5 +1,5 @@
 module.exports = (doc, req) => {
-    const accepted = ['en', 'ar'];
+    const accepted = ['en', 'fr', 'ar'];
     let language = accepted.includes(req.headers['accept-language'])
         ? req.headers['accept-language']
         : 'en';
@@ -7,6 +7,7 @@ module.exports = (doc, req) => {
     let spread = doc.toObject ? doc.toObject() : doc;
     const newDoc = { ...lang, ...spread };
     delete newDoc.en;
+    delete newDoc.fr;
     delete newDoc.ar;
     return newDoc;
 };

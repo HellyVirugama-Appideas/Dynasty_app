@@ -2,7 +2,7 @@ const { promisify } = require('util');
 const createError = require('http-errors');
 const validator = require('validator');
 const jwt = require('jsonwebtoken');
-const multilingualUser = require('../../utils/multilingual_user');
+const multilingualUser = require('../../utils/multilingualUser');
 // const { sendOTP } = require('../../utils/sendSMS');
 
 const User = require('../../models/userModel');

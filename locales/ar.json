@@ -28,9 +28,9 @@
         "blocked": "آسف! أنت محظور ، يرجى الاتصال المسؤول."
     },
     "address": {
-        "added": "Address added successfully.",
-        "edited": "Address edited successfully.",
-        "deleted": "Address deleted successfully."
+        "added": "العنوان المضافة بنجاح.",
+        "edited": "العنوان الذي تم تحريره بنجاح.",
+        "deleted": "تم حذف العنوان بنجاح."
     },
     "loggedIn": "تسجيل الدخول ناجح.",
     "profile": "تم إنشاء ملف تعريف بنجاح.",

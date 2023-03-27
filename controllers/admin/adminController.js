@@ -19,6 +19,7 @@ exports.postAddCountry = async (req, res) => {
 
         await Country.create({
             en: { name: req.body.nameEn },
+            fr: { name: req.body.nameFr },
             ar: { name: req.body.nameAr },
             image,
         });
@@ -56,6 +57,7 @@ exports.postEditCountry = async (req, res) => {
         }
 
         country.en.name = req.body.nameEn;
+        country.fr.name = req.body.nameFr;
         country.ar.name = req.body.nameAr;
 
         if (req.file) country.image = `/uploads/${req.file.filename}`;
@@ -112,6 +114,7 @@ exports.postAddCity = async (req, res) => {
     try {
         await City.create({
             en: { name: req.body.nameEn },
+            fr: { name: req.body.nameFr },
             ar: { name: req.body.nameAr },
             country: req.body.country,
         });
@@ -153,6 +156,7 @@ exports.postEditCity = async (req, res) => {
         }
 
         city.en.name = req.body.nameEn;
+        city.fr.name = req.body.nameFr;
         city.ar.name = req.body.nameAr;
         city.country = req.body.country;
 
