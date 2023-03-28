@@ -82,7 +82,7 @@ exports.addAddress = async (req, res, next) => {
 exports.editAddress = async (req, res, next) => {
     try {
         const address = await Address.findOneAndUpdate(
-            { _id: req.params.id, userId: req.user.id },
+            { _id: req.body.id, userId: req.user.id },
             { address: req.body.address },
             { new: true }
         ).select('-__v -userId');
@@ -98,7 +98,7 @@ exports.editAddress = async (req, res, next) => {
 exports.deleteAddress = async (req, res, next) => {
     try {
         await Address.findOneAndDelete({
-            _id: req.params.id,
+            _id: req.body.id,
             userId: req.user.id,
         });
 
@@ -111,7 +111,7 @@ exports.deleteAddress = async (req, res, next) => {
 exports.selectAddress = async (req, res, next) => {
     try {
         const address = await Address.findOne({
-            _id: req.params.id,
+            _id: req.body.id,
             userId: req.user.id,
         });
         if (!address) return next(createError.NotFound('Address not found.'));

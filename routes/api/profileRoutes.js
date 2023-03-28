@@ -25,12 +25,22 @@ router.post(
     profileController.addAddress
 );
 router.post(
-    '/edit_address/:id',
+    '/edit_address',
     fileUpload(),
     checkUser,
     profileController.editAddress
 );
-router.get('/delete_address/:id', checkUser, profileController.deleteAddress);
-router.get('/select_address/:id', checkUser, profileController.selectAddress);
+router.post(
+    '/delete_address',
+    fileUpload(),
+    checkUser,
+    profileController.deleteAddress
+);
+router.post(
+    '/select_address',
+    fileUpload(),
+    checkUser,
+    profileController.selectAddress
+);
 
 module.exports = router;
