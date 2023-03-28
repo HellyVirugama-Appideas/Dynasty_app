@@ -30,6 +30,7 @@
     "address": {
         "added": "Address added successfully.",
         "edited": "Address edited successfully.",
+        "selected": "Address selected successfully.",
         "deleted": "Address deleted successfully."
     },
     "loggedIn": "Login Successful.",

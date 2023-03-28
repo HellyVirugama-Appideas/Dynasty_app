@@ -122,7 +122,7 @@ exports.selectAddress = async (req, res, next) => {
             User.findByIdAndUpdate(req.user.id, { address: address.id }),
         ]);
 
-        res.json({ code: '1', message: req.t('address.edited'), address });
+        res.json({ code: '1', message: req.t('address.selected'), address });
     } catch (error) {
         next(error);
     }

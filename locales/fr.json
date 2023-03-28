@@ -30,6 +30,7 @@
     "address": {
         "added": "L'adresse ajoutée avec succès.",
         "edited": "Adresse édité avec succès.",
+        "selected": "Adresse sélectionnée avec succès.",
         "deleted": "Adresse supprimée avec succès."
     },
     "loggedIn": "Connexion réussie.",
