@@ -3,6 +3,7 @@ const multilingualUser = require('../../utils/multilingualUser');
 
 const Country = require('../../models/countryModel');
 const City = require('../../models/cityModel');
+const Banner = require('../../models/bannerModel');
 
 exports.getSelectCountryCity = async (req, res, next) => {
     try {
@@ -42,6 +43,17 @@ exports.postSelectCountryCity = async (req, res, next) => {
             message: req.t('success'),
             data: { city: user.city, country: user.country },
         });
+    } catch (error) {
+        next(error);
+    }
+};
+
+exports.getBanners = async (req, res, next) => {
+    try {
+        let banners = await Banner.find().sort('-_id');
+        banners = banners.map(el => el.image);
+
+        res.json({ code: '1', message: req.t('success'), data: { banners } });
     } catch (error) {
         next(error);
     }

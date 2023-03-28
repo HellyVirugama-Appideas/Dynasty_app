@@ -27,4 +27,16 @@ router
     .post(adminController.postEditCity);
 router.get('/city/delete/:id', adminController.getDeleteCity);
 
+// banner
+router.get('/banner', adminController.getBanners);
+router
+    .route('/banner/add')
+    .get(adminController.getAddBanner)
+    .post(upload.single('image'), adminController.postAddBanner);
+router
+    .route('/banner/edit/:id')
+    .get(adminController.getEditBanner)
+    .post(upload.single('image'), adminController.postEditBanner);
+router.get('/banner/delete/:id', adminController.getDeleteBanner);
+
 module.exports = router;

@@ -1,5 +1,6 @@
 const Country = require('../../models/countryModel');
 const City = require('../../models/cityModel');
+const Banner = require('../../models/bannerModel');
 
 exports.getCountries = async (req, res) => {
     try {
@@ -181,5 +182,81 @@ exports.getDeleteCity = async (req, res) => {
             req.flash('red', 'City not found!');
         else req.flash('red', error.message);
         res.redirect('/city');
+    }
+};
+
+exports.getBanners = async (req, res) => {
+    try {
+        const banners = await Banner.find().sort('-_id');
+        res.render('banner', { banners });
+    } catch (error) {
+        req.flash('red', error.message);
+        res.redirect('/');
+    }
+};
+
+exports.getAddBanner = (req, res) => res.render('banner_add');
+
+exports.postAddBanner = async (req, res) => {
+    try {
+        const image = req.file ? `/uploads/${req.file.filename}` : undefined;
+
+        await Banner.create({ image });
+
+        req.flash('green', 'Banner added successfully.');
+        res.redirect('/banner');
+    } catch (error) {
+        req.flash('red', error.message);
+        res.redirect('/banner');
+    }
+};
+
+exports.getEditBanner = async (req, res) => {
+    try {
+        const banner = await Banner.findById(req.params.id);
+        if (!banner) {
+            req.flash('red', 'Banner not found!');
+            return res.redirect('/banner');
+        }
+
+        res.render('banner_edit', { banner });
+    } catch (error) {
+        if (error.name === 'CastError') req.flash('red', 'Banner not found!');
+        else req.flash('red', error.message);
+        res.redirect('/banner');
+    }
+};
+
+exports.postEditBanner = async (req, res) => {
+    try {
+        const banner = await Banner.findById(req.params.id);
+        if (!banner) {
+            req.flash('red', 'Banner not found!');
+            return res.redirect('/banner');
+        }
+
+        if (req.file) banner.image = `/uploads/${req.file.filename}`;
+
+        await banner.save();
+
+        req.flash('green', 'Banner edited successfully.');
+        res.redirect('/banner');
+    } catch (error) {
+        req.flash('red', error.message);
+        res.redirect('/banner');
+    }
+};
+
+exports.getDeleteBanner = async (req, res) => {
+    try {
+        await Banner.findByIdAndDelete(req.params.id);
+
+        req.flash('green', 'Banner deleted successfully.');
+        res.redirect('/banner');
+    } catch (error) {
+        if (error.name === 'CastError' || error.name === 'TypeError')
+            req.flash('red', 'Banner not found!');
+        else req.flash('red', error.message);
+        res.redirect('/banner');
     }
 };

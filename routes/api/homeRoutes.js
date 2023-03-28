@@ -10,4 +10,7 @@ router
     .get(checkUser, homeController.getSelectCountryCity)
     .post(fileUpload(), checkUser, homeController.postSelectCountryCity);
 
+// banner
+router.get('/banner', homeController.getBanners);
+
 module.exports = router;
