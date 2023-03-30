@@ -182,6 +182,137 @@ exports.createProfile = async (req, res, next) => {
     }
 };
 
+exports.socialLogin = async (req, res, next) => {
+    try {
+        const { email, googleId, facebookId, appleId } = req.body;
+
+        const user = await User.findOne({ email });
+
+        // if user exists, redirect to create profile screen
+        if (!user) {
+            return res.json({
+                code: '001',
+                message: req.t('success'),
+                data: { email, googleId, facebookId, appleId },
+            });
+        }
+
+        if (googleId) {
+            if (!user.googleId) {
+                const errorMessage = user.facebookId
+                    ? 'social.facebook'
+                    : user.appleId
+                    ? 'social.apple'
+                    : 'social.phone';
+                return next(createError.BadRequest(errorMessage));
+            }
+            if (googleId !== user.googleId) {
+                return next(createError.BadRequest('social.invalidGoogle'));
+            }
+        }
+
+        if (facebookId) {
+            if (!user.facebookId) {
+                const errorMessage = user.googleId
+                    ? 'social.google'
+                    : user.appleId
+                    ? 'social.apple'
+                    : 'social.phone';
+                return next(createError.BadRequest(errorMessage));
+            }
+            if (facebookId !== user.facebookId) {
+                return next(createError.BadRequest('social.invalidFacebook'));
+            }
+        }
+
+        if (appleId) {
+            if (!user.appleId) {
+                const errorMessage = user.googleId
+                    ? 'social.google'
+                    : user.facebookId
+                    ? 'social.facebook'
+                    : 'social.phone';
+                return next(createError.BadRequest(errorMessage));
+            }
+            if (appleId !== user.appleId) {
+                return next(createError.BadRequest('social.invalidApple'));
+            }
+        }
+
+        const token = await user.generateAuthToken();
+        return res.json({
+            code: '1',
+            message: req.t('loggedIn'),
+            token,
+            user,
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
+exports.createSocialProfile = async (req, res, next) => {
+    try {
+        const { city_id, country_id } = req.body;
+        const [city, country] = await Promise.all([
+            City.findOne({ city_id }),
+            Country.findOne({ country_id }),
+        ]);
+        if (!city) return next(createError.BadRequest('Invalid city_id'));
+        if (!country) return next(createError.BadRequest('Invalid country_id'));
+
+        // create user
+        let user = new User({
+            name: req.body.name,
+            email: req.body.email,
+            country_code: req.body.country_code,
+            phone: req.body.phone,
+            city: city.id,
+            country: country.id,
+            googleId: req.body.googleId,
+            facebookId: req.body.facebookId,
+            appleId: req.body.appleId,
+        });
+
+        // create address
+        const address = new Address({
+            userId: user.id,
+            address: req.body.address,
+            selected: true,
+        });
+
+        // validate
+        await user.validate();
+        await address.validate();
+
+        user.address = address.id;
+        await Promise.all([user.save(), address.save()]);
+
+        const token = await user.generateAuthToken();
+
+        await user.populate('city country address');
+        user = multilingualUser(user, req);
+        user.address = user.address.address;
+
+        // hide fields
+        user.password = undefined;
+        user.__v = undefined;
+
+        res.status(201).json({
+            code: '1',
+            message: req.t('profile'),
+            token,
+            user,
+        });
+    } catch (error) {
+        if (error.name == 'JsonWebTokenError')
+            return next(createError.BadRequest('token.invalid'));
+        if (error.name == 'TokenExpiredError')
+            return next(createError.BadRequest('token.expired'));
+        next(error);
+    }
+};
+
 // generate random code
 const generateCode = length => {
     const digits = '0123456789';

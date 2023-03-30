@@ -33,6 +33,15 @@
         "selected": "Adresse sélectionnée avec succès.",
         "deleted": "Adresse supprimée avec succès."
     },
+    "social": {
+        "google": "Veuillez vous connecter avec Google.",
+        "facebook": "Veuillez vous connecter avec Facebook.",
+        "apple": "Veuillez vous connecter avec Apple.",
+        "phone": "Veuillez vous connecter avec le numéro de téléphone.",
+        "invalidGoogle": "ID Google non valide.",
+        "invalidFacebook": "ID Facebook non valide.",
+        "invalidApple": "ID de pomme non valide."
+    },
     "loggedIn": "Connexion réussie.",
     "profile": "Profil créé avec succès.",
     "deleted": "Profil supprimé.",

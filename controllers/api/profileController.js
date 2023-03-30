@@ -8,7 +8,7 @@ exports.getProfile = async (req, res, next) => {
     try {
         const user = multilingualUser(req.user, req);
 
-        user.address = user.address.address;
+        user.address = user.address?.address;
 
         // Hide fields
         user.blocked = undefined;

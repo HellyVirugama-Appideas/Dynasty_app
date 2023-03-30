@@ -33,6 +33,15 @@
         "selected": "Address selected successfully.",
         "deleted": "Address deleted successfully."
     },
+    "social": {
+        "google": "Please log in with Google.",
+        "facebook": "Please log in with Facebook.",
+        "apple": "Please log in with Apple.",
+        "phone": "Please log in with phone number.",
+        "invalidGoogle": "Invalid Google ID.",
+        "invalidFacebook": "Invalid Facebook ID.",
+        "invalidApple": "Invalid Apple ID."
+    },
     "loggedIn": "Login Successful.",
     "profile": "Profile created successfully.",
     "deleted": "Profile deleted.",

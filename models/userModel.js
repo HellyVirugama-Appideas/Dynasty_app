@@ -24,6 +24,9 @@ const userSchema = new mongoose.Schema({
         lowercase: true,
         validate: [validator.isEmail, 'validation.emailInvalid'],
     },
+    googleId: String,
+    facebookId: String,
+    appleId: String,
     city: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'City',

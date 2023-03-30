@@ -33,6 +33,15 @@
         "selected": "العنوان المحدد بنجاح.",
         "deleted": "تم حذف العنوان بنجاح."
     },
+    "social": {
+        "google": "يرجى تسجيل الدخول مع Google.",
+        "facebook": "الرجاء تسجيل الدخول مع Facebook.",
+        "apple": "يرجى تسجيل الدخول مع Apple.",
+        "phone": "يرجى تسجيل الدخول باستخدام رقم الهاتف.",
+        "invalidGoogle": "معرف Google غير صالح.",
+        "invalidFacebook": "معرف Facebook غير صالح.",
+        "invalidApple": "معرف Apple غير صالح."
+    },
     "loggedIn": "تسجيل الدخول ناجح.",
     "profile": "تم إنشاء ملف تعريف بنجاح.",
     "deleted": "تم حذف الملف الشخصي.",
