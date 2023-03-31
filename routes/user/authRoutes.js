@@ -1,7 +1,7 @@
 const router = require('express').Router();
 const fileUpload = require('express-fileupload');
 
-const authController = require('../../controllers/api/authController');
+const authController = require('../../controllers/user/authController');
 
 router.post('/send_otp', fileUpload(), authController.sendOTP);
 

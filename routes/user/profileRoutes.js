@@ -1,8 +1,8 @@
 const router = require('express').Router();
 const fileUpload = require('express-fileupload');
 
-const { checkUser } = require('../../controllers/api/authController');
-const profileController = require('../../controllers/api/profileController');
+const { checkUser } = require('../../controllers/user/authController');
+const profileController = require('../../controllers/user/profileController');
 
 // profile
 router.get('/get_profile_data', checkUser, profileController.getProfile);

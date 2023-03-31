@@ -1,8 +1,8 @@
 const router = require('express').Router();
 const fileUpload = require('express-fileupload');
 
-const { checkUser } = require('../../controllers/api/authController');
-const homeController = require('../../controllers/api/homeController');
+const { checkUser } = require('../../controllers/user/authController');
+const homeController = require('../../controllers/user/homeController');
 
 // country_city
 router

@@ -84,12 +84,14 @@ app.use('/uploads/*', (req, res) => res.status(404).end());
 
 // 2) API ROUTES
 // USER ROUTES
-app.use('/api/user', require('./routes/api/authRoutes'));
-app.use('/api/user', require('./routes/api/profileRoutes'));
-app.use('/api/user', require('./routes/api/homeRoutes'));
+app.use('/api/user', require('./routes/user/authRoutes'));
+app.use('/api/user', require('./routes/user/profileRoutes'));
+app.use('/api/user', require('./routes/user/homeRoutes'));
 
-app.use('/api', require('./routes/api/cityCountryRoutes'));
-app.use('/api', require('./routes/api/cmsRoutes'));
+// DRIVER ROUTES
+
+app.use('/api', require('./routes/user/cityCountryRoutes'));
+app.use('/api', require('./routes/user/cmsRoutes'));
 
 // 404 api
 app.use('/api', (req, res, next) => {
