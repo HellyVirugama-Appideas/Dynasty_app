@@ -2,6 +2,7 @@ const Country = require('../../models/countryModel');
 const City = require('../../models/cityModel');
 const Banner = require('../../models/bannerModel');
 const Type = require('../../models/typeModel');
+const Charge = require('../../models/chargesModel');
 
 exports.getCountries = async (req, res) => {
     try {
@@ -332,5 +333,27 @@ exports.postEditType = async (req, res) => {
     } catch (error) {
         req.flash('red', error.message);
         res.redirect('/type');
+    }
+};
+
+exports.getCharges = async (req, res) => {
+    try {
+        const charge = await Charge.findOne();
+        res.render('charge', { charge });
+    } catch (error) {
+        req.flash('red', error.message);
+        res.redirect('/');
+    }
+};
+
+exports.postCharges = async (req, res) => {
+    try {
+        await Charge.findOneAndUpdate({}, req.body);
+
+        req.flash('green', 'Charges updated successfully.');
+        res.redirect('/charge');
+    } catch (error) {
+        req.flash('red', error.message);
+        res.redirect('/charge');
     }
 };

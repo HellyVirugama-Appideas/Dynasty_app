@@ -50,4 +50,10 @@ router
     .get(adminController.getEditType)
     .post(upload.single('image'), adminController.postEditType);
 
+// charge
+router
+    .route('/charge')
+    .get(adminController.getCharges)
+    .post(adminController.postCharges);
+
 module.exports = router;

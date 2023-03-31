@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html class="loading" lang="en" data-textdirection="ltr">
+<!-- BEGIN: Head-->
+
+<head>
+    <%- include('_layouts/head') %>
+    <title>Charges | <%= title %></title>
+</head>
+<!-- END: Head-->
+
+<body class="vertical-layout page-header-light vertical-menu-collapsible vertical-dark-menu preload-transitions 2-columns" data-open="click" data-menu="vertical-dark-menu" data-col="2-columns">
+    <%- include('_layouts/sidenavbar') %>
+
+    <!-- BEGIN: Page Main-->
+    <div id="main">
+        <div class="row">
+            <div id="breadcrumbs-wrapper" data-image="/app-assets/images/gallery/breadcrumb-bg.jpg">
+                <div class="container">
+                    <div class="row">
+                        <div class="col s12 m6 l6">
+                            <h5 class="breadcrumbs-title mt-0 mb-0"><span>Changes</span></h5>
+                        </div>
+                        <div class="col s12 m6 l6 right-align-md">
+                            <ol class="breadcrumbs mb-0">
+                                <li class="breadcrumb-item"><a href="/">Home</a></li>
+                                <li class="breadcrumb-item"><a href="/type">Type</a></li>
+                                <li class="breadcrumb-item active">Changes</li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="">
+                <div class="container">
+                    <div class="section">
+                        <div class="row">
+                            <div class="col s12">
+                                <%- messages('messages', locals) %>
+                            </div>
+                        </div>
+                        <form method="POST" onsubmit="validate()" action="/charge" id="form">
+                            <div class="col s12">
+                                <div class="card">
+                                    <div class="card-content">
+                                        <div class="row">
+                                            <div class="input-field col m6 s12">
+                                                <input placeholder="Base Fare" id="baseFare" name="baseFare" type="text" value="<%= charge.baseFare %>" oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*?)\..*/g, '$1');">
+                                                <label for="baseFare">Base Fare</label>
+                                                <small>
+                                                    <div id="error1" class="error"></div>
+                                                </small>
+                                            </div>
+                                            <div class="input-field col m6 s12">
+                                                <input placeholder="Distance Rate" id="distanceRate" name="distanceRate" type="text" value="<%= charge.distanceRate %>" oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*?)\..*/g, '$1');">
+                                                <label for="distanceRate">Distance Rate</label>
+                                                <small>
+                                                    <div id="error2" class="error"></div>
+                                                </small>
+                                            </div>
+                                            <div class="input-field col m6 s12">
+                                                <input placeholder="Minimum Fare" id="minimumFare" name="minimumFare" type="text" value="<%= charge.minimumFare %>" oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*?)\..*/g, '$1');">
+                                                <label for="minimumFare">Minimum Fare</label>
+                                                <small>
+                                                    <div id="error3" class="error"></div>
+                                                </small>
+                                            </div>
+                                            <div class="input-field col m6 s12">
+                                                <input placeholder="Booking Fee" id="bookingFee" name="bookingFee" type="text" value="<%= charge.bookingFee %>" oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*?)\..*/g, '$1');">
+                                                <label for="bookingFee">Booking Fee</label>
+                                                <small>
+                                                    <div id="error4" class="error"></div>
+                                                </small>
+                                            </div>
+                                            <div class="col s12">
+                                                <button type="submit" class="btn purple" id="submitBtn">Submit</button>
+                                                <a onclick="history.back()" class="btn btn-danger ml-1">Cancel</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <div class="content-overlay"></div>
+            </div>
+        </div>
+    </div>
+    <!-- END: Page Main-->
+
+    <script>
+        const formC = document.getElementById('form');
+
+        formC.addEventListener('submit', (e) => {
+            e.preventDefault();
+        })
+
+        function validate() {
+            let returnVal = true;
+
+            const baseFareValue = document.getElementById('baseFare').value.trim();
+            const distanceRateValue = document.getElementById('distanceRate').value.trim();
+            const minimumFareValue = document.getElementById('minimumFare').value.trim();
+            const bookingFeeValue = document.getElementById('bookingFee').value.trim();
+
+            if (baseFareValue == '') {
+                document.getElementById('error1').innerText = 'Please enter base fare.';
+                returnVal = false;
+            } else {
+                document.getElementById('error1').innerText = '';
+            }
+
+            if (distanceRateValue == '') {
+                document.getElementById('error2').innerText = 'Please enter distance rate.';
+                returnVal = false;
+            } else {
+                document.getElementById('error2').innerText = '';
+            }
+
+            if (minimumFareValue == '') {
+                document.getElementById('error3').innerText = 'Please enter minimum fare.';
+                returnVal = false;
+            } else {
+                document.getElementById('error3').innerText = '';
+            }
+
+            if (bookingFeeValue == '') {
+                document.getElementById('error4').innerText = 'Please enter booking fee.';
+                returnVal = false;
+            } else {
+                document.getElementById('error4').innerText = '';
+            }
+
+            if (returnVal) {
+                document.getElementById('submitBtn').disabled = true;
+                formC.submit();
+            }
+        }
+    </script>
+    <%- include('_layouts/commonJs') %>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Dropify/0.2.2/js/dropify.min.js"></script>
+    <script src="/app-assets/js/scripts/form-file-uploads.min.js"></script>
+</body>
+
+</html>
