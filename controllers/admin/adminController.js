@@ -1,6 +1,7 @@
 const Country = require('../../models/countryModel');
 const City = require('../../models/cityModel');
 const Banner = require('../../models/bannerModel');
+const Type = require('../../models/typeModel');
 
 exports.getCountries = async (req, res) => {
     try {
@@ -258,5 +259,78 @@ exports.getDeleteBanner = async (req, res) => {
             req.flash('red', 'Banner not found!');
         else req.flash('red', error.message);
         res.redirect('/banner');
+    }
+};
+
+exports.getTypes = async (req, res) => {
+    try {
+        const types = await Type.find();
+        res.render('type', { types });
+    } catch (error) {
+        req.flash('red', error.message);
+        res.redirect('/');
+    }
+};
+
+exports.getAddType = (req, res) => res.render('type_add');
+
+exports.postAddType = async (req, res) => {
+    try {
+        const image = req.file ? `/uploads/${req.file.filename}` : undefined;
+
+        await Type.create({
+            en: { name: req.body.nameEn },
+            fr: { name: req.body.nameFr },
+            ar: { name: req.body.nameAr },
+            typeFor: req.body.typeFor,
+            image,
+        });
+
+        req.flash('green', 'Type added successfully.');
+        res.redirect('/type');
+    } catch (error) {
+        req.flash('red', error.message);
+        res.redirect('/type');
+    }
+};
+
+exports.getEditType = async (req, res) => {
+    try {
+        const type = await Type.findById(req.params.id);
+        if (!type) {
+            req.flash('red', 'Type not found!');
+            return res.redirect('/type');
+        }
+
+        res.render('type_edit', { type });
+    } catch (error) {
+        if (error.name === 'CastError') req.flash('red', 'Type not found!');
+        else req.flash('red', error.message);
+        res.redirect('/type');
+    }
+};
+
+exports.postEditType = async (req, res) => {
+    try {
+        const type = await Type.findById(req.params.id);
+        if (!type) {
+            req.flash('red', 'Type not found!');
+            return res.redirect('/type');
+        }
+
+        type.en.name = req.body.nameEn;
+        type.fr.name = req.body.nameFr;
+        type.ar.name = req.body.nameAr;
+        type.typeFor = req.body.typeFor;
+
+        if (req.file) type.image = `/uploads/${req.file.filename}`;
+
+        await type.save();
+
+        req.flash('green', 'Type edited successfully.');
+        res.redirect('/type');
+    } catch (error) {
+        req.flash('red', error.message);
+        res.redirect('/type');
     }
 };

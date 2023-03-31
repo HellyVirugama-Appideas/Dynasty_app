@@ -39,4 +39,15 @@ router
     .post(upload.single('image'), adminController.postEditBanner);
 router.get('/banner/delete/:id', adminController.getDeleteBanner);
 
+// type
+router.get('/type', adminController.getTypes);
+router
+    .route('/type/add')
+    .get(adminController.getAddType)
+    .post(upload.single('image'), adminController.postAddType);
+router
+    .route('/type/edit/:id')
+    .get(adminController.getEditType)
+    .post(upload.single('image'), adminController.postEditType);
+
 module.exports = router;
