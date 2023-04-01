@@ -10,6 +10,14 @@ const addressSchema = new mongoose.Schema({
         type: String,
         required: [true, 'validation.address'],
     },
+    latitude: {
+        type: String,
+        required: [true, 'validation.latitude'],
+    },
+    longitude: {
+        type: String,
+        required: [true, 'validation.longitude'],
+    },
     selected: {
         type: Boolean,
         default: false,

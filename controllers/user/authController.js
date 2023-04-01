@@ -147,6 +147,8 @@ exports.createProfile = async (req, res, next) => {
         const address = new Address({
             userId: user.id,
             address: req.body.address,
+            latitude: req.body.latitude,
+            longitude: req.body.longitude,
             selected: true,
         });
 
@@ -278,6 +280,8 @@ exports.createSocialProfile = async (req, res, next) => {
         const address = new Address({
             userId: user.id,
             address: req.body.address,
+            latitude: req.body.latitude,
+            longitude: req.body.longitude,
             selected: true,
         });
 

@@ -7,6 +7,8 @@
         "email": "Veuillez fournir un e-mail.",
         "emailInvalid": "Veuillez fournir un e-mail valide.",
         "address": "Veuillez fournir l'adresse.",
+        "latitude": "Veuillez fournir la latitude.",
+        "longitude": "Veuillez fournir la longitude.",
         "city": "Veuillez fournir la ville.",
         "country": "Veuillez fournir un pays."
     },
