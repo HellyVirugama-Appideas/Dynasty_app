@@ -8,6 +8,8 @@ exports.getProfile = async (req, res, next) => {
     try {
         const user = multilingualUser(req.user, req);
 
+        user.latitude = user.address?.latitude;
+        user.longitude = user.address?.longitude;
         user.address = user.address?.address;
 
         // Hide fields
@@ -29,7 +31,11 @@ exports.editProfile = async (req, res, next) => {
             new: true,
         }).populate('city country');
 
+        await user.populate('city country address');
         user = multilingualUser(user, req);
+        user.latitude = user.address.latitude;
+        user.longitude = user.address.longitude;
+        user.address = user.address.address;
 
         res.json({ code: '1', message: req.t('success'), user });
     } catch (error) {
