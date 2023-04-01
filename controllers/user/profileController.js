@@ -68,6 +68,8 @@ exports.addAddress = async (req, res, next) => {
         const address = await Address.create({
             userId: req.user.id,
             address: req.body.address,
+            latitude: req.body.latitude,
+            longitude: req.body.longitude,
         });
 
         address.userId = undefined;
@@ -83,7 +85,11 @@ exports.editAddress = async (req, res, next) => {
     try {
         const address = await Address.findOneAndUpdate(
             { _id: req.body.id, userId: req.user.id },
-            { address: req.body.address },
+            {
+                address: req.body.address,
+                latitude: req.body.latitude,
+                longitude: req.body.longitude,
+            },
             { new: true }
         ).select('-__v -userId');
 
