@@ -163,6 +163,8 @@ exports.createProfile = async (req, res, next) => {
 
         await user.populate('city country address');
         user = multilingualUser(user, req);
+        user.latitude = user.address.latitude;
+        user.longitude = user.address.longitude;
         user.address = user.address.address;
 
         // hide fields
@@ -296,6 +298,8 @@ exports.createSocialProfile = async (req, res, next) => {
 
         await user.populate('city country address');
         user = multilingualUser(user, req);
+        user.latitude = user.address.latitude;
+        user.longitude = user.address.longitude;
         user.address = user.address.address;
 
         // hide fields
