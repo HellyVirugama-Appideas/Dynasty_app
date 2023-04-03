@@ -29,9 +29,8 @@ exports.editProfile = async (req, res, next) => {
 
         let user = await User.findByIdAndUpdate(req.user.id, req.body, {
             new: true,
-        }).populate('city country');
+        }).populate('city country address');
 
-        await user.populate('city country address');
         user = multilingualUser(user, req);
         user.latitude = user.address.latitude;
         user.longitude = user.address.longitude;
