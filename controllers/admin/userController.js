@@ -36,7 +36,7 @@ exports.blockUser = async (req, res) => {
             { blocked: true },
             { strict: false }
         );
-        req.flash('green', `'${user.name} blocked successfully.`);
+        req.flash('green', `'${user.name}' blocked successfully.`);
         res.redirect('/user');
     } catch (error) {
         if (error.name === 'CastError' || error.name === 'TypeError')
@@ -53,7 +53,7 @@ exports.unblockUser = async (req, res) => {
             { blocked: false },
             { strict: false }
         );
-        req.flash('green', `'${user.name} unblocked successfully.`);
+        req.flash('green', `'${user.name}' unblocked successfully.`);
         res.redirect('/user');
     } catch (error) {
         if (error.name === 'CastError' || error.name === 'TypeError')

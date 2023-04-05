@@ -37,12 +37,27 @@ const driverSchema = new mongoose.Schema({
         ref: 'Country',
         required: [true, 'validation.country'],
     },
+    type: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Type',
+        required: [true, 'validation.type'],
+    },
+    profile: String,
+    licence: String,
+    pan: String,
+    rc: String,
     latitude: String,
     longitude: String,
     // address: {
     //     type: mongoose.Schema.Types.ObjectId,
     //     ref: 'Address',
     // },
+    approved: {
+        type: Boolean,
+        default: false,
+        select: false,
+        immutable: true,
+    },
     blocked: {
         type: Boolean,
         default: false,

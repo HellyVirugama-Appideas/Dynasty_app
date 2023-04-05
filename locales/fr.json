@@ -10,7 +10,8 @@
         "latitude": "Veuillez fournir la latitude.",
         "longitude": "Veuillez fournir la longitude.",
         "city": "Veuillez fournir la ville.",
-        "country": "Veuillez fournir un pays."
+        "country": "Veuillez fournir un pays.",
+        "type": "Veuillez fournir le type de véhicule."
     },
     "phone": {
         "verify": "Veuillez vérifier le numéro de mobile."
