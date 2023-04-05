@@ -27,6 +27,10 @@ const typeSchema = new mongoose.Schema({
         enum: ['Taxi', 'Bike', 'Delivery'],
         required: [true, 'Please specify the type of vehicle.'],
     },
+    distanceRate: {
+        type: String,
+        required: [true, 'Please specify distance rate.'],
+    },
     image: { type: String, required: true },
 });
 

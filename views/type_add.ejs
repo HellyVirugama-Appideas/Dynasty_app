@@ -44,21 +44,21 @@
                                 <div class="card">
                                     <div class="card-content">
                                         <div class="row">
-                                            <div class="input-field col m6 s12">
+                                            <div class="input-field col m4 s12">
                                                 <input placeholder="Name (English)" id="nameEn" name="nameEn" type="text">
                                                 <label for="nameEn">Name</label>
                                                 <small>
                                                     <div id="error1" class="error"></div>
                                                 </small>
                                             </div>
-                                            <div class="input-field col m6 s12">
+                                            <div class="input-field col m4 s12">
                                                 <input placeholder="Name (French)" id="nameFr" name="nameFr" type="text">
                                                 <label for="nameFr">Name</label>
                                                 <small>
                                                     <div id="error2" class="error"></div>
                                                 </small>
                                             </div>
-                                            <div class="input-field col m6 s12">
+                                            <div class="input-field col m4 s12">
                                                 <input placeholder="Name (Arabic)" id="nameAr" name="nameAr" type="text">
                                                 <label for="nameAr">Name</label>
                                                 <small>
@@ -66,13 +66,20 @@
                                                 </small>
                                             </div>
                                             <div class="input-field col m6 s12">
+                                                <input placeholder="Distance rate" id="distanceRate" name="distanceRate" type="text" oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*?)\..*/g, '$1');">
+                                                <label for="distanceRate">Distance rate</label>
+                                                <small>
+                                                    <div id="error6" class="error"></div>
+                                                </small>
+                                            </div>
+                                            <div class="input-field col m6 s12">
                                                 <select id="typeFor" name="typeFor">
-                                                    <option value="">Select country</option>
+                                                    <option value="">Select type</option>
                                                     <option value="Taxi">Taxi</option>
                                                     <option value="Bike">Bike</option>
                                                     <option value="Delivery">Delivery</option>
                                                 </select>
-                                                <label>Select country</label>
+                                                <label>Select type</label>
                                                 <small>
                                                     <div id="error4" class="error"></div>
                                                 </small>
@@ -114,6 +121,7 @@
             const nameEnValue = document.getElementById('nameEn').value.trim();
             const nameFrValue = document.getElementById('nameFr').value.trim();
             const nameArValue = document.getElementById('nameAr').value.trim();
+            const distanceRateValue = document.getElementById('distanceRate').value;
             const typeForValue = document.getElementById('typeFor').value;
             const fileValue = document.getElementById('input-file-now').value;
             const ext = fileValue.substring(fileValue.lastIndexOf('.') + 1);
@@ -137,6 +145,13 @@
                 returnVal = false;
             } else {
                 document.getElementById('error3').innerText = '';
+            }
+
+            if (distanceRateValue == '') {
+                document.getElementById('error6').innerText = 'Please enter distance rate.';
+                returnVal = false;
+            } else {
+                document.getElementById('error6').innerText = '';
             }
 
             if (typeForValue == '') {

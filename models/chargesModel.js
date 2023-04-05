@@ -5,10 +5,6 @@ const chargesSchema = new mongoose.Schema({
         type: Number,
         required: true,
     },
-    distanceRate: {
-        type: Number,
-        required: true,
-    },
     minimumFare: {
         type: Number,
         required: true,

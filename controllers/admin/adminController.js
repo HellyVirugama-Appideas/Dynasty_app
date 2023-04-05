@@ -284,6 +284,7 @@ exports.postAddType = async (req, res) => {
             fr: { name: req.body.nameFr },
             ar: { name: req.body.nameAr },
             typeFor: req.body.typeFor,
+            distanceRate: req.body.distanceRate,
             image,
         });
 
@@ -323,6 +324,7 @@ exports.postEditType = async (req, res) => {
         type.fr.name = req.body.nameFr;
         type.ar.name = req.body.nameAr;
         type.typeFor = req.body.typeFor;
+        type.distanceRate = req.body.distanceRate;
 
         if (req.file) type.image = `/uploads/${req.file.filename}`;
 

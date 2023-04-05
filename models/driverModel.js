@@ -46,12 +46,10 @@ const driverSchema = new mongoose.Schema({
     licence: String,
     pan: String,
     rc: String,
-    latitude: String,
-    longitude: String,
-    // address: {
-    //     type: mongoose.Schema.Types.ObjectId,
-    //     ref: 'Address',
-    // },
+    location: {
+        type: { type: String, enum: ['Point'], default: 'Point' },
+        coordinates: { type: [Number] },
+    },
     approved: {
         type: Boolean,
         default: false,
@@ -69,6 +67,8 @@ const driverSchema = new mongoose.Schema({
         default: Date.now,
     },
 });
+
+driverSchema.index({ location: '2dsphere' });
 
 // generating tokens
 driverSchema.methods.generateAuthToken = async function () {

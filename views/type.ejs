@@ -48,6 +48,7 @@
                                                         <tr>
                                                             <th>Sr</th>
                                                             <th>Name</th>
+                                                            <th>Rate</th>
                                                             <th>Type For</th>
                                                             <th>Image</th>
                                                             <th>Action</th>
@@ -58,6 +59,7 @@
                                                         <tr>
                                                             <td><%= i+1 %></td>
                                                             <td><%= types[i].en.name %></td>
+                                                            <td><%= types[i].distanceRate %></td>
                                                             <td><%= types[i].typeFor %></td>
                                                             <td><img src="<%= types[i].image %>" alt="alt" width="70" onerror="this.onerror=null; this.src='/uploads/no_image_available_3.jpg';"></td>
                                                             <td style="max-width: 70px;">
