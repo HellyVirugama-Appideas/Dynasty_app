@@ -190,7 +190,9 @@ exports.socialLogin = async (req, res, next) => {
     try {
         const { email, googleId, facebookId, appleId } = req.body;
 
-        const user = await User.findOne({ email });
+        let user = await User.findOne({ email }).populate(
+            'city country address'
+        );
 
         // if user exists, redirect to create profile screen
         if (!user) {
@@ -244,6 +246,12 @@ exports.socialLogin = async (req, res, next) => {
         }
 
         const token = await user.generateAuthToken();
+
+        user = multilingualUser(user, req);
+        user.latitude = user.address.latitude;
+        user.longitude = user.address.longitude;
+        user.address = user.address.address;
+
         return res.json({
             code: '1',
             message: req.t('loggedIn'),

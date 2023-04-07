@@ -27,6 +27,7 @@ const driverSchema = new mongoose.Schema({
     googleId: String,
     facebookId: String,
     appleId: String,
+    address: String,
     city: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'City',
@@ -40,14 +41,13 @@ const driverSchema = new mongoose.Schema({
     type: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Type',
-        required: [true, 'validation.type'],
     },
     profile: String,
     licence: String,
     pan: String,
     rc: String,
     location: {
-        type: { type: String, enum: ['Point'], default: 'Point' },
+        type: { type: String, enum: ['Point'] },
         coordinates: { type: [Number] },
     },
     approved: {

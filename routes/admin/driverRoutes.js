@@ -35,4 +35,6 @@ router.get('/block/:id', driverController.blockDriver);
 
 router.get('/unblock/:id', driverController.unblockDriver);
 
+router.get('/approve/:id', driverController.approveDriver);
+
 module.exports = router;

@@ -5,7 +5,10 @@ const Type = require('../../models/typeModel');
 
 exports.getAllDrivers = async (req, res) => {
     try {
-        const drivers = await Driver.find().select('+blocked').sort('-_id');
+        const drivers = await Driver.find()
+            .select('+approved +blocked')
+            .sort('-_id');
+
         res.render('driver', { drivers });
     } catch (error) {
         req.flash('red', error.message);
@@ -54,6 +57,7 @@ exports.postAddDriver = async (req, res) => {
             phone: req.body.phone,
             city: req.body.city,
             country: req.body.country,
+            address: req.body.address,
             type: req.body.type,
             profile,
             licence,
@@ -119,6 +123,7 @@ exports.postEditDriver = async (req, res) => {
         driver.country_code = req.body.country_code;
         driver.phone = req.body.phone;
         driver.country = req.body.country;
+        driver.address = req.body.address;
         driver.city = req.body.city;
         driver.type = req.body.type;
 
@@ -164,6 +169,24 @@ exports.unblockDriver = async (req, res) => {
             { strict: false }
         );
         req.flash('green', `'${driver.name}' unblocked successfully.`);
+        res.redirect('/driver');
+    } catch (error) {
+        if (error.name === 'CastError' || error.name === 'TypeError')
+            req.flash('red', 'Driver not found!');
+        else req.flash('red', error.message);
+        res.redirect('/driver');
+    }
+};
+
+exports.approveDriver = async (req, res) => {
+    try {
+        const driver = await Driver.findByIdAndUpdate(
+            req.params.id,
+            { approved: true },
+            { strict: false }
+        );
+
+        req.flash('green', `'${driver.name}' approved successfully.`);
         res.redirect('/driver');
     } catch (error) {
         if (error.name === 'CastError' || error.name === 'TypeError')

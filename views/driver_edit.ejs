@@ -96,7 +96,14 @@
                                                     <div id="error6" class="error"></div>
                                                 </small>
                                             </div>
-                                            <div class="input-field col s12">
+                                            <div class="input-field col m6 s12">
+                                                <input placeholder="Address" id="address" name="address" type="text" value="<%= driver.address %>">
+                                                <label for=" address">Address</label>
+                                                <small>
+                                                    <div id="error12" class="error"></div>
+                                                </small>
+                                            </div>
+                                            <div class="input-field col m6 s12">
                                                 <select id="type" name="type">
                                                     <option value="">Select vehicle type</option>
                                                     <% for( let i = 0; i < types.length; i++ ) { %>
@@ -195,6 +202,7 @@
             const phoneValue = document.getElementById('phone').value.trim();
             const countryValue = document.getElementById('country').value.trim();
             const cityValue = document.getElementById('city').value.trim();
+            const addressValue = document.getElementById('address').value.trim();
             const typeValue = document.getElementById('type').value.trim();
             const profileFileValue = document.getElementById('profile').value;
             const profileExt = profileFileValue.substring(profileFileValue.lastIndexOf('.') + 1);
@@ -248,6 +256,13 @@
                 returnVal = false;
             } else {
                 document.getElementById('error6').innerText = '';
+            }
+
+            if (addressValue == '') {
+                document.getElementById('error12').innerText = 'Please enter address.';
+                returnVal = false;
+            } else {
+                document.getElementById('error12').innerText = '';
             }
 
             if (typeValue == '') {

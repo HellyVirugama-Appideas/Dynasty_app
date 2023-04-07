@@ -1,9 +1,14 @@
+const { promisify } = require('util');
 const createError = require('http-errors');
 const validator = require('validator');
+const multilingualUser = require('../../utils/multilingualUser');
 const jwt = require('jsonwebtoken');
+// const { sendOTP } = require('../../utils/sendSMS');
 
 const Driver = require('../../models/driverModel');
 const OTP = require('../../models/otpModel');
+const City = require('../../models/cityModel');
+const Country = require('../../models/countryModel');
 
 exports.sendOTP = async (req, res, next) => {
     try {
@@ -81,6 +86,177 @@ exports.verifyOTP = async (req, res, next) => {
             phone,
         });
     } catch (error) {
+        next(error);
+    }
+};
+
+exports.createProfile = async (req, res, next) => {
+    try {
+        // verify verifyToken
+        const decoded = await promisify(jwt.verify)(
+            req.body.verifyToken,
+            process.env.JWT_SECRET
+        );
+        if (!decoded.phone) return next(createError.BadRequest('phone.verify'));
+
+        const { city_id, country_id } = req.body;
+        const [city, country] = await Promise.all([
+            City.findOne({ city_id }),
+            Country.findOne({ country_id }),
+        ]);
+        if (!city) return next(createError.BadRequest('Invalid city_id'));
+        if (!country) return next(createError.BadRequest('Invalid country_id'));
+
+        // create driver
+        let driver = await Driver.create({
+            name: req.body.name,
+            email: req.body.email,
+            country_code: decoded.country_code,
+            phone: decoded.phone,
+            city: city.id,
+            country: country.id,
+            address: req.body.address,
+        });
+
+        const token = await driver.generateAuthToken();
+
+        await driver.populate('city country');
+        driver = multilingualUser(driver, req);
+
+        // hide fields
+        driver.password = undefined;
+        driver.__v = undefined;
+
+        res.status(201).json({
+            code: '1',
+            message: req.t('profile'),
+            token,
+            driver,
+        });
+    } catch (error) {
+        if (error.name == 'JsonWebTokenError')
+            return next(createError.BadRequest('token.invalid'));
+        if (error.name == 'TokenExpiredError')
+            return next(createError.BadRequest('token.expired'));
+        next(error);
+    }
+};
+
+exports.socialLogin = async (req, res, next) => {
+    try {
+        const { email, googleId, facebookId, appleId } = req.body;
+
+        let driver = await Driver.findOne({ email }).populate('city country');
+
+        // if driver exists, redirect to create profile screen
+        if (!driver) {
+            return res.json({
+                code: '001',
+                message: req.t('success'),
+                data: { email, googleId, facebookId, appleId },
+            });
+        }
+
+        if (googleId) {
+            if (!driver.googleId) {
+                const errorMessage = driver.facebookId
+                    ? 'social.facebook'
+                    : driver.appleId
+                    ? 'social.apple'
+                    : 'social.phone';
+                return next(createError.BadRequest(errorMessage));
+            }
+            if (googleId !== driver.googleId) {
+                return next(createError.BadRequest('social.invalidGoogle'));
+            }
+        }
+
+        if (facebookId) {
+            if (!driver.facebookId) {
+                const errorMessage = driver.googleId
+                    ? 'social.google'
+                    : driver.appleId
+                    ? 'social.apple'
+                    : 'social.phone';
+                return next(createError.BadRequest(errorMessage));
+            }
+            if (facebookId !== driver.facebookId) {
+                return next(createError.BadRequest('social.invalidFacebook'));
+            }
+        }
+
+        if (appleId) {
+            if (!driver.appleId) {
+                const errorMessage = driver.googleId
+                    ? 'social.google'
+                    : driver.facebookId
+                    ? 'social.facebook'
+                    : 'social.phone';
+                return next(createError.BadRequest(errorMessage));
+            }
+            if (appleId !== driver.appleId) {
+                return next(createError.BadRequest('social.invalidApple'));
+            }
+        }
+
+        const token = await driver.generateAuthToken();
+        driver = multilingualUser(driver, req);
+
+        return res.json({
+            code: '1',
+            message: req.t('loggedIn'),
+            token,
+            driver,
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
+exports.createSocialProfile = async (req, res, next) => {
+    try {
+        const { city_id, country_id } = req.body;
+        const [city, country] = await Promise.all([
+            City.findOne({ city_id }),
+            Country.findOne({ country_id }),
+        ]);
+        if (!city) return next(createError.BadRequest('Invalid city_id'));
+        if (!country) return next(createError.BadRequest('Invalid country_id'));
+
+        // create driver
+        let driver = await Driver.create({
+            name: req.body.name,
+            email: req.body.email,
+            country_code: req.body.country_code,
+            phone: req.body.phone,
+            city: city.id,
+            country: country.id,
+            address: req.body.address,
+            googleId: req.body.googleId,
+            facebookId: req.body.facebookId,
+            appleId: req.body.appleId,
+        });
+
+        const token = await driver.generateAuthToken();
+
+        await driver.populate('city country');
+        driver = multilingualUser(driver, req);
+
+        // hide fields
+        driver.password = undefined;
+        driver.__v = undefined;
+
+        res.status(201).json({
+            code: '1',
+            message: req.t('profile'),
+            token,
+            driver,
+        });
+    } catch (error) {
+        if (error.name == 'JsonWebTokenError')
+            return next(createError.BadRequest('token.invalid'));
+        if (error.name == 'TokenExpiredError')
+            return next(createError.BadRequest('token.expired'));
         next(error);
     }
 };
