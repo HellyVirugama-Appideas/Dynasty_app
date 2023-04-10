@@ -1,6 +1,7 @@
 const { promisify } = require('util');
 const createError = require('http-errors');
 const validator = require('validator');
+const multilingual = require('../../utils/multilingual');
 const multilingualUser = require('../../utils/multilingualUser');
 const jwt = require('jsonwebtoken');
 // const { sendOTP } = require('../../utils/sendSMS');
@@ -9,6 +10,33 @@ const Driver = require('../../models/driverModel');
 const OTP = require('../../models/otpModel');
 const City = require('../../models/cityModel');
 const Country = require('../../models/countryModel');
+const Type = require('../../models/typeModel');
+
+exports.checkDriver = async (req, res, next) => {
+    try {
+        const token = req.headers.token;
+
+        if (!token) return next(createError.BadRequest('auth.provideToken'));
+
+        const decoded = await promisify(jwt.verify)(
+            token,
+            process.env.JWT_SECRET
+        );
+
+        let driver = await Driver.findById(decoded._id)
+            .select('+blocked +password')
+            .populate('city country');
+
+        if (!driver) return next(createError.BadRequest('auth.login'));
+        if (driver.blocked)
+            return next(createError.Unauthorized('auth.blocked'));
+
+        req.driver = driver;
+        next();
+    } catch (error) {
+        next(error);
+    }
+};
 
 exports.sendOTP = async (req, res, next) => {
     try {
@@ -257,6 +285,95 @@ exports.createSocialProfile = async (req, res, next) => {
             return next(createError.BadRequest('token.invalid'));
         if (error.name == 'TokenExpiredError')
             return next(createError.BadRequest('token.expired'));
+        next(error);
+    }
+};
+
+exports.getVehicleTypes = async (req, res, next) => {
+    try {
+        let types = await Type.find().select('-__v -typeFor -distanceRate');
+        types = types.map(type => multilingual(type, req));
+
+        res.json({ code: '1', message: req.t('success'), data: { types } });
+    } catch (error) {
+        next(error);
+    }
+};
+
+exports.selectVehicleType = async (req, res, next) => {
+    try {
+        const type = await Type.findById(req.body.type);
+        if (!type)
+            return next(createError.BadRequest('Invalid vehicle type id.'));
+
+        const driver = await Driver.findByIdAndUpdate(
+            req.driver.id,
+            { type: req.body.type },
+            { new: true }
+        );
+
+        res.json({ code: '1', message: req.t('success'), driver });
+    } catch (error) {
+        next(error);
+    }
+};
+
+exports.uploadProfile = async (req, res, next) => {
+    try {
+        const image = req.file ? `/uploads/${req.file.filename}` : undefined;
+        const driver = await Driver.findByIdAndUpdate(
+            req.driver.id,
+            { profile: image },
+            { new: true }
+        );
+
+        res.json({ code: '1', message: req.t('success'), driver });
+    } catch (error) {
+        next(error);
+    }
+};
+
+exports.uploadLicence = async (req, res, next) => {
+    try {
+        const image = req.file ? `/uploads/${req.file.filename}` : undefined;
+        const driver = await Driver.findByIdAndUpdate(
+            req.driver.id,
+            { licence: image },
+            { new: true }
+        );
+
+        res.json({ code: '1', message: req.t('success'), driver });
+    } catch (error) {
+        next(error);
+    }
+};
+
+exports.uploadPAN = async (req, res, next) => {
+    try {
+        const image = req.file ? `/uploads/${req.file.filename}` : undefined;
+        const driver = await Driver.findByIdAndUpdate(
+            req.driver.id,
+            { pan: image },
+            { new: true }
+        );
+
+        res.json({ code: '1', message: req.t('success'), driver });
+    } catch (error) {
+        next(error);
+    }
+};
+
+exports.uploadRC = async (req, res, next) => {
+    try {
+        const image = req.file ? `/uploads/${req.file.filename}` : undefined;
+        const driver = await Driver.findByIdAndUpdate(
+            req.driver.id,
+            { rc: image },
+            { new: true }
+        );
+
+        res.json({ code: '1', message: req.t('success'), driver });
+    } catch (error) {
         next(error);
     }
 };
