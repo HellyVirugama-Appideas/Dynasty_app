@@ -318,6 +318,35 @@ exports.selectVehicleType = async (req, res, next) => {
     }
 };
 
+exports.getDocs = async (req, res, next) => {
+    try {
+        const driver = req.driver;
+        // console.log(driver);
+
+        const obj = { profile: 1, licence: 1, pan: 1, rc: 1 };
+
+        if (!driver.profile) {
+            obj.profile = 0;
+            obj.licence = driver.licence ? 1 : 2;
+            obj.pan = driver.pan ? 1 : 2;
+            obj.rc = driver.rc ? 1 : 2;
+        } else if (!driver.licence) {
+            obj.licence = 0;
+            obj.pan = driver.pan ? 1 : 2;
+            obj.rc = driver.rc ? 1 : 2;
+        } else if (!driver.pan) {
+            obj.pan = 0;
+            obj.rc = driver.rc ? 1 : 2;
+        } else if (!driver.rc) {
+            obj.rc = 0;
+        }
+
+        res.json({ code: '1', message: req.t('success'), data: obj });
+    } catch (error) {
+        next(error);
+    }
+};
+
 exports.uploadProfile = async (req, res, next) => {
     try {
         const image = req.file ? `/uploads/${req.file.filename}` : undefined;

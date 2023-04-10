@@ -26,6 +26,7 @@ router.post(
     authController.selectVehicleType
 );
 
+router.get('/get_docs', authController.checkDriver, authController.getDocs);
 router.post(
     '/upload/profile',
     authController.checkDriver,
