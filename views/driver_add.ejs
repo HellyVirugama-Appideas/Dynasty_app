@@ -166,7 +166,6 @@
 
         function setCityOptions() {
             if (this.value == '') {
-                tax = 0;
                 city.innerHTML = '<option value="">Select city</option>';
             } else {
                 city.innerHTML = '<option value="">Select city</option>';
@@ -178,9 +177,9 @@
                         z.text = `${cities[i].name}`;
                         city.appendChild(z);
                     }
-                    instance = M.FormSelect.init(city);
                 }
             }
+            instance = M.FormSelect.init(city);
         }
         document.getElementById('country').addEventListener('change', setCityOptions);
 

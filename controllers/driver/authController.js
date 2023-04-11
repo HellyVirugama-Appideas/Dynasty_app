@@ -321,7 +321,6 @@ exports.selectVehicleType = async (req, res, next) => {
 exports.getDocs = async (req, res, next) => {
     try {
         const driver = req.driver;
-        // console.log(driver);
 
         const obj = { profile: 1, licence: 1, pan: 1, rc: 1 };
 

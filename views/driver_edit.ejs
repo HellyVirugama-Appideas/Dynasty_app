@@ -181,9 +181,9 @@
                         z.text = `${cities[i].name}`;
                         city.appendChild(z);
                     }
-                    instance = M.FormSelect.init(city);
                 }
             }
+            instance = M.FormSelect.init(city);
         }
         document.getElementById('country').addEventListener('change', setCityOptions);
 
