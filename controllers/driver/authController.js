@@ -340,7 +340,12 @@ exports.getDocs = async (req, res, next) => {
             obj.rc = 0;
         }
 
-        res.json({ code: '1', message: req.t('success'), data: obj });
+        const data = Object.entries(obj).map(([title, status]) => ({
+            title,
+            status,
+        }));
+
+        res.json({ code: '1', message: req.t('success'), data });
     } catch (error) {
         next(error);
     }
