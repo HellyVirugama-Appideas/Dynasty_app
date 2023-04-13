@@ -343,6 +343,7 @@ exports.getDocs = async (req, res, next) => {
         const data = Object.entries(obj).map(([title, status]) => ({
             title,
             status,
+            url: req.driver[title],
         }));
 
         res.json({ code: '1', message: req.t('success'), data });
@@ -353,10 +354,12 @@ exports.getDocs = async (req, res, next) => {
 
 exports.uploadProfile = async (req, res, next) => {
     try {
-        const image = req.file ? `/uploads/${req.file.filename}` : undefined;
+        if (!req.file)
+            return next(createError.BadRequest('Please upload file.'));
+
         const driver = await Driver.findByIdAndUpdate(
             req.driver.id,
-            { profile: image },
+            { profile: `/uploads/${req.file.filename}` },
             { new: true }
         );
 
