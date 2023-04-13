@@ -26,6 +26,9 @@ exports.editProfile = async (req, res, next) => {
         // Not allowed to change
         delete req.body.country_code;
         delete req.body.phone;
+        delete req.body.googleId;
+        delete req.body.facebookId;
+        delete req.body.appleId;
 
         let user = await User.findByIdAndUpdate(req.user.id, req.body, {
             new: true,

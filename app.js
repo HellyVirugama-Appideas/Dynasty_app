@@ -91,6 +91,7 @@ app.use('/api/', require('./routes/user/rideRoutes'));
 
 // DRIVER ROUTES
 app.use('/api/driver', require('./routes/driver/authRoutes'));
+app.use('/api/driver', require('./routes/driver/profileRoutes'));
 
 app.use('/api', require('./routes/user/cityCountryRoutes'));
 app.use('/api', require('./routes/user/cmsRoutes'));
