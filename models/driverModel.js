@@ -46,6 +46,11 @@ const driverSchema = new mongoose.Schema({
     licence: String,
     pan: String,
     rc: String,
+    status: {
+        type: String,
+        enum: ['online', 'offline'],
+        default: 'offline',
+    },
     location: {
         type: { type: String, enum: ['Point'] },
         coordinates: { type: [Number] },
