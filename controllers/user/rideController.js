@@ -3,8 +3,8 @@ const createError = require('http-errors');
 
 const Driver = require('../../models/driverModel');
 const Charges = require('../../models/chargesModel');
+const Ride = require('../../models/rideModel');
 
-// TODO: only 'online' driver and there type is in ['taxi', 'bike']
 exports.getRides = async (req, res, next) => {
     try {
         const accepted = ['en', 'fr', 'ar'];
@@ -17,8 +17,9 @@ exports.getRides = async (req, res, next) => {
             return next(createError.BadRequest('Invalid coordinates.'));
 
         // find available drivers
-        const [drivers, charges] = await Promise.all([
+        let [drivers, charges] = await Promise.all([
             Driver.find({
+                status: 'online',
                 location: {
                     $near: {
                         $geometry: {
@@ -31,6 +32,12 @@ exports.getRides = async (req, res, next) => {
             }).populate('type'),
             Charges.findOne(),
         ]);
+
+        // type is in ['Taxi', 'Bike'] not 	Delivery
+        drivers = drivers.filter(driver => {
+            const typeFor = driver.type ? driver.type.typeFor : null;
+            return typeFor === 'Bike' || typeFor === 'Taxi';
+        });
 
         let rides = [];
         const speed = 30; // speed in km/h
@@ -59,6 +66,7 @@ exports.getRides = async (req, res, next) => {
             ).toFixed(2); // ride price
 
             rides.push({
+                driverId: driver.id,
                 type: driver.type[language].name,
                 image: driver.type.image,
                 capacity: driver.type.capacity,
@@ -69,6 +77,55 @@ exports.getRides = async (req, res, next) => {
 
         res.json({ code: '1', message: req.t('success'), rides });
     } catch (error) {
+        next(error);
+    }
+};
+
+exports.bookRide = async (req, res, next) => {
+    try {
+        const {
+            pickupLat,
+            pickupLng,
+            endLat,
+            endLng,
+            driverId,
+            pickupAddress,
+            endAddress,
+        } = req.body;
+
+        if (
+            !pickupLat ||
+            !pickupLng ||
+            !endLat ||
+            !endLng ||
+            !pickupAddress ||
+            !endAddress
+        )
+            return next(createError.BadRequest('Invalid addresses.'));
+
+        // Check that the driver exists and is online
+        const driver = await Driver.findById(driverId);
+        if (!driver || driver.status !== 'online')
+            return next(createError.BadRequest('Invalid driverId.'));
+
+        const ride = await Ride.create({
+            user: req.user.id,
+            driver: driverId,
+            pickupAddress: req.body.pickupAddress,
+            pickupLat: req.body.pickupLat,
+            pickupLng: req.body.pickupLng,
+            endAddress: req.body.endAddress,
+            endLat: req.body.endLat,
+            endLng: req.body.endLng,
+        });
+
+        // Notify the driver about the new ride request
+        // notifyDriver(driver, ride);
+
+        res.json({ code: '1', message: req.t('success'), ride });
+    } catch (error) {
+        if (error.name == 'CastError')
+            return next(createError.BadRequest('Invalid driverId.'));
         next(error);
     }
 };
