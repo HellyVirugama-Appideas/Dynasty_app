@@ -65,14 +65,21 @@
                                                     <div id="error3" class="error"></div>
                                                 </small>
                                             </div>
-                                            <div class="input-field col m6 s12">
+                                            <div class="input-field col m4 s12">
+                                                <input placeholder="Passenger capacity" id="capacity" name="capacity" type="text" oninput="this.value = this.value.replace(/[^0-9]/g, '').replace(/(\..*?)\..*/g, '$1');">
+                                                <label for="capacity">Passenger capacity</label>
+                                                <small>
+                                                    <div id="error7" class="error"></div>
+                                                </small>
+                                            </div>
+                                            <div class="input-field col m4 s12">
                                                 <input placeholder="Distance rate" id="distanceRate" name="distanceRate" type="text" oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*?)\..*/g, '$1');">
                                                 <label for="distanceRate">Distance rate</label>
                                                 <small>
                                                     <div id="error6" class="error"></div>
                                                 </small>
                                             </div>
-                                            <div class="input-field col m6 s12">
+                                            <div class="input-field col m4 s12">
                                                 <select id="typeFor" name="typeFor">
                                                     <option value="">Select type</option>
                                                     <option value="Taxi">Taxi</option>
@@ -121,6 +128,7 @@
             const nameEnValue = document.getElementById('nameEn').value.trim();
             const nameFrValue = document.getElementById('nameFr').value.trim();
             const nameArValue = document.getElementById('nameAr').value.trim();
+            const capacityValue = document.getElementById('capacity').value;
             const distanceRateValue = document.getElementById('distanceRate').value;
             const typeForValue = document.getElementById('typeFor').value;
             const fileValue = document.getElementById('input-file-now').value;
@@ -145,6 +153,13 @@
                 returnVal = false;
             } else {
                 document.getElementById('error3').innerText = '';
+            }
+
+            if (capacityValue == '') {
+                document.getElementById('error7').innerText = 'Please enter passenger capacity.';
+                returnVal = false;
+            } else {
+                document.getElementById('error7').innerText = '';
             }
 
             if (distanceRateValue == '') {

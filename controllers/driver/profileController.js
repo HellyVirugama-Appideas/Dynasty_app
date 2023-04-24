@@ -8,6 +8,11 @@ exports.getProfile = async (req, res, next) => {
     try {
         const driver = multilingualUser(req.driver, req);
 
+        if (driver.location.coordinates) {
+            driver.latitude = driver.location.coordinates[1];
+            driver.longitude = driver.location.coordinates[0];
+        }
+
         // Hide fields
         driver.blocked = undefined;
         driver.location = undefined;
@@ -32,6 +37,11 @@ exports.editProfile = async (req, res, next) => {
         }).populate('city country');
 
         driver = multilingualUser(driver, req);
+
+        if (driver.location.coordinates) {
+            driver.latitude = driver.location.coordinates[1];
+            driver.longitude = driver.location.coordinates[0];
+        }
 
         // Hide fields
         driver.location = undefined;

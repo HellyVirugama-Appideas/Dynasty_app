@@ -4,6 +4,7 @@ const createError = require('http-errors');
 const Driver = require('../../models/driverModel');
 const Charges = require('../../models/chargesModel');
 
+// TODO: only 'online' driver and there type is in ['taxi', 'bike']
 exports.getRides = async (req, res, next) => {
     try {
         const accepted = ['en', 'fr', 'ar'];
@@ -59,6 +60,8 @@ exports.getRides = async (req, res, next) => {
 
             rides.push({
                 type: driver.type[language].name,
+                image: driver.type.image,
+                capacity: driver.type.capacity,
                 timeToArrival,
                 price,
             });
@@ -66,7 +69,6 @@ exports.getRides = async (req, res, next) => {
 
         res.json({ code: '1', message: req.t('success'), rides });
     } catch (error) {
-        console.log(error);
         next(error);
     }
 };

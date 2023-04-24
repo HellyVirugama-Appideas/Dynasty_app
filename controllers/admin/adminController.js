@@ -283,6 +283,7 @@ exports.postAddType = async (req, res) => {
             en: { name: req.body.nameEn },
             fr: { name: req.body.nameFr },
             ar: { name: req.body.nameAr },
+            capacity: req.body.capacity,
             typeFor: req.body.typeFor,
             distanceRate: req.body.distanceRate,
             image,
@@ -323,6 +324,7 @@ exports.postEditType = async (req, res) => {
         type.en.name = req.body.nameEn;
         type.fr.name = req.body.nameFr;
         type.ar.name = req.body.nameAr;
+        type.capacity = req.body.capacity;
         type.typeFor = req.body.typeFor;
         type.distanceRate = req.body.distanceRate;
 

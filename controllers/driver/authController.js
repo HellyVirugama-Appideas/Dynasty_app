@@ -86,11 +86,23 @@ exports.verifyOTP = async (req, res, next) => {
         if (!otpVerified) return next(createError.BadRequest('otp.fail'));
 
         // if driver exists, login else send verifyToken
-        const driver = await Driver.findOne({ country_code, phone }).select(
-            '-__v'
-        );
+        let driver = await Driver.findOne({ country_code, phone })
+            .select('-__v')
+            .populate('city country');
+
         if (driver) {
             const token = await driver.generateAuthToken();
+
+            driver = multilingualUser(driver, req);
+
+            if (driver.location.coordinates) {
+                driver.latitude = driver.location.coordinates[1];
+                driver.longitude = driver.location.coordinates[0];
+            }
+
+            // Hide fields
+            driver.location = undefined;
+
             return res.json({
                 code: '1',
                 message: req.t('loggedIn'),
@@ -151,9 +163,10 @@ exports.createProfile = async (req, res, next) => {
         await driver.populate('city country');
         driver = multilingualUser(driver, req);
 
-        // hide fields
+        // Hide fields
         driver.password = undefined;
         driver.__v = undefined;
+        driver.location = undefined;
 
         res.status(201).json({
             code: '1',
@@ -230,6 +243,16 @@ exports.socialLogin = async (req, res, next) => {
         const token = await driver.generateAuthToken();
         driver = multilingualUser(driver, req);
 
+        if (driver.location.coordinates) {
+            driver.latitude = driver.location.coordinates[1];
+            driver.longitude = driver.location.coordinates[0];
+        }
+
+        // Hide fields
+        driver.password = undefined;
+        driver.__v = undefined;
+        driver.location = undefined;
+
         return res.json({
             code: '1',
             message: req.t('loggedIn'),
@@ -270,9 +293,10 @@ exports.createSocialProfile = async (req, res, next) => {
         await driver.populate('city country');
         driver = multilingualUser(driver, req);
 
-        // hide fields
+        // Hide fields
         driver.password = undefined;
         driver.__v = undefined;
+        driver.location = undefined;
 
         res.status(201).json({
             code: '1',
@@ -306,11 +330,22 @@ exports.selectVehicleType = async (req, res, next) => {
         if (!type)
             return next(createError.BadRequest('Invalid vehicle type id.'));
 
-        const driver = await Driver.findByIdAndUpdate(
+        let driver = await Driver.findByIdAndUpdate(
             req.driver.id,
             { type: req.body.type },
             { new: true }
-        );
+        ).populate('city country');
+
+        driver = multilingualUser(driver, req);
+
+        if (driver.location.coordinates) {
+            driver.latitude = driver.location.coordinates[1];
+            driver.longitude = driver.location.coordinates[0];
+        }
+
+        // Hide fields
+        driver.location = undefined;
+        driver.__v = undefined;
 
         res.json({ code: '1', message: req.t('success'), driver });
     } catch (error) {
@@ -357,11 +392,22 @@ exports.uploadProfile = async (req, res, next) => {
         if (!req.file)
             return next(createError.BadRequest('Please upload file.'));
 
-        const driver = await Driver.findByIdAndUpdate(
+        let driver = await Driver.findByIdAndUpdate(
             req.driver.id,
             { profile: `/uploads/${req.file.filename}` },
             { new: true }
-        );
+        ).populate('city country');
+
+        driver = multilingualUser(driver, req);
+
+        if (driver.location.coordinates) {
+            driver.latitude = driver.location.coordinates[1];
+            driver.longitude = driver.location.coordinates[0];
+        }
+
+        // Hide fields
+        driver.location = undefined;
+        driver.__v = undefined;
 
         res.json({ code: '1', message: req.t('success'), driver });
     } catch (error) {
@@ -371,12 +417,24 @@ exports.uploadProfile = async (req, res, next) => {
 
 exports.uploadLicence = async (req, res, next) => {
     try {
-        const image = req.file ? `/uploads/${req.file.filename}` : undefined;
-        const driver = await Driver.findByIdAndUpdate(
+        if (!req.file)
+            return next(createError.BadRequest('Please upload file.'));
+
+        let driver = await Driver.findByIdAndUpdate(
             req.driver.id,
-            { licence: image },
+            { licence: `/uploads/${req.file.filename}` },
             { new: true }
-        );
+        ).populate('city country');
+
+        driver = multilingualUser(driver, req);
+
+        if (driver.location.coordinates) {
+            driver.latitude = driver.location.coordinates[1];
+            driver.longitude = driver.location.coordinates[0];
+        }
+        // Hide fields
+        driver.location = undefined;
+        driver.__v = undefined;
 
         res.json({ code: '1', message: req.t('success'), driver });
     } catch (error) {
@@ -386,12 +444,25 @@ exports.uploadLicence = async (req, res, next) => {
 
 exports.uploadPAN = async (req, res, next) => {
     try {
-        const image = req.file ? `/uploads/${req.file.filename}` : undefined;
-        const driver = await Driver.findByIdAndUpdate(
+        if (!req.file)
+            return next(createError.BadRequest('Please upload file.'));
+
+        let driver = await Driver.findByIdAndUpdate(
             req.driver.id,
-            { pan: image },
+            { pan: `/uploads/${req.file.filename}` },
             { new: true }
-        );
+        ).populate('city country');
+
+        driver = multilingualUser(driver, req);
+
+        if (driver.location.coordinates) {
+            driver.latitude = driver.location.coordinates[1];
+            driver.longitude = driver.location.coordinates[0];
+        }
+
+        // Hide fields
+        driver.location = undefined;
+        driver.__v = undefined;
 
         res.json({ code: '1', message: req.t('success'), driver });
     } catch (error) {
@@ -401,12 +472,25 @@ exports.uploadPAN = async (req, res, next) => {
 
 exports.uploadRC = async (req, res, next) => {
     try {
-        const image = req.file ? `/uploads/${req.file.filename}` : undefined;
-        const driver = await Driver.findByIdAndUpdate(
+        if (!req.file)
+            return next(createError.BadRequest('Please upload file.'));
+
+        let driver = await Driver.findByIdAndUpdate(
             req.driver.id,
-            { rc: image },
+            { rc: `/uploads/${req.file.filename}` },
             { new: true }
-        );
+        ).populate('city country');
+
+        driver = multilingualUser(driver, req);
+
+        if (driver.location.coordinates) {
+            driver.latitude = driver.location.coordinates[1];
+            driver.longitude = driver.location.coordinates[0];
+        }
+
+        // Hide fields
+        driver.location = undefined;
+        driver.__v = undefined;
 
         res.json({ code: '1', message: req.t('success'), driver });
     } catch (error) {

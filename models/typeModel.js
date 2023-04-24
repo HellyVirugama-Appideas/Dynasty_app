@@ -22,6 +22,10 @@ const typeSchema = new mongoose.Schema({
             trim: true,
         },
     },
+    capacity: {
+        type: Number,
+        required: [true, 'Passenger capacity is required.'],
+    },
     typeFor: {
         type: String,
         enum: ['Taxi', 'Bike', 'Delivery'],

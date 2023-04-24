@@ -4,6 +4,8 @@ const jwt = require('jsonwebtoken');
 
 const Admin = require('../../models/adminModel');
 const OTP = require('../../models/adminOtpModel');
+const User = require('../../models/userModel');
+const Driver = require('../../models/driverModel');
 
 const generateCode = length => {
     var digits = '0123456789';
@@ -45,7 +47,26 @@ exports.checkAdmin = async (req, res, next) => {
 };
 
 exports.getDashboard = async (req, res) => {
-    res.render('index');
+    const [user, driver] = await Promise.all([
+        User.find().select('date'),
+        Driver.find().select('date'),
+    ]);
+
+    // user
+    let newUser = 0;
+    for (let i = 0; i < user.length; i++) if (isToday(user[i].date)) newUser++;
+
+    // driver
+    let newDriver = 0;
+    for (let i = 0; i < driver.length; i++)
+        if (isToday(driver[i].date)) newDriver++;
+
+    res.render('index', {
+        user: user.length,
+        newUser,
+        driver: driver.length,
+        newDriver,
+    });
 };
 
 exports.getLogin = async (req, res) => {
