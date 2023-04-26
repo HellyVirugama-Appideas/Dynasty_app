@@ -45,6 +45,9 @@
         "invalidFacebook": "Invalid Facebook ID.",
         "invalidApple": "Invalid Apple ID."
     },
+    "ride": {
+        "success": "Your ride has been successfully scheduled."
+    },
     "loggedIn": "Login Successful.",
     "profile": "Profile created successfully.",
     "deleted": "Profile deleted.",

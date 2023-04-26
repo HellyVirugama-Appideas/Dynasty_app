@@ -45,6 +45,9 @@
         "invalidFacebook": "معرف Facebook غير صالح.",
         "invalidApple": "معرف Apple غير صالح."
     },
+    "ride": {
+        "success": "تم جدولة رحلتك بنجاح."
+    },
     "loggedIn": "تسجيل الدخول ناجح.",
     "profile": "تم إنشاء ملف تعريف بنجاح.",
     "deleted": "تم حذف الملف الشخصي.",

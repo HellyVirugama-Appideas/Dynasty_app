@@ -45,6 +45,9 @@
         "invalidFacebook": "ID Facebook non valide.",
         "invalidApple": "ID de pomme non valide."
     },
+    "ride": {
+        "success": "Votre trajet a été programmé avec succès."
+    },
     "loggedIn": "Connexion réussie.",
     "profile": "Profil créé avec succès.",
     "deleted": "Profil supprimé.",

@@ -87,7 +87,7 @@ app.use('/uploads/*', (req, res) => res.status(404).end());
 app.use('/api/user', require('./routes/user/authRoutes'));
 app.use('/api/user', require('./routes/user/profileRoutes'));
 app.use('/api/user', require('./routes/user/homeRoutes'));
-app.use('/api/', require('./routes/user/rideRoutes'));
+app.use('/api/user', require('./routes/user/rideRoutes'));
 
 // DRIVER ROUTES
 app.use('/api/driver', require('./routes/driver/authRoutes'));
