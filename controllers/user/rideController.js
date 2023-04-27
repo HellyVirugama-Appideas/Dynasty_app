@@ -4,7 +4,7 @@ const multilingual = require('../../utils/multilingual');
 
 const Type = require('../../models/typeModel');
 const Charges = require('../../models/chargesModel');
-const Ride = require('../../models/rideModel');
+const RideReq = require('../../models/rideReqModel');
 
 exports.getVehicleTypes = async (req, res, next) => {
     try {
@@ -43,39 +43,21 @@ exports.getVehicleTypes = async (req, res, next) => {
     }
 };
 
-// ? update this later
 exports.bookRide = async (req, res, next) => {
     try {
-        const {
-            type,
-            pickupLat,
-            pickupLng,
-            endLat,
-            endLng,
-            pickupAddress,
-            endAddress,
-        } = req.body;
-
-        if (
-            !pickupLat ||
-            !pickupLng ||
-            !endLat ||
-            !endLng ||
-            !pickupAddress ||
-            !endAddress
-        )
-            return next(createError.BadRequest('Invalid addresses.'));
-
-        // TODO: find near by drivers with type and online, notify them
-
-        const ride = await Ride.create({
+        const ride = await RideReq.create({
             user: req.user.id,
+            pickupLocation: {
+                type: 'Point',
+                coordinates: [req.body.pickupLng, req.body.pickupLat],
+            },
             pickupAddress: req.body.pickupAddress,
             pickupLat: req.body.pickupLat,
             pickupLng: req.body.pickupLng,
             endAddress: req.body.endAddress,
             endLat: req.body.endLat,
             endLng: req.body.endLng,
+            type: req.body.type,
         });
 
         res.json({ code: '1', message: req.t('ride.success'), ride });

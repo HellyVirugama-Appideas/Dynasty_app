@@ -18,4 +18,7 @@ router.post(
     homeController.setLocation
 );
 
+// rides
+router.get('/get_rides', checkDriver, homeController.getRides);
+
 module.exports = router;

@@ -1,6 +1,7 @@
 const createError = require('http-errors');
 
 const Driver = require('../../models/driverModel');
+const RideReq = require('../../models/rideReqModel');
 
 exports.getStatus = (req, res, next) => {
     try {
@@ -46,6 +47,28 @@ exports.setLocation = async (req, res, next) => {
         );
 
         res.json({ code: '1', message: req.t('success') });
+    } catch (error) {
+        next(error);
+    }
+};
+
+exports.getRides = async (req, res, next) => {
+    try {
+        // Get near by rides requests
+        let rides = await RideReq.find({
+            type: req.driver.type,
+            pickupLocation: {
+                $near: {
+                    $geometry: {
+                        type: 'Point',
+                        coordinates: req.driver.location.coordinates,
+                    },
+                    $maxDistance: 10000, // distance in meters
+                },
+            },
+        }).select('-__v -user -pickupLocation -type -createdAt');
+
+        res.json({ code: '1', message: req.t('success'), rides });
     } catch (error) {
         next(error);
     }
