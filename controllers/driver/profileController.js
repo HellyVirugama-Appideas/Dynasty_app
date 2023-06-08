@@ -1,3 +1,4 @@
+const multilingual = require('../../utils/multilingual');
 const multilingualUser = require('../../utils/multilingualUser');
 
 const Driver = require('../../models/driverModel');
@@ -6,6 +7,7 @@ const City = require('../../models/cityModel');
 
 exports.getProfile = async (req, res, next) => {
     try {
+        await req.driver.populate('city country');
         const driver = multilingualUser(req.driver, req);
 
         if (driver.location.coordinates) {
@@ -65,6 +67,7 @@ exports.deleteProfile = async (req, res, next) => {
 
 exports.getSelectCountryCity = async (req, res, next) => {
     try {
+        await req.driver.populate('city country');
         const driver = multilingualUser(req.driver, req);
 
         res.json({
@@ -93,13 +96,14 @@ exports.postSelectCountryCity = async (req, res, next) => {
         driver.city = city.id;
         driver.country = country.id;
         await driver.save();
-        await driver.populate('city country');
-        driver = multilingualUser(driver, req);
 
         res.json({
             code: '1',
             message: req.t('success'),
-            data: { city: driver.city, country: driver.country },
+            data: {
+                city: multilingual(city, req).name,
+                country: multilingual(country, req).name,
+            },
         });
     } catch (error) {
         next(error);

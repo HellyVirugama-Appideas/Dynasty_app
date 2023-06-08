@@ -7,6 +7,7 @@ const Banner = require('../../models/bannerModel');
 
 exports.getSelectCountryCity = async (req, res, next) => {
     try {
+        await req.user.populate('city country address');
         const user = multilingualUser(req.user, req);
 
         res.json({

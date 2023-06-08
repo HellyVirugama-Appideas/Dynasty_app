@@ -23,9 +23,9 @@ exports.checkDriver = async (req, res, next) => {
             process.env.JWT_SECRET
         );
 
-        let driver = await Driver.findById(decoded._id)
-            .select('+blocked +password')
-            .populate('city country');
+        let driver = await Driver.findById(decoded._id).select(
+            '+blocked +password'
+        );
 
         if (!driver) return next(createError.BadRequest('auth.login'));
         if (driver.blocked)

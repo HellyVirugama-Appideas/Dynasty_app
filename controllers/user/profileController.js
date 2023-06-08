@@ -6,6 +6,7 @@ const Address = require('../../models/addressModel');
 
 exports.getProfile = async (req, res, next) => {
     try {
+        await req.user.populate('city country address');
         const user = multilingualUser(req.user, req);
 
         user.latitude = user.address?.latitude;

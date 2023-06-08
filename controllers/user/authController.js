@@ -22,9 +22,9 @@ exports.checkUser = async (req, res, next) => {
             process.env.JWT_SECRET
         );
 
-        let user = await User.findById(decoded._id)
-            .select('+blocked +password')
-            .populate('city country address');
+        let user = await User.findById(decoded._id).select(
+            '+blocked +password'
+        );
 
         if (!user) return next(createError.BadRequest('auth.login'));
         if (user.blocked) return next(createError.Unauthorized('auth.blocked'));
