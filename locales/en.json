@@ -46,7 +46,8 @@
         "invalidApple": "Invalid Apple ID."
     },
     "ride": {
-        "success": "Your ride has been successfully scheduled."
+        "success": "Your ride has been successfully scheduled.",
+        "already": "Ride request has already been accepted by another driver."
     },
     "loggedIn": "Login Successful.",
     "profile": "Profile created successfully.",

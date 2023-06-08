@@ -17,10 +17,7 @@ exports.checkUser = async (req, res, next) => {
 
         if (!token) return next(createError.BadRequest('auth.provideToken'));
 
-        const decoded = await promisify(jwt.verify)(
-            token,
-            process.env.JWT_SECRET
-        );
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
         let user = await User.findById(decoded._id).select(
             '+blocked +password'

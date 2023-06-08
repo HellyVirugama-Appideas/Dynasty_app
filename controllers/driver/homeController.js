@@ -2,6 +2,7 @@ const createError = require('http-errors');
 
 const Driver = require('../../models/driverModel');
 const RideReq = require('../../models/rideReqModel');
+const Ride = require('../../models/rideModel');
 
 exports.getStatus = (req, res, next) => {
     try {
@@ -52,24 +53,24 @@ exports.setLocation = async (req, res, next) => {
     }
 };
 
-exports.getRides = async (req, res, next) => {
+exports.acceptRide = async (req, res, next) => {
     try {
-        // Get near by rides requests
-        let rides = await RideReq.find({
-            type: req.driver.type,
-            pickupLocation: {
-                $near: {
-                    $geometry: {
-                        type: 'Point',
-                        coordinates: req.driver.location.coordinates,
-                    },
-                    $maxDistance: 10000, // distance in meters
-                },
-            },
-        }).select('-__v -user -pickupLocation -type -createdAt');
+        // Ride req to ride collection
+        const rideReq = await RideReq.findById(req.body.id).lean();
+        if (!rideReq) return next(createError.Conflict('ride.already'));
 
-        res.json({ code: '1', message: req.t('success'), rides });
+        const ride = new Ride({ ...rideReq, driver: req.driver.id });
+        await Promise.all([
+            ride.save(),
+            ride.populate('user', 'name country_code phone'),
+        ]);
+
+        // Notify user
+
+        res.json({ code: '1', message: req.t('success'), ride });
     } catch (error) {
+        if (error.code == 11000 && error.keyPattern._id)
+            return next(createError.Conflict('ride.already'));
         next(error);
     }
 };

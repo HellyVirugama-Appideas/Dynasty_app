@@ -19,6 +19,11 @@ router.post(
 );
 
 // rides
-router.get('/get_rides', checkDriver, homeController.getRides);
+router.post(
+    '/accept_ride',
+    fileUpload(),
+    checkDriver,
+    homeController.acceptRide
+);
 
 module.exports = router;

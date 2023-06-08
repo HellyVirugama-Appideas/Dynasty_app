@@ -5,6 +5,7 @@ const multilingual = require('../../utils/multilingual');
 const Type = require('../../models/typeModel');
 const Charges = require('../../models/chargesModel');
 const RideReq = require('../../models/rideReqModel');
+const Driver = require('../../models/driverModel');
 
 exports.getVehicleTypes = async (req, res, next) => {
     try {
@@ -45,12 +46,28 @@ exports.getVehicleTypes = async (req, res, next) => {
 
 exports.bookRide = async (req, res, next) => {
     try {
+        const radiusInMeters = 10000;
+        const nearbyDrivers = await Driver.find({
+            location: {
+                $near: {
+                    $geometry: {
+                        type: 'Point',
+                        coordinates: [req.body.pickupLng, req.body.pickupLat],
+                    },
+                    $maxDistance: radiusInMeters,
+                },
+            },
+            type: req.body.type,
+            status: 'online',
+        });
+
+        if (nearbyDrivers.length === 0)
+            return next(createError.BadRequest('No available drivers nearby.'));
+
+        // Notify nearbyDrivers
+
         const ride = await RideReq.create({
             user: req.user.id,
-            pickupLocation: {
-                type: 'Point',
-                coordinates: [req.body.pickupLng, req.body.pickupLat],
-            },
             pickupAddress: req.body.pickupAddress,
             pickupLat: req.body.pickupLat,
             pickupLng: req.body.pickupLng,

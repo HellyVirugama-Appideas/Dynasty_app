@@ -18,26 +18,25 @@ const generateCode = length => {
 
 exports.checkAdmin = async (req, res, next) => {
     try {
-        const token = req.cookies['jwtAdmin'];
-        req.session.checkAdminSuccess = true;
-        if (token) {
-            const decoded = await promisify(jwt.verify)(
-                token,
-                process.env.JWT_SECRET
-            );
-            const admin = await Admin.findById(decoded._id);
-            if (!admin) {
-                req.flash('red', 'Please login as admin first!');
-                return res.redirect('/login');
-            }
-            req.admin = admin;
-            res.locals.photo = admin.photo;
-            req.session.checkAdminSuccess = undefined;
-            next();
-        } else {
+        const token = req.cookies.jwtAdmin;
+
+        if (!token) {
             req.flash('red', 'Please login as admin first!');
-            res.redirect('/login');
+            return res.redirect('/login');
         }
+
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        const admin = await Admin.findById(decoded._id);
+
+        if (!admin) {
+            req.flash('red', 'Please login as admin first!');
+            return res.redirect('/login');
+        }
+
+        req.admin = admin;
+        res.locals.photo = admin.photo;
+        req.session.checkAdminSuccess = undefined;
+        next();
     } catch (error) {
         if (error.message == 'invalid signature')
             req.flash('red', 'Invalid token! Please login again.');

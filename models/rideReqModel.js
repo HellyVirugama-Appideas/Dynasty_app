@@ -6,10 +6,6 @@ const rideReqSchema = new mongoose.Schema({
         ref: 'User',
         required: true,
     },
-    pickupLocation: {
-        type: { type: String, enum: ['Point'] },
-        coordinates: { type: [Number] },
-    },
     pickupAddress: {
         type: String,
         required: [true, 'pickupAddress is required.'],
@@ -29,7 +25,5 @@ const rideReqSchema = new mongoose.Schema({
         default: Date.now,
     },
 });
-
-rideReqSchema.index({ pickupLocation: '2dsphere' });
 
 module.exports = new mongoose.model('Ride request', rideReqSchema);

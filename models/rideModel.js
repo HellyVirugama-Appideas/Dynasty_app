@@ -9,6 +9,7 @@ const rideSchema = new mongoose.Schema({
     driver: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Driver',
+        required: true,
     },
     pickupAddress: { type: String, required: true },
     pickupLat: { type: String, required: true },
@@ -18,8 +19,8 @@ const rideSchema = new mongoose.Schema({
     endLng: { type: String, required: true },
     status: {
         type: String,
-        enum: ['requested', 'accepted', 'ongoing', 'completed', 'cancelled'],
-        default: 'requested',
+        enum: ['accepted', 'ongoing', 'completed', 'cancelled'],
+        default: 'accepted',
     },
     createdAt: {
         type: Date,

@@ -46,7 +46,8 @@
         "invalidApple": "ID de pomme non valide."
     },
     "ride": {
-        "success": "Votre trajet a été programmé avec succès."
+        "success": "Votre trajet a été programmé avec succès.",
+        "already": "La demande de conduite a déjà été acceptée par un autre conducteur."
     },
     "loggedIn": "Connexion réussie.",
     "profile": "Profil créé avec succès.",
