@@ -1,4 +1,5 @@
 const multer = require('multer');
+const shortid = require('shortid');
 
 exports.upload = multer({
     storage: multer.diskStorage({
@@ -6,7 +7,10 @@ exports.upload = multer({
             cb(null, './public/uploads/');
         },
         filename: function (req, file, cb) {
-            cb(null, Date.now() + file.originalname.replace(' ', ''));
+            cb(
+                null,
+                shortid.generate() + file.originalname.replaceAll(' ', '')
+            );
         },
     }),
     limits: { fileSize: 1024 * 1024 * 10 },

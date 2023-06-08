@@ -49,6 +49,18 @@
         "success": "Votre trajet a été programmé avec succès.",
         "already": "La demande de conduite a déjà été acceptée par un autre conducteur."
     },
+    "car": {
+        "added": "La voiture a ajouté avec succès.",
+        "edited": "Car a été édité avec succès.",
+        "name": "Veuillez fournir le nom de la voiture.",
+        "condition": "Veuillez fournir une condition.",
+        "company": "Veuillez fournir l'entreprise",
+        "model": "Veuillez fournir un modèle",
+        "purchaseDate": "Veuillez fournir la date d'achat.",
+        "kmsDriven": "Veuillez fournir le nombre de KMS conduits",
+        "carNumber": "Veuillez fournir le numéro de voiture.",
+        "price": "Veuillez fournir le prix."
+    },
     "loggedIn": "Connexion réussie.",
     "profile": "Profil créé avec succès.",
     "deleted": "Profil supprimé.",
