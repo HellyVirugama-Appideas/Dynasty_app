@@ -45,7 +45,11 @@ exports.createCar = async (req, res, next) => {
             : undefined;
 
         req.body.driver = req.driver.id;
-        const car = await Car.create(req.body);
+        let car = await Car.create(req.body);
+
+        await car.populate('type');
+        car = car._doc;
+        car.type = multilingual(car.type, req).name;
 
         res.json({ code: '1', message: req.t('car.added'), car });
     } catch (error) {
@@ -59,7 +63,7 @@ exports.editCar = async (req, res, next) => {
             { _id: req.params.id, driver: req.driver.id },
             req.body,
             { new: true }
-        ).select('-__v -driver');
+        ).select('-__v -driver -type');
         if (!car) return next(createError.NotFound('Car not found.'));
 
         res.json({ code: '1', message: req.t('car.edited'), car });

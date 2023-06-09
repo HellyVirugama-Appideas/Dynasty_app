@@ -88,6 +88,7 @@ app.use('/api/user', require('./routes/user/authRoutes'));
 app.use('/api/user', require('./routes/user/profileRoutes'));
 app.use('/api/user', require('./routes/user/homeRoutes'));
 app.use('/api/user', require('./routes/user/rideRoutes'));
+app.use('/api/user', require('./routes/user/rentRoutes'));
 
 // DRIVER ROUTES
 app.use('/api/driver', require('./routes/driver/authRoutes'));
