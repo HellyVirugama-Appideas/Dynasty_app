@@ -9,7 +9,7 @@ const carSchema = new mongoose.Schema({
     type: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Type',
-        required: [true, 'Car type is required.'],
+        required: [true, 'car.type'],
     },
     name: { type: String, required: [true, 'car.name'], trim: true },
     condition: { type: String, required: [true, 'car.condition'] },

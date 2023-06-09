@@ -47,6 +47,7 @@ const userSchema = new mongoose.Schema({
         select: false,
         immutable: true,
     },
+    favorites: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Car' }],
     date: {
         type: Date,
         default: Date.now,
