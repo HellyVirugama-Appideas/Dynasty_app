@@ -30,12 +30,12 @@ const userSchema = new mongoose.Schema({
     city: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'City',
-        required: [true, 'validation.city'],
+        // required: [true, 'validation.city'],
     },
     country: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Country',
-        required: [true, 'validation.country'],
+        // required: [true, 'validation.country'],
     },
     address: {
         type: mongoose.Schema.Types.ObjectId,

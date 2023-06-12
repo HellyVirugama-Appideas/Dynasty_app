@@ -127,8 +127,8 @@ exports.createProfile = async (req, res, next) => {
             City.findOne({ city_id }),
             Country.findOne({ country_id }),
         ]);
-        if (!city) return next(createError.BadRequest('Invalid city_id'));
-        if (!country) return next(createError.BadRequest('Invalid country_id'));
+        // if (!city) return next(createError.BadRequest('Invalid city_id'));
+        // if (!country) return next(createError.BadRequest('Invalid country_id'));
 
         // create user
         let user = new User({
@@ -136,8 +136,8 @@ exports.createProfile = async (req, res, next) => {
             email: req.body.email,
             country_code: decoded.country_code,
             phone: decoded.phone,
-            city: city.id,
-            country: country.id,
+            city: city?.id,
+            country: country?.id,
         });
 
         // create address
@@ -267,8 +267,8 @@ exports.createSocialProfile = async (req, res, next) => {
             City.findOne({ city_id }),
             Country.findOne({ country_id }),
         ]);
-        if (!city) return next(createError.BadRequest('Invalid city_id'));
-        if (!country) return next(createError.BadRequest('Invalid country_id'));
+        // if (!city) return next(createError.BadRequest('Invalid city_id'));
+        // if (!country) return next(createError.BadRequest('Invalid country_id'));
 
         // create user
         let user = new User({
@@ -276,8 +276,8 @@ exports.createSocialProfile = async (req, res, next) => {
             email: req.body.email,
             country_code: req.body.country_code,
             phone: req.body.phone,
-            city: city.id,
-            country: country.id,
+            city: city?.id,
+            country: country?.id,
             googleId: req.body.googleId,
             facebookId: req.body.facebookId,
             appleId: req.body.appleId,
