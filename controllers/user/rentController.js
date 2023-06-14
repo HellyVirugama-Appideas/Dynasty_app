@@ -57,6 +57,22 @@ exports.listCars = async (req, res, next) => {
 
         res.json({ code: '1', message: req.t('success'), cars });
     } catch (error) {
+        next(error);
+    }
+};
+
+exports.carDetail = async (req, res, next) => {
+    try {
+        const car = await Car.findById(req.params.id)
+            .populate('type')
+            .select('-__v -location')
+            .lean();
+
+        car.isFavourite = req.user.favorites.includes(car._id);
+        car.type = multilingual(car.type, req).name;
+
+        res.json({ code: '1', message: req.t('success'), car });
+    } catch (error) {
         if (error.name == 'CastError')
             return next(createError.BadRequest('Invalid city id.'));
         next(error);
