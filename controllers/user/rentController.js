@@ -44,7 +44,7 @@ exports.listCars = async (req, res, next) => {
         let cars = await Car.find(filter)
             .sort(sort)
             .populate('type')
-            .select('name price')
+            .select('name price pics')
             .lean();
 
         cars = cars.map(car => {
