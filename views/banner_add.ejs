@@ -79,7 +79,7 @@
             let returnVal = true;
 
             const fileValue = document.getElementById('input-file-now').value;
-            const ext = fileValue.substring(fileValue.lastIndexOf('.') + 1);
+            const ext = fileValue.substring(fileValue.lastIndexOf('.') + 1).toLowerCase();
 
             if (ext == 'png' || ext == 'jpeg' || ext == 'jpg') {
                 document.getElementById('error1').innerText = '';

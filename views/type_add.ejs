@@ -132,7 +132,7 @@
             const distanceRateValue = document.getElementById('distanceRate').value;
             const typeForValue = document.getElementById('typeFor').value;
             const fileValue = document.getElementById('input-file-now').value;
-            const ext = fileValue.substring(fileValue.lastIndexOf('.') + 1);
+            const ext = fileValue.substring(fileValue.lastIndexOf('.') + 1).toLowerCase();
 
             if (nameEnValue == '') {
                 document.getElementById('error1').innerText = 'Please enter country name.';

@@ -103,7 +103,7 @@
             const nameFrValue = document.getElementById('nameFr').value.trim();
             const nameArValue = document.getElementById('nameAr').value.trim();
             const fileValue = document.getElementById('input-file-now').value;
-            const ext = fileValue.substring(fileValue.lastIndexOf('.') + 1);
+            const ext = fileValue.substring(fileValue.lastIndexOf('.') + 1).toLowerCase();
 
             if (nameEnValue == '') {
                 document.getElementById('error1').innerText = 'Please enter country name.';
