@@ -7,25 +7,44 @@ const User = require('../../models/userModel');
 
 exports.listCars = async (req, res, next) => {
     try {
-        const dateFrom = new Date(req.body.dateFrom);
-        const dateTo = new Date(req.body.dateTo);
+        // Filter
+        const filter = {};
 
-        if (isNaN(dateFrom.getTime()) || isNaN(dateTo.getTime()))
-            return next(createError.BadRequest('Invalid date format'));
+        // By date time availability
+        if (req.body.dateFrom && req.body.dateTo) {
+            const dateFrom = new Date(req.body.dateFrom);
+            const dateTo = new Date(req.body.dateTo);
 
-        // Find the cars that are not booked within the date range
-        const bookedCarIds = await Booking.distinct('car', {
-            bookedFrom: { $lt: dateTo },
-            bookedTo: { $gt: dateFrom },
-        });
+            if (isNaN(dateFrom.getTime()) || isNaN(dateTo.getTime()))
+                return next(createError.BadRequest('Invalid date format'));
 
-        const filter = { _id: { $nin: bookedCarIds } };
+            // Find the cars that are not booked within the date range
+            const bookedCarIds = await Booking.distinct('car', {
+                bookedFrom: { $lt: dateTo },
+                bookedTo: { $gt: dateFrom },
+            });
+            filter._id = { $nin: bookedCarIds };
+        }
+
+        // By location
+        if (req.body.latitude && req.body.longitude)
+            filter.location = {
+                $near: {
+                    $geometry: {
+                        type: 'Point',
+                        coordinates: [req.body.longitude, req.body.latitude],
+                    },
+                    $maxDistance: 10000, // radiusInMeters
+                },
+            };
+
+        // Sort
         const sort = { _id: -1 };
 
         let cars = await Car.find(filter)
             .sort(sort)
             .populate('type')
-            .select('-__v')
+            .select('name price')
             .lean();
 
         cars = cars.map(car => {
@@ -38,6 +57,8 @@ exports.listCars = async (req, res, next) => {
 
         res.json({ code: '1', message: req.t('success'), cars });
     } catch (error) {
+        if (error.name == 'CastError')
+            return next(createError.BadRequest('Invalid city id.'));
         next(error);
     }
 };

@@ -6,6 +6,13 @@ const rentController = require('../../controllers/user/rentController');
 
 router.post('/list_cars', checkUser, fileUpload(), rentController.listCars);
 
+// router.get(
+//     '/car_detail/:id',
+//     checkUser,
+//     fileUpload(),
+//     rentController.carDetail
+// );
+
 // favorites
 router.get('/favorites', checkUser, rentController.getFavorites);
 router.post(

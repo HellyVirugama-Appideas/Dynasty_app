@@ -44,6 +44,14 @@ exports.createCar = async (req, res, next) => {
             ? `/uploads/${req.files.rc[0].filename}`
             : undefined;
 
+        const { latitude, longitude } = req.body;
+        if (!latitude || !longitude)
+            return next(createError.BadRequest('Invalid latitude longitude.'));
+        req.body.location = {
+            type: 'Point',
+            coordinates: [longitude, latitude],
+        };
+
         req.body.driver = req.driver.id;
         let car = await Car.create(req.body);
 
@@ -59,6 +67,13 @@ exports.createCar = async (req, res, next) => {
 
 exports.editCar = async (req, res, next) => {
     try {
+        const { latitude, longitude } = req.body;
+        if (latitude && longitude)
+            req.body.location = {
+                type: 'Point',
+                coordinates: [longitude, latitude],
+            };
+
         const car = await Car.findOneAndUpdate(
             { _id: req.params.id, driver: req.driver.id },
             req.body,

@@ -20,10 +20,18 @@ const carSchema = new mongoose.Schema({
     carNumber: { type: String, required: [true, 'car.carNumber'], trim: true },
     price: { type: String, required: [true, 'car.price'], trim: true },
 
+    address: { type: String, required: [true, 'car.price'], trim: true },
+    location: {
+        type: { type: String, enum: ['Point'] },
+        coordinates: { type: [Number] },
+    },
+
     pics: [String],
     purchaseBill: String,
     insurance: String,
     rc: String,
 });
+
+carSchema.index({ location: '2dsphere' });
 
 module.exports = mongoose.model('Car', carSchema);
