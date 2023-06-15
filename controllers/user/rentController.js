@@ -4,6 +4,7 @@ const multilingual = require('../../utils/multilingual');
 const Car = require('../../models/carModel');
 const Booking = require('../../models/bookingModel');
 const User = require('../../models/userModel');
+const Rating = require('../../models/ratingModel');
 
 exports.listCars = async (req, res, next) => {
     try {
@@ -44,7 +45,7 @@ exports.listCars = async (req, res, next) => {
         let cars = await Car.find(filter)
             .sort(sort)
             .populate('type')
-            .select('name price pics')
+            .select('name price pics rating')
             .lean();
 
         cars = cars.map(car => {
@@ -63,18 +64,28 @@ exports.listCars = async (req, res, next) => {
 
 exports.carDetail = async (req, res, next) => {
     try {
-        const car = await Car.findById(req.params.id)
-            .populate('type')
-            .select('-__v -location')
-            .lean();
+        const carId = req.params.id;
+
+        const [car, ratings] = await Promise.all([
+            Car.findById(req.params.id)
+                .populate('driver', 'profile name')
+                .select('-__v -location -type')
+                .lean(),
+            Rating.find({ car: carId })
+                .populate('user', 'name')
+                .select('-__v -car')
+                .lean(),
+        ]);
+
+        if (!car) return next(createError.BadRequest('Invalid car id.'));
 
         car.isFavourite = req.user.favorites.includes(car._id);
-        car.type = multilingual(car.type, req).name;
+        car.ratings = ratings;
 
         res.json({ code: '1', message: req.t('success'), car });
     } catch (error) {
-        if (error.name == 'CastError')
-            return next(createError.BadRequest('Invalid city id.'));
+        if (error.name === 'CastError')
+            return next(createError.BadRequest('Invalid car id.'));
         next(error);
     }
 };
@@ -120,6 +131,48 @@ exports.removeFromFavorites = async (req, res, next) => {
     } catch (error) {
         if (error.name == 'CastError')
             return next(createError.NotFound('Car not found.'));
+        next(error);
+    }
+};
+
+exports.addRating = async (req, res, next) => {
+    try {
+        const { carId, rating: newRating, comment } = req.body;
+
+        const updatedRating = await Rating.findOne({
+            car: carId,
+            user: req.user.id,
+        });
+
+        if (updatedRating) {
+            updatedRating.rating = newRating;
+            updatedRating.comment = comment;
+        } else {
+            updatedRating = new Rating({
+                car: carId,
+                user: req.user.id,
+                rating: newRating,
+                comment,
+            });
+        }
+        await updatedRating.save();
+
+        Rating.aggregate([
+            { $match: { car: updatedRating.car } },
+            { $group: { _id: '$car', averageRating: { $avg: '$rating' } } },
+        ]).then(averageRatings => {
+            const averageRating = averageRatings[0].averageRating.toFixed(1);
+            Car.findByIdAndUpdate(carId, { rating: averageRating }).exec();
+        });
+
+        res.json({
+            code: '1',
+            message: req.t('rating.added'),
+            rating: updatedRating,
+        });
+    } catch (error) {
+        if (error.name == 'CastError')
+            return next(createError.BadRequest('Invalid carId.'));
         next(error);
     }
 };

@@ -62,6 +62,11 @@
         "carNumber": "Please provide car number.",
         "price": "Please provide price"
     },
+    "rating": {
+        "added": "Rating added successfully.",
+        "rating": "Rating is required.",
+        "comment": "Comment is required."
+    },
     "loggedIn": "Login Successful.",
     "profile": "Profile created successfully.",
     "deleted": "Profile deleted.",

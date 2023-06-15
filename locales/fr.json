@@ -62,6 +62,11 @@
         "carNumber": "Veuillez fournir le numéro de voiture.",
         "price": "Veuillez fournir le prix."
     },
+    "rating": {
+        "added": "La note a ajouté avec succès.",
+        "rating": "Une notation est requise.",
+        "comment": "Un commentaire est requis."
+    },
     "loggedIn": "Connexion réussie.",
     "profile": "Profil créé avec succès.",
     "deleted": "Profil supprimé.",

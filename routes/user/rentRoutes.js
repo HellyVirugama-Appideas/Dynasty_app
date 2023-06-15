@@ -24,4 +24,7 @@ router.post(
     rentController.removeFromFavorites
 );
 
+// Rating
+router.post('/give_rating', fileUpload(), checkUser, rentController.addRating);
+
 module.exports = router;

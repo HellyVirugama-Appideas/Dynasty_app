@@ -55,6 +55,7 @@ const driverSchema = new mongoose.Schema({
         type: { type: String, enum: ['Point'] },
         coordinates: { type: [Number] },
     },
+    useFor: { type: String, enum: ['taxi', 'rental'], default: 'taxi' },
     approved: {
         type: Boolean,
         default: false,

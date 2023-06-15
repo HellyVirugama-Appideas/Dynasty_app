@@ -31,6 +31,8 @@ const carSchema = new mongoose.Schema({
     purchaseBill: String,
     insurance: String,
     rc: String,
+
+    rating: { type: Number, default: 0 },
 });
 
 carSchema.index({ location: '2dsphere' });
