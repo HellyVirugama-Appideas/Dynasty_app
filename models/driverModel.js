@@ -27,7 +27,7 @@ const driverSchema = new mongoose.Schema({
     googleId: String,
     facebookId: String,
     appleId: String,
-    address: String,
+    address: { type: String, required: [true, 'validation.address'] },
     city: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'City',

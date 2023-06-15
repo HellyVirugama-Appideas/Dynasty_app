@@ -3,6 +3,7 @@ const multilingual = require('../../utils/multilingual');
 
 const Car = require('../../models/carModel');
 const Booking = require('../../models/bookingModel');
+const BookingReq = require('../../models/bookingReqModel');
 const User = require('../../models/userModel');
 const Rating = require('../../models/ratingModel');
 
@@ -86,6 +87,50 @@ exports.carDetail = async (req, res, next) => {
     } catch (error) {
         if (error.name === 'CastError')
             return next(createError.BadRequest('Invalid car id.'));
+        next(error);
+    }
+};
+
+exports.bookCar = async (req, res, next) => {
+    try {
+        const bookedFrom = new Date(req.body.dateFrom);
+        const bookedTo = new Date(req.body.dateTo);
+
+        if (isNaN(bookedFrom.getTime()) || isNaN(bookedTo.getTime()))
+            return next(createError.BadRequest('Invalid date format'));
+
+        const currentDate = new Date();
+        if (bookedFrom < currentDate || bookedTo < currentDate)
+            return next(createError.BadRequest('Dates must be in the future.'));
+
+        const car = await Car.findById(req.body.car).populate(
+            'driver',
+            'address'
+        );
+        if (!car) return next(createError.BadRequest('Invalid carId.'));
+
+        const { deliveryOption } = req.body;
+        let address;
+        if (deliveryOption === 'delivery') address = req.body.address;
+        else if (deliveryOption === 'pickup') address = car.driver.address;
+        else return next(createError.BadRequest('Invalid delivery option.'));
+
+        const booking = await BookingReq.create({
+            user: req.user.id,
+            car: req.body.car,
+            driver: car.driver,
+            deliveryOption,
+            address,
+            bookedFrom,
+            bookedTo,
+        });
+
+        // Notify driver
+
+        res.json({ code: '1', message: req.t('success'), booking });
+    } catch (error) {
+        if (error.name === 'CastError')
+            return next(createError.BadRequest('Invalid carId.'));
         next(error);
     }
 };

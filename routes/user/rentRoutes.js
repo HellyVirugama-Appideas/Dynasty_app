@@ -8,6 +8,8 @@ router.post('/list_cars', checkUser, fileUpload(), rentController.listCars);
 
 router.get('/car_detail/:id', checkUser, rentController.carDetail);
 
+router.post('/book_car', checkUser, fileUpload(), rentController.bookCar);
+
 // favorites
 router.get('/favorites', checkUser, rentController.getFavorites);
 router.post(

@@ -6,6 +6,7 @@
         "mobileInvalid": "Mobile number is invalid.",
         "email": "Please provide email.",
         "emailInvalid": "Please provide a valid email.",
+        "deliveryOption": "Please selecte delivery option.",
         "address": "Please provide address.",
         "latitude": "Please provide latitude.",
         "longitude": "Please provide longitude.",

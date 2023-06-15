@@ -94,6 +94,7 @@ app.use('/api/user', require('./routes/user/rentRoutes'));
 app.use('/api/driver', require('./routes/driver/authRoutes'));
 app.use('/api/driver', require('./routes/driver/homeRoutes'));
 app.use('/api/driver/car', require('./routes/driver/carRoutes'));
+app.use('/api/driver', require('./routes/driver/rentRoutes'));
 app.use('/api/driver', require('./routes/driver/profileRoutes'));
 
 app.use('/api', require('./routes/user/cityCountryRoutes'));
