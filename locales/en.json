@@ -53,6 +53,7 @@
     "car": {
         "added": "Car added successfully.",
         "edited": "Car edited successfully.",
+        "deleted": "Car deleted successfully.",
         "type": "Please provide car type.",
         "name": "Please provide car name.",
         "condition": "Please provide condition.",

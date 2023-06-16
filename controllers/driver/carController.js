@@ -19,7 +19,7 @@ exports.getVehicleTypes = async (req, res, next) => {
 
 exports.getCars = async (req, res, next) => {
     try {
-        const cars = await Car.find({ driver: req.driver.id })
+        const cars = await Car.find({ driver: req.driver.id, isDeleted: false })
             .select('-driver')
             .sort('-_id');
 
@@ -75,13 +75,30 @@ exports.editCar = async (req, res, next) => {
             };
 
         const car = await Car.findOneAndUpdate(
-            { _id: req.params.id, driver: req.driver.id },
+            { _id: req.params.id, driver: req.driver.id, isDeleted: false },
             req.body,
             { new: true }
         ).select('-__v -driver -type');
         if (!car) return next(createError.NotFound('Car not found.'));
 
         res.json({ code: '1', message: req.t('car.edited'), car });
+    } catch (error) {
+        if (error.name == 'CastError')
+            return next(createError.NotFound('Car not found.'));
+        next(error);
+    }
+};
+
+exports.deleteCar = async (req, res, next) => {
+    try {
+        const car = await Car.findOneAndUpdate(
+            { _id: req.params.id, driver: req.driver.id, isDeleted: false },
+            { isDeleted: true }
+        );
+
+        if (!car) return next(createError.NotFound('Car not found.'));
+
+        res.json({ code: '1', message: req.t('car.deleted') });
     } catch (error) {
         if (error.name == 'CastError')
             return next(createError.NotFound('Car not found.'));
@@ -96,7 +113,7 @@ exports.addImage = async (req, res, next) => {
             req.files.map(file => pics.push(`/uploads/${file.filename}`));
 
         await Car.findOneAndUpdate(
-            { _id: req.body.carId, driver: req.driver.id },
+            { _id: req.body.carId, driver: req.driver.id, isDeleted: false },
             { $push: { pics: { $each: pics } } },
             { new: true }
         );

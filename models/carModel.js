@@ -33,6 +33,8 @@ const carSchema = new mongoose.Schema({
     rc: String,
 
     rating: { type: Number, default: 0 },
+
+    isDeleted: { type: Boolean, default: false, select: false },
 });
 
 carSchema.index({ location: '2dsphere' });

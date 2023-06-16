@@ -53,6 +53,7 @@
     "car": {
         "added": "La voiture a ajouté avec succès.",
         "edited": "Car a été édité avec succès.",
+        "deleted": "Voiture supprimée avec succès.",
         "type": "Veuillez fournir le type de voiture.",
         "name": "Veuillez fournir le nom de la voiture.",
         "condition": "Veuillez fournir une condition.",

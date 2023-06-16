@@ -36,4 +36,6 @@ router.post(
 
 router.post('/:id', fileUpload(), checkDriver, carController.editCar);
 
+router.get('/delete/:id', fileUpload(), checkDriver, carController.deleteCar);
+
 module.exports = router;

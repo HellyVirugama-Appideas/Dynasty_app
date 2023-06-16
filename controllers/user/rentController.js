@@ -10,7 +10,7 @@ const Rating = require('../../models/ratingModel');
 exports.listCars = async (req, res, next) => {
     try {
         // Filter
-        const filter = {};
+        const filter = { isDeleted: false };
 
         // By date time availability
         if (req.body.dateFrom && req.body.dateTo) {
