@@ -26,4 +26,7 @@ router.post(
     homeController.acceptRide
 );
 
+// notifications
+router.get('/notification', checkDriver, homeController.getNotifications);
+
 module.exports = router;

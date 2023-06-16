@@ -4,6 +4,7 @@ const multilingualUser = require('../../utils/multilingualUser');
 const Country = require('../../models/countryModel');
 const City = require('../../models/cityModel');
 const Banner = require('../../models/bannerModel');
+const Notification = require('../../models/notificationModel');
 
 exports.getSelectCountryCity = async (req, res, next) => {
     try {
@@ -55,6 +56,21 @@ exports.getBanners = async (req, res, next) => {
         banners = banners.map(el => el.image);
 
         res.json({ code: '1', message: req.t('success'), data: { banners } });
+    } catch (error) {
+        next(error);
+    }
+};
+
+exports.getNotifications = async (req, res, next) => {
+    try {
+        const notifications = await Notification.find({
+            user: req.user.id,
+        })
+            .select('-__v -user')
+            .sort('-_id')
+            .lean();
+
+        res.json({ code: '1', message: req.t('success'), notifications });
     } catch (error) {
         next(error);
     }

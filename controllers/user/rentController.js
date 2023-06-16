@@ -6,6 +6,7 @@ const Booking = require('../../models/bookingModel');
 const BookingReq = require('../../models/bookingReqModel');
 const User = require('../../models/userModel');
 const Rating = require('../../models/ratingModel');
+const Notification = require('../../models/notificationModel');
 
 exports.listCars = async (req, res, next) => {
     try {
@@ -132,6 +133,13 @@ exports.bookCar = async (req, res, next) => {
         });
 
         // Notify driver
+
+        Notification.create({
+            driver: car.driver,
+            message: 'New booking request.',
+        }).catch(error => {
+            console.log('Error creating notification: ', error);
+        });
 
         res.json({ code: '1', message: req.t('success'), booking });
     } catch (error) {

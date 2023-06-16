@@ -26,6 +26,15 @@ exports.rejectRequest = async (req, res, next) => {
         if (!request)
             return next(createError.BadRequest('Invalid request id.'));
 
+        // Notify user
+
+        Notification.create({
+            user: request.user,
+            message: 'Booking request rejected.',
+        }).catch(error => {
+            console.log('Error creating notification: ', error);
+        });
+
         res.json({ code: '1', message: req.t('success') });
     } catch (error) {
         if (error.name === 'CastError')

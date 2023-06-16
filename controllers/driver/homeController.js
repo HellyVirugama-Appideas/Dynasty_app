@@ -3,6 +3,7 @@ const createError = require('http-errors');
 const Driver = require('../../models/driverModel');
 const RideReq = require('../../models/rideReqModel');
 const Ride = require('../../models/rideModel');
+const Notification = require('../../models/notificationModel');
 
 exports.getStatus = (req, res, next) => {
     try {
@@ -71,6 +72,21 @@ exports.acceptRide = async (req, res, next) => {
     } catch (error) {
         if (error.code == 11000 && error.keyPattern._id)
             return next(createError.Conflict('ride.already'));
+        next(error);
+    }
+};
+
+exports.getNotifications = async (req, res, next) => {
+    try {
+        const notifications = await Notification.find({
+            driver: req.driver.id,
+        })
+            .select('-__v -driver')
+            .sort('-_id')
+            .lean();
+
+        res.json({ code: '1', message: req.t('success'), notifications });
+    } catch (error) {
         next(error);
     }
 };

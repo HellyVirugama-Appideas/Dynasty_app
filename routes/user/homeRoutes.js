@@ -13,4 +13,7 @@ router
 // banner
 router.get('/banner', homeController.getBanners);
 
+// notifications
+router.get('/notification', checkUser, homeController.getNotifications);
+
 module.exports = router;
