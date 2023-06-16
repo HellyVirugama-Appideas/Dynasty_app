@@ -67,7 +67,7 @@ exports.carDetail = async (req, res, next) => {
     try {
         const carId = req.params.id;
 
-        const [car, ratings] = await Promise.all([
+        const [car, ratings, request] = await Promise.all([
             Car.findById(req.params.id)
                 .populate('driver', 'profile name')
                 .select('-__v -location -type')
@@ -76,12 +76,18 @@ exports.carDetail = async (req, res, next) => {
                 .populate('user', 'name')
                 .select('-__v -car')
                 .lean(),
+            BookingReq.exists({
+                car: carId,
+                user: req.user.id,
+                status: 'requested',
+            }),
         ]);
 
         if (!car) return next(createError.BadRequest('Invalid car id.'));
 
         car.isFavourite = req.user.favorites.includes(car._id);
         car.ratings = ratings;
+        car.requested = request ? true : false;
 
         res.json({ code: '1', message: req.t('success'), car });
     } catch (error) {
