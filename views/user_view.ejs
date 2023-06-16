@@ -6,6 +6,7 @@
     <%- include('_layouts/head') %>
     <title>User View | <%= title %></title>
     <link rel="stylesheet" type="text/css" href="/app-assets/css/pages/page-users.css">
+    <link rel="stylesheet" type="text/css" href="/app-assets/vendors/magnific-popup/magnific-popup.css">
 </head>
 <!-- END: Head-->
 
@@ -42,6 +43,7 @@
                             <div class="row">
                                 <div class="col s12 m7">
                                     <div class="display-flex media">
+                                        <img src="<%= user.profile %>" alt="users view avatar" class="z-depth-2 circle mr-3" height="64" width="64" onerror="this.onerror=null; this.src='/uploads/default_user.jpg';">
                                         <div class="media-body">
                                             <h6 class="media-heading">
                                                 <span class="users-view-name"><%= user.name %></span>
@@ -76,11 +78,11 @@
                                                 </tr>
                                                 <tr>
                                                     <th>City</th>
-                                                    <td><%= user.city?.en?.name %></td>
+                                                    <td><%= user.city?.en?.name || '-' %></td>
                                                 </tr>
                                                 <tr>
                                                     <th>Country</th>
-                                                    <td><%= user.country?.en?.name %></td>
+                                                    <td><%= user.country?.en?.name || '-' %></td>
                                                 </tr>
                                                 <tr>
                                                     <th>Date</th>
@@ -96,6 +98,36 @@
                             </div>
                         </div>
                         <!-- users view card details ends -->
+                        <div class="card">
+                            <div class="card-content">
+                                <% if (!user.licenseFront || !user.licenseBack) { %>
+                                <h6 class="mb-1 mt-2">No License Images.</h6>
+                                <% } else { %>
+                                <h6 class="mb-1 mt-2">License Images:</h6>
+                                <div class="masonry-gallery-wrapper">
+                                    <div class="popup-gallery">
+                                        <div class="gallery-sizer"></div>
+                                        <div class="row">
+                                            <div class="col s12 m6 l4 xl2">
+                                                <div>
+                                                    <a href="<%= user.licenseFront %>" title="licenseFront">
+                                                        <img src="<%= user.licenseFront %>" class="responsive-img mb-10" alt="licenseFront">
+                                                    </a>
+                                                </div>
+                                            </div>
+                                            <div class="col s12 m6 l4 xl2">
+                                                <div>
+                                                    <a href="<%= user.licenseBack %>" title="licenseBack">
+                                                        <img src="<%= user.licenseBack %>" class="responsive-img mb-10" alt="licenseBack">
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <% } %>
+                            </div>
+                        </div>
                     </div>
                     <!-- users view ends -->
                 </div>
@@ -106,6 +138,9 @@
     <!-- END: Page Main-->
 
     <%- include('_layouts/commonJs')  %>
+    <script src="/app-assets/vendors/magnific-popup/jquery.magnific-popup.min.js"></script>
+    <script src="/app-assets/vendors/imagesloaded.pkgd.min.js"></script>
+    <script src="/app-assets/js/scripts/media-gallery-page.js"></script>
 </body>
 
 </html>

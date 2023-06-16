@@ -137,7 +137,10 @@ exports.bookCar = async (req, res, next) => {
 
 exports.getFavorites = async (req, res, next) => {
     try {
-        await req.user.populate('favorites');
+        await req.user.populate({
+            path: 'favorites',
+            match: { isDeleted: false },
+        });
 
         res.json({
             code: '1',

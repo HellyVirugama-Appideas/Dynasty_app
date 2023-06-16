@@ -1,5 +1,6 @@
 const createError = require('http-errors');
 const multilingualUser = require('../../utils/multilingualUser');
+const deleteFile = require('../../utils/deleteFile');
 
 const User = require('../../models/userModel');
 const Address = require('../../models/addressModel');
@@ -24,16 +25,43 @@ exports.getProfile = async (req, res, next) => {
 
 exports.editProfile = async (req, res, next) => {
     try {
-        // Not allowed to change
-        delete req.body.country_code;
-        delete req.body.phone;
-        delete req.body.googleId;
-        delete req.body.facebookId;
-        delete req.body.appleId;
+        // Properties not allowed to change
+        const disallowedProperties = [
+            'country_code',
+            'phone',
+            'googleId',
+            'facebookId',
+            'appleId',
+            'profile',
+            'licenseFront',
+            'licenseBack',
+        ];
+        disallowedProperties.forEach(property => {
+            delete req.body[property];
+        });
+
+        let oldProfile, oldLicenceFront, oldLicenceBack;
+        if (req.files.profile) {
+            oldProfile = req.user.profile;
+            req.body.profile = `/uploads/${req.files.profile[0].filename}`;
+        }
+        if (req.files.licenseFront) {
+            oldLicenceFront = req.user.licenseFront;
+            req.body.licenseFront = `/uploads/${req.files.licenseFront[0].filename}`;
+        }
+        if (req.files.licenseBack) {
+            oldLicenceBack = req.user.licenseBack;
+            req.body.licenseBack = `/uploads/${req.files.licenseBack[0].filename}`;
+        }
 
         let user = await User.findByIdAndUpdate(req.user.id, req.body, {
             new: true,
         }).populate('city country address');
+
+        // remove old images
+        if (oldProfile) deleteFile(oldProfile);
+        if (oldLicenceFront) deleteFile(oldLicenceFront);
+        if (oldLicenceBack) deleteFile(oldLicenceBack);
 
         user = multilingualUser(user, req);
         user.latitude = user.address.latitude;

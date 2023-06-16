@@ -4,6 +4,7 @@ const validator = require('validator');
 const jwt = require('jsonwebtoken');
 const multilingualUser = require('../../utils/multilingualUser');
 // const { sendOTP } = require('../../utils/sendSMS');
+const deleteFile = require('../../utils/deleteFile');
 
 const User = require('../../models/userModel');
 const OTP = require('../../models/otpModel');
@@ -130,6 +131,17 @@ exports.createProfile = async (req, res, next) => {
         // if (!city) return next(createError.BadRequest('Invalid city_id'));
         // if (!country) return next(createError.BadRequest('Invalid country_id'));
 
+        // images
+        const profile = req.files.profile
+            ? `/uploads/${req.files.profile[0].filename}`
+            : undefined;
+        const licenseFront = req.files.licenseFront
+            ? `/uploads/${req.files.licenseFront[0].filename}`
+            : undefined;
+        const licenseBack = req.files.licenseBack
+            ? `/uploads/${req.files.licenseBack[0].filename}`
+            : undefined;
+
         // create user
         let user = new User({
             name: req.body.name,
@@ -138,6 +150,9 @@ exports.createProfile = async (req, res, next) => {
             phone: decoded.phone,
             city: city?.id,
             country: country?.id,
+            profile,
+            licenseFront,
+            licenseBack,
         });
 
         // create address
@@ -175,10 +190,19 @@ exports.createProfile = async (req, res, next) => {
             user,
         });
     } catch (error) {
+        // remove files
+        if (req.files.profile)
+            deleteFile(`/uploads/${req.files.profile[0].filename}`);
+        if (req.files.licenseFront)
+            deleteFile(`/uploads/${req.files.licenseFront[0].filename}`);
+        if (req.files.licenseBack)
+            deleteFile(`/uploads/${req.files.licenseBack[0].filename}`);
+
         if (error.name == 'JsonWebTokenError')
             return next(createError.BadRequest('token.invalid'));
         if (error.name == 'TokenExpiredError')
             return next(createError.BadRequest('token.expired'));
+
         next(error);
     }
 };
@@ -270,6 +294,17 @@ exports.createSocialProfile = async (req, res, next) => {
         // if (!city) return next(createError.BadRequest('Invalid city_id'));
         // if (!country) return next(createError.BadRequest('Invalid country_id'));
 
+        // images
+        const profile = req.files.profile
+            ? `/uploads/${req.files.profile[0].filename}`
+            : undefined;
+        const licenseFront = req.files.licenseFront
+            ? `/uploads/${req.files.licenseFront[0].filename}`
+            : undefined;
+        const licenseBack = req.files.licenseBack
+            ? `/uploads/${req.files.licenseBack[0].filename}`
+            : undefined;
+
         // create user
         let user = new User({
             name: req.body.name,
@@ -281,6 +316,9 @@ exports.createSocialProfile = async (req, res, next) => {
             googleId: req.body.googleId,
             facebookId: req.body.facebookId,
             appleId: req.body.appleId,
+            profile,
+            licenseFront,
+            licenseBack,
         });
 
         // create address
@@ -318,10 +356,19 @@ exports.createSocialProfile = async (req, res, next) => {
             user,
         });
     } catch (error) {
+        // remove files
+        if (req.files.profile)
+            deleteFile(`/uploads/${req.files.profile[0].filename}`);
+        if (req.files.licenseFront)
+            deleteFile(`/uploads/${req.files.licenseFront[0].filename}`);
+        if (req.files.licenseBack)
+            deleteFile(`/uploads/${req.files.licenseBack[0].filename}`);
+
         if (error.name == 'JsonWebTokenError')
             return next(createError.BadRequest('token.invalid'));
         if (error.name == 'TokenExpiredError')
             return next(createError.BadRequest('token.expired'));
+
         next(error);
     }
 };

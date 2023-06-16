@@ -50,6 +50,7 @@
                                                     <thead>
                                                         <tr>
                                                             <th>Sr</th>
+                                                            <th>Profile</th>
                                                             <th>User Name</th>
                                                             <th>Mobile</th>
                                                             <th>Email</th>
@@ -62,6 +63,7 @@
                                                         <% for( let i=0; i < users.length; i++ ) { %>
                                                         <tr>
                                                             <td><%= i+1 %></td>
+                                                            <td><img src="<%= users[i].profile %>" alt="alt" width="50" onerror="this.onerror=null; this.src='/uploads/default_user.jpg';"></td>
                                                             <td><%= users[i].name %></td>
                                                             <td><%= users[i].country_code + " " + users[i].phone %></td>
                                                             <td><%= users[i].email %></td>

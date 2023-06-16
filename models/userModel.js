@@ -41,6 +41,9 @@ const userSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Address',
     },
+    profile: String,
+    licenseFront: String,
+    licenseBack: String,
     blocked: {
         type: Boolean,
         default: false,
