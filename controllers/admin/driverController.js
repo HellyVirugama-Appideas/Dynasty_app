@@ -1,3 +1,5 @@
+const deleteFile = require('../../utils/deleteFile');
+
 const Driver = require('../../models/driverModel');
 const City = require('../../models/cityModel');
 const Country = require('../../models/countryModel');
@@ -69,7 +71,20 @@ exports.postAddDriver = async (req, res) => {
         req.flash('green', 'Driver added successfully.');
         res.redirect('/driver');
     } catch (error) {
-        req.flash('red', error.message);
+        // delete images
+        if (req.files.profile)
+            deleteFile(`/uploads/${req.files.profile[0].filename}`);
+        if (req.files.licence)
+            deleteFile(`/uploads/${req.files.licence[0].filename}`);
+        if (req.files.pan) deleteFile(`/uploads/${req.files.pan[0].filename}`);
+        if (req.files.rc) deleteFile(`/uploads/${req.files.rc[0].filename}`);
+
+        if (error.code == 11000)
+            req.flash(
+                'red',
+                `${Object.values(error.keyValue)[0]} is already registered.`
+            );
+        else req.flash('red', error.message);
         res.redirect('/driver');
     }
 };
@@ -127,14 +142,30 @@ exports.postEditDriver = async (req, res) => {
         driver.city = req.body.city;
         driver.type = req.body.type;
 
-        if (req.files.profile)
+        if (req.files.profile) {
+            oldProfile = driver.profile;
             driver.profile = `/uploads/${req.files.profile[0].filename}`;
-        if (req.files.licence)
+        }
+        if (req.files.licence) {
+            oldLicence = driver.licence;
             driver.licence = `/uploads/${req.files.licence[0].filename}`;
-        if (req.files.pan) driver.pan = `/uploads/${req.files.pan[0].filename}`;
-        if (req.files.rc) driver.rc = `/uploads/${req.files.rc[0].filename}`;
+        }
+        if (req.files.pan) {
+            oldPAN = driver.pan;
+            driver.pan = `/uploads/${req.files.pan[0].filename}`;
+        }
+        if (req.files.rc) {
+            oldRC = driver.rc;
+            driver.rc = `/uploads/${req.files.rc[0].filename}`;
+        }
 
         await driver.save();
+
+        // remove old images
+        if (oldProfile) deleteFile(oldProfile);
+        if (oldLicence) deleteFile(oldLicence);
+        if (oldPAN) deleteFile(oldPAN);
+        if (oldRC) deleteFile(oldRC);
 
         req.flash('green', 'Driver edited successfully.');
         res.redirect('/driver');

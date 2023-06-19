@@ -4,6 +4,7 @@ const validator = require('validator');
 const multilingual = require('../../utils/multilingual');
 const multilingualUser = require('../../utils/multilingualUser');
 const jwt = require('jsonwebtoken');
+const deleteFile = require('../../utils/deleteFile');
 // const { sendOTP } = require('../../utils/sendSMS');
 
 const Driver = require('../../models/driverModel');
@@ -395,6 +396,9 @@ exports.uploadProfile = async (req, res, next) => {
             { new: true }
         ).populate('city country');
 
+        // delete old image
+        if (req.driver.profile) deleteFile(req.driver.profile);
+
         driver = multilingualUser(driver, req);
 
         if (driver.location.coordinates) {
@@ -423,6 +427,9 @@ exports.uploadLicence = async (req, res, next) => {
             { new: true }
         ).populate('city country');
 
+        // delete old image
+        if (req.driver.licence) deleteFile(req.driver.licence);
+
         driver = multilingualUser(driver, req);
 
         if (driver.location.coordinates) {
@@ -449,6 +456,9 @@ exports.uploadPAN = async (req, res, next) => {
             { pan: `/uploads/${req.file.filename}` },
             { new: true }
         ).populate('city country');
+
+        // delete old image
+        if (req.driver.pan) deleteFile(req.driver.pan);
 
         driver = multilingualUser(driver, req);
 
@@ -477,6 +487,9 @@ exports.uploadRC = async (req, res, next) => {
             { rc: `/uploads/${req.file.filename}` },
             { new: true }
         ).populate('city country');
+
+        // delete old image
+        if (req.driver.rc) deleteFile(req.driver.rc);
 
         driver = multilingualUser(driver, req);
 

@@ -1,3 +1,5 @@
+const deleteFile = require('../../utils/deleteFile');
+
 const Country = require('../../models/countryModel');
 const City = require('../../models/cityModel');
 const Banner = require('../../models/bannerModel');
@@ -59,6 +61,8 @@ exports.postEditCountry = async (req, res) => {
             return res.redirect('/country');
         }
 
+        const oldImage = country.image;
+
         country.en.name = req.body.nameEn;
         country.fr.name = req.body.nameFr;
         country.ar.name = req.body.nameAr;
@@ -66,6 +70,9 @@ exports.postEditCountry = async (req, res) => {
         if (req.file) country.image = `/uploads/${req.file.filename}`;
 
         await country.save();
+
+        // delete old image
+        req.file && oldImage && deleteFile(oldImage);
 
         req.flash('green', 'Country edited successfully.');
         res.redirect('/country');
@@ -78,10 +85,13 @@ exports.postEditCountry = async (req, res) => {
 exports.getDeleteCountry = async (req, res) => {
     try {
         // Delele country, cities
-        await Promise.all([
+        const [country] = await Promise.all([
             Country.findByIdAndDelete(req.params.id),
             City.deleteMany({ country: req.params.id }),
         ]);
+
+        // delete old image
+        deleteFile(country.image);
 
         req.flash('green', 'Country deleted successfully.');
         res.redirect('/country');
@@ -237,9 +247,14 @@ exports.postEditBanner = async (req, res) => {
             return res.redirect('/banner');
         }
 
+        const oldImage = banner.image;
+
         if (req.file) banner.image = `/uploads/${req.file.filename}`;
 
         await banner.save();
+
+        // delete old image
+        req.file && oldImage && deleteFile(oldImage);
 
         req.flash('green', 'Banner edited successfully.');
         res.redirect('/banner');
@@ -251,7 +266,10 @@ exports.postEditBanner = async (req, res) => {
 
 exports.getDeleteBanner = async (req, res) => {
     try {
-        await Banner.findByIdAndDelete(req.params.id);
+        const banner = await Banner.findByIdAndDelete(req.params.id);
+
+        // delete old image
+        deleteFile(banner.image);
 
         req.flash('green', 'Banner deleted successfully.');
         res.redirect('/banner');
@@ -321,6 +339,8 @@ exports.postEditType = async (req, res) => {
             return res.redirect('/type');
         }
 
+        const oldImage = type.image;
+
         type.en.name = req.body.nameEn;
         type.fr.name = req.body.nameFr;
         type.ar.name = req.body.nameAr;
@@ -331,6 +351,9 @@ exports.postEditType = async (req, res) => {
         if (req.file) type.image = `/uploads/${req.file.filename}`;
 
         await type.save();
+
+        // delete old image
+        req.file && oldImage && deleteFile(oldImage);
 
         req.flash('green', 'Type edited successfully.');
         res.redirect('/type');
