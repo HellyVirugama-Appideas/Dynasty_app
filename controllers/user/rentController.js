@@ -164,12 +164,25 @@ exports.getFavorites = async (req, res, next) => {
         await req.user.populate({
             path: 'favorites',
             match: { isDeleted: false },
+            select: 'name price pics rating',
+            options: { lean: true },
+            populate: { path: 'type' },
         });
+
+        const favorites = req.user.favorites.map(car => {
+            return {
+                ...car,
+                isFavourite: true,
+                type: multilingual(car.type, req).name,
+            };
+        });
+
+        favorites.reverse();
 
         res.json({
             code: '1',
             message: req.t('success'),
-            favorites: req.user.favorites,
+            favorites,
         });
     } catch (error) {
         next(error);
