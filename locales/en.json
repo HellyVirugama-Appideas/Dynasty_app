@@ -64,6 +64,12 @@
         "carNumber": "Please provide car number.",
         "price": "Please provide price"
     },
+    "carImage": {
+        "pics": "At least one pic is required.",
+        "purchaseBill": "Purchase bill is required.",
+        "insurance": "Insurance is required.",
+        "rc": "RC is required."
+    },
     "rating": {
         "added": "Rating added successfully.",
         "rating": "Rating is required.",

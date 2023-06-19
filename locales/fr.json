@@ -64,6 +64,12 @@
         "carNumber": "Veuillez fournir le numéro de voiture.",
         "price": "Veuillez fournir le prix."
     },
+    "carImage": {
+        "pics": "Au moins une photo est requise.",
+        "purchaseBill": "La facture d'achat est requise.",
+        "insurance": "Une assurance est requise.",
+        "rc": "RC est requis."
+    },
     "rating": {
         "added": "La note a ajouté avec succès.",
         "rating": "Une notation est requise.",

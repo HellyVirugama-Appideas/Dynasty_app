@@ -120,7 +120,7 @@ exports.bookCar = async (req, res, next) => {
         if (bookedFrom < currentDate || bookedTo < currentDate)
             return next(createError.BadRequest('Dates must be in the future.'));
 
-        const car = await Car.findById(req.body.car).populate(
+        const car = await Car.findById(req.body.carId).populate(
             'driver',
             'address'
         );
@@ -134,7 +134,7 @@ exports.bookCar = async (req, res, next) => {
 
         const booking = await BookingReq.create({
             user: req.user.id,
-            car: req.body.car,
+            car: req.body.carId,
             driver: car.driver,
             deliveryOption,
             address,

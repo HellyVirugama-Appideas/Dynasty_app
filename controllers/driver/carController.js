@@ -1,5 +1,6 @@
 const createError = require('http-errors');
 const multilingual = require('../../utils/multilingual');
+const deleteFile = require('../../utils/deleteFile');
 
 const Type = require('../../models/typeModel');
 const Car = require('../../models/carModel');
@@ -31,18 +32,18 @@ exports.getCars = async (req, res, next) => {
 
 exports.createCar = async (req, res, next) => {
     try {
-        req.body.pics = req.files?.pics
-            ? req.files.pics.map(file => `/uploads/${file.filename}`)
-            : undefined;
-        req.body.purchaseBill = req.files?.purchaseBill
-            ? `/uploads/${req.files.purchaseBill[0].filename}`
-            : undefined;
-        req.body.insurance = req.files?.insurance
-            ? `/uploads/${req.files.insurance[0].filename}`
-            : undefined;
-        req.body.rc = req.files?.rc
-            ? `/uploads/${req.files.rc[0].filename}`
-            : undefined;
+        if (!req.files?.pics || req.files.pics.length === 0)
+            throw createError.BadRequest('carImage.pics');
+        if (!req.files?.purchaseBill)
+            throw createError.BadRequest('carImage.purchaseBill');
+        if (!req.files?.insurance)
+            throw createError.BadRequest('carImage.insurance');
+        if (!req.files?.rc) throw createError.BadRequest('carImage.rc');
+
+        req.body.pics = req.files.pics.map(file => `/uploads/${file.filename}`);
+        req.body.purchaseBill = `/uploads/${req.files.purchaseBill[0].filename}`;
+        req.body.insurance = `/uploads/${req.files.insurance[0].filename}`;
+        req.body.rc = `/uploads/${req.files.rc[0].filename}`;
 
         const { latitude, longitude } = req.body;
         if (!latitude || !longitude)
@@ -61,6 +62,17 @@ exports.createCar = async (req, res, next) => {
 
         res.json({ code: '1', message: req.t('car.added'), car });
     } catch (error) {
+        // Remove files
+        if (req.files.pics)
+            req.files.pics.forEach(file =>
+                deleteFile(`/uploads/${file.filename}`)
+            );
+        if (req.files.purchaseBill)
+            deleteFile(`/uploads/${req.files.purchaseBill[0].filename}`);
+        if (req.files.insurance)
+            deleteFile(`/uploads/${req.files.insurance[0].filename}`);
+        if (req.files.rc) deleteFile(`/uploads/${req.files.rc[0].filename}`);
+
         next(error);
     }
 };
@@ -136,6 +148,8 @@ exports.deleteImage = async (req, res, next) => {
             { $pull: { pics: req.body.pic } },
             { new: true }
         );
+
+        deleteFile(req.body.pic);
 
         res.json({ code: '1', message: req.t('success') });
     } catch (error) {
