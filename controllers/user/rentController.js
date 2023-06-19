@@ -13,6 +13,16 @@ exports.listCars = async (req, res, next) => {
         // Filter
         const filter = { isDeleted: false };
 
+        // Search
+        if (req.body.search) {
+            const searchRegex = new RegExp(req.body.search, 'i');
+            filter.$or = [
+                { name: { $regex: searchRegex } },
+                { company: { $regex: searchRegex } },
+                { model: { $regex: searchRegex } },
+            ];
+        }
+
         // By date time availability
         if (req.body.dateFrom && req.body.dateTo) {
             const dateFrom = new Date(req.body.dateFrom);
