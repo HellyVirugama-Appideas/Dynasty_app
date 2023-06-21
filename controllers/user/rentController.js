@@ -159,6 +159,25 @@ exports.bookCar = async (req, res, next) => {
     }
 };
 
+exports.tempPayment = async (req, res, next) => {
+    try {
+        const request = await BookingReq.findById(req.body.bookingId).lean();
+        if (!request) return next(createError.BadRequest('Invalid bookingId.'));
+
+        const { _id, ...requestData } = request;
+
+        const booking = await Booking.create(requestData);
+
+        BookingReq.findByIdAndDelete(_id).catch(error => {
+            console.log('Error deleting booking request:', error);
+        });
+
+        res.json({ code: '1', message: req.t('success'), booking });
+    } catch (error) {
+        next(error);
+    }
+};
+
 exports.getFavorites = async (req, res, next) => {
     try {
         await req.user.populate({

@@ -16,6 +16,11 @@ const bookingSchema = new mongoose.Schema({
         ref: 'Driver',
         required: true,
     },
+    deliveryOption: {
+        type: String,
+        required: [true, 'validation.deliveryOption'],
+    },
+    address: { type: String, required: [true, 'validation.address'] },
     bookedFrom: { type: Date, required: true },
     bookedTo: { type: Date, required: true },
 });
