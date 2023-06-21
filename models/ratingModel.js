@@ -12,7 +12,7 @@ const ratingSchema = new mongoose.Schema({
         required: true,
     },
     rating: { type: Number, required: [true, 'rating.rating'] },
-    comment: { type: String, required: [true, 'rating.comment'] },
+    comment: String,
     createdAt: { type: Date, default: Date.now },
 });
 

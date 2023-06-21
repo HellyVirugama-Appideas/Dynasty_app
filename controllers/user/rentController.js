@@ -79,7 +79,7 @@ exports.carDetail = async (req, res, next) => {
         const carId = req.params.id;
 
         const [car, ratings, request] = await Promise.all([
-            Car.findById(req.params.id)
+            Car.findById(carId)
                 .populate('driver', 'profile name')
                 .select('-__v -location -type')
                 .lean(),
@@ -96,8 +96,13 @@ exports.carDetail = async (req, res, next) => {
 
         if (!car) return next(createError.BadRequest('Invalid car id.'));
 
+        // Filter out ratings with comments
+        const reviews = ratings.filter(rating => !!rating.comment);
+        car.numReviews = reviews.length;
+        car.numRatings = ratings.length;
+
         car.isFavorite = req.user.favorites.includes(car._id);
-        car.ratings = ratings;
+        car.reviews = reviews;
         car.requested = request ? true : false;
 
         res.json({ code: '1', message: req.t('success'), car });
@@ -233,7 +238,7 @@ exports.addRating = async (req, res, next) => {
     try {
         const { carId, rating: newRating, comment } = req.body;
 
-        const updatedRating = await Rating.findOne({
+        let updatedRating = await Rating.findOne({
             car: carId,
             user: req.user.id,
         });
