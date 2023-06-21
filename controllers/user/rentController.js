@@ -84,7 +84,7 @@ exports.carDetail = async (req, res, next) => {
                 .select('-__v -location -type')
                 .lean(),
             Rating.find({ car: carId })
-                .populate('user', 'name')
+                .populate('user', 'name profile')
                 .select('-__v -car')
                 .lean(),
             BookingReq.exists({
