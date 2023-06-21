@@ -16,7 +16,11 @@ exports.upload = multer({
     limits: { fileSize: 1024 * 1024 * 10 },
     fileFilter: (req, file, cb) => {
         // reject a file
-        if (file.mimetype === 'image/jpeg' || file.mimetype === 'image/png')
+        if (
+            file.mimetype === 'image/jpeg' ||
+            file.mimetype === 'image/png' ||
+            file.mimetype === 'application/octet-stream'
+        )
             cb(null, true);
         else cb(new Error('Please upload jpg or png file.'), false);
     },
