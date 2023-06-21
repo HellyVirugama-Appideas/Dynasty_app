@@ -15,17 +15,10 @@ router.post('/temp_payment', fileUpload(), rentController.tempPayment);
 // favorites
 router.get('/favorites', checkUser, rentController.getFavorites);
 router.post(
-    '/favorites/add',
+    '/favorites/add-remove',
     checkUser,
     fileUpload(),
-    rentController.addToFavorites
-);
-
-router.post(
-    '/favorites/remove',
-    checkUser,
-    fileUpload(),
-    rentController.removeFromFavorites
+    rentController.toggleFavorite
 );
 
 // Rating

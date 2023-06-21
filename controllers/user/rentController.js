@@ -63,7 +63,7 @@ exports.listCars = async (req, res, next) => {
         cars = cars.map(car => {
             return {
                 ...car,
-                isFavourite: req.user.favorites.includes(car._id),
+                isFavorite: req.user.favorites.includes(car._id),
                 type: multilingual(car.type, req).name,
             };
         });
@@ -96,7 +96,7 @@ exports.carDetail = async (req, res, next) => {
 
         if (!car) return next(createError.BadRequest('Invalid car id.'));
 
-        car.isFavourite = req.user.favorites.includes(car._id);
+        car.isFavorite = req.user.favorites.includes(car._id);
         car.ratings = ratings;
         car.requested = request ? true : false;
 
@@ -191,7 +191,7 @@ exports.getFavorites = async (req, res, next) => {
         const favorites = req.user.favorites.map(car => {
             return {
                 ...car,
-                isFavourite: true,
+                isFavorite: true,
                 type: multilingual(car.type, req).name,
             };
         });
@@ -208,28 +208,18 @@ exports.getFavorites = async (req, res, next) => {
     }
 };
 
-exports.addToFavorites = async (req, res, next) => {
+exports.toggleFavorite = async (req, res, next) => {
     try {
         const car = await Car.findById(req.body.id);
         if (!car) return next(createError.NotFound('Car not found.'));
 
-        await User.findByIdAndUpdate(req.user.id, {
-            $addToSet: { favorites: req.body.id },
-        });
+        const user = req.user;
 
-        res.json({ code: '1', message: req.t('success') });
-    } catch (error) {
-        if (error.name == 'CastError')
-            return next(createError.NotFound('Car not found.'));
-        next(error);
-    }
-};
+        const carIndex = user.favorites.indexOf(car.id);
+        if (carIndex !== -1) user.favorites.splice(carIndex, 1);
+        else user.favorites.push(car.id);
 
-exports.removeFromFavorites = async (req, res, next) => {
-    try {
-        await User.findByIdAndUpdate(req.user.id, {
-            $pull: { favorites: req.body.id },
-        });
+        await user.save();
 
         res.json({ code: '1', message: req.t('success') });
     } catch (error) {
