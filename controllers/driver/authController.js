@@ -46,8 +46,8 @@ exports.sendOTP = async (req, res, next) => {
         if (!phone) return next(createError.BadRequest('validation.phone'));
 
         const mobile = country_code + phone;
-        if (!validator.isMobilePhone(mobile, 'any', { strictMode: true }))
-            return next(createError.BadRequest('validation.mobileInvalid'));
+        // if (!validator.isMobilePhone(mobile, 'any', { strictMode: true }))
+        //     return next(createError.BadRequest('validation.mobileInvalid'));
 
         // generate and save OTP
         const otp = generateCode(4);
