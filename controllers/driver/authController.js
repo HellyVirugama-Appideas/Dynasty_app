@@ -154,6 +154,7 @@ exports.createProfile = async (req, res, next) => {
             city: city?.id,
             country: country?.id,
             address: req.body.address,
+            useFor: req.body.useFor,
         });
 
         const token = await driver.generateAuthToken();
@@ -281,6 +282,7 @@ exports.createSocialProfile = async (req, res, next) => {
             city: city?.id,
             country: country?.id,
             address: req.body.address,
+            useFor: req.body.useFor,
             googleId: req.body.googleId,
             facebookId: req.body.facebookId,
             appleId: req.body.appleId,
