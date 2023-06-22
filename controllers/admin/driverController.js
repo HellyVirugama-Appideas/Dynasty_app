@@ -103,7 +103,7 @@ exports.getEditDriver = async (req, res) => {
         ]);
 
         const citiesInSelectedCountry = cities.find(
-            item => item._id == driver.country.toString()
+            item => item._id == driver.country?.toString()
         )?.cities;
 
         if (!driver) {
@@ -137,11 +137,12 @@ exports.postEditDriver = async (req, res) => {
         driver.email = req.body.email;
         driver.country_code = req.body.country_code;
         driver.phone = req.body.phone;
-        driver.country = req.body.country;
+        driver.country = req.body.country || undefined;
+        driver.city = req.body.city || undefined;
         driver.address = req.body.address;
-        driver.city = req.body.city;
-        driver.type = req.body.type;
+        driver.type = req.body.type || undefined;
 
+        let oldProfile, oldLicence, oldPAN, oldRC;
         if (req.files.profile) {
             oldProfile = driver.profile;
             driver.profile = `/uploads/${req.files.profile[0].filename}`;
@@ -170,6 +171,7 @@ exports.postEditDriver = async (req, res) => {
         req.flash('green', 'Driver edited successfully.');
         res.redirect('/driver');
     } catch (error) {
+        console.log(error);
         req.flash('red', error.message);
         res.redirect('/driver');
     }

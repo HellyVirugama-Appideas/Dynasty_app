@@ -87,7 +87,7 @@
                                             <div class="input-field col m6 s12">
                                                 <select id="city" name="city">
                                                     <option value="">Select city</option>
-                                                    <% for( let i = 0; i < citiesInSelectedCountry.length; i++ ) { %>
+                                                    <% for( let i = 0; i < citiesInSelectedCountry?.length; i++ ) { %>
                                                     <option value="<%= citiesInSelectedCountry[i]._id %>" <%= JSON.stringify(driver.city) == JSON.stringify(citiesInSelectedCountry[i]._id) ? 'selected' : '' %>><%= citiesInSelectedCountry[i].name %></option>
                                                     <% } %>
                                                 </select>
@@ -200,10 +200,10 @@
             const emailValue = document.getElementById('email').value.trim();
             const countryCodeValue = document.getElementById('country_code').value.trim();
             const phoneValue = document.getElementById('phone').value.trim();
-            const countryValue = document.getElementById('country').value.trim();
-            const cityValue = document.getElementById('city').value.trim();
+            // const countryValue = document.getElementById('country').value.trim();
+            // const cityValue = document.getElementById('city').value.trim();
             const addressValue = document.getElementById('address').value.trim();
-            const typeValue = document.getElementById('type').value.trim();
+            // const typeValue = document.getElementById('type').value.trim();
             const profileFileValue = document.getElementById('profile').value;
             const profileExt = profileFileValue.substring(profileFileValue.lastIndexOf('.') + 1);
             const licenceFileValue = document.getElementById('licence').value;
@@ -244,19 +244,19 @@
                 document.getElementById('error4').innerText = '';
             }
 
-            if (countryValue == '') {
-                document.getElementById('error5').innerText = 'Please select country.';
-                returnVal = false;
-            } else {
-                document.getElementById('error5').innerText = '';
-            }
+            // if (countryValue == '') {
+            //     document.getElementById('error5').innerText = 'Please select country.';
+            //     returnVal = false;
+            // } else {
+            //     document.getElementById('error5').innerText = '';
+            // }
 
-            if (cityValue == '') {
-                document.getElementById('error6').innerText = 'Please select city.';
-                returnVal = false;
-            } else {
-                document.getElementById('error6').innerText = '';
-            }
+            // if (cityValue == '') {
+            //     document.getElementById('error6').innerText = 'Please select city.';
+            //     returnVal = false;
+            // } else {
+            //     document.getElementById('error6').innerText = '';
+            // }
 
             if (addressValue == '') {
                 document.getElementById('error12').innerText = 'Please enter address.';
@@ -265,12 +265,12 @@
                 document.getElementById('error12').innerText = '';
             }
 
-            if (typeValue == '') {
-                document.getElementById('error7').innerText = 'Please select vehicle type.';
-                returnVal = false;
-            } else {
-                document.getElementById('error7').innerText = '';
-            }
+            // if (typeValue == '') {
+            //     document.getElementById('error7').innerText = 'Please select vehicle type.';
+            //     returnVal = false;
+            // } else {
+            //     document.getElementById('error7').innerText = '';
+            // }
 
             if (profileFileValue == '') {
                 document.getElementById('error8').innerText = '';
