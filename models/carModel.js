@@ -19,9 +19,13 @@ const carSchema = new mongoose.Schema({
     kmsDriven: { type: String, required: [true, 'car.kmsDriven'], trim: true },
     carNumber: { type: String, required: [true, 'car.carNumber'], trim: true },
     price: { type: String, required: [true, 'car.price'], trim: true },
-    description: { type: String, required: [true, 'car.price'], trim: true },
+    description: {
+        type: String,
+        required: [true, 'car.description'],
+        trim: true,
+    },
 
-    address: { type: String, required: [true, 'car.price'], trim: true },
+    address: { type: String, required: [true, 'car.address'], trim: true },
     location: {
         type: { type: String, enum: ['Point'] },
         coordinates: { type: [Number] },
