@@ -34,7 +34,7 @@ router.post(
     carController.deleteImage
 );
 
-router.post('/:id', fileUpload(), checkDriver, carController.editCar);
+router.post('/:id', upload.array('pics'), checkDriver, carController.editCar);
 
 router.get('/delete/:id', fileUpload(), checkDriver, carController.deleteCar);
 

@@ -79,6 +79,10 @@ exports.createCar = async (req, res, next) => {
 
 exports.editCar = async (req, res, next) => {
     try {
+        let pics = [];
+        if (req.files.length)
+            req.files.map(file => pics.push(`/uploads/${file.filename}`));
+
         const { latitude, longitude } = req.body;
         if (latitude && longitude)
             req.body.location = {
@@ -86,9 +90,12 @@ exports.editCar = async (req, res, next) => {
                 coordinates: [longitude, latitude],
             };
 
+        const updatedData = { ...req.body };
+        if (pics.length) updatedData.$push = { pics: { $each: pics } };
+
         const car = await Car.findOneAndUpdate(
             { _id: req.params.id, driver: req.driver.id, isDeleted: false },
-            req.body,
+            updatedData,
             { new: true }
         ).select('-__v -driver -type');
         if (!car) return next(createError.NotFound('Car not found.'));
