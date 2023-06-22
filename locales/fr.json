@@ -62,7 +62,9 @@
         "purchaseDate": "Veuillez fournir la date d'achat.",
         "kmsDriven": "Veuillez fournir le nombre de KMS conduits",
         "carNumber": "Veuillez fournir le numéro de voiture.",
-        "price": "Veuillez fournir le prix."
+        "price": "Veuillez fournir le prix.",
+        "description": "Veuillez fournir une description.",
+        "address": "Veuillez fournir l'adresse."
     },
     "carImage": {
         "pics": "Au moins une photo est requise.",

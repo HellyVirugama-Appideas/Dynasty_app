@@ -62,7 +62,9 @@
         "purchaseDate": "Please provide purchase date.",
         "kmsDriven": "Please provide number of kms driven",
         "carNumber": "Please provide car number.",
-        "price": "Please provide price"
+        "price": "Please provide price.",
+        "description": "Please provide description.",
+        "address": "Please provide address."
     },
     "carImage": {
         "pics": "At least one pic is required.",

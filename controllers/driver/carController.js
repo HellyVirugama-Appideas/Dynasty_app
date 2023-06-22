@@ -47,7 +47,7 @@ exports.createCar = async (req, res, next) => {
 
         const { latitude, longitude } = req.body;
         if (!latitude || !longitude)
-            return next(createError.BadRequest('Invalid latitude longitude.'));
+            throw createError.BadRequest('Invalid latitude longitude.');
         req.body.location = {
             type: 'Point',
             coordinates: [longitude, latitude],

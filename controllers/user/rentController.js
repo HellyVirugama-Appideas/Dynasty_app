@@ -4,7 +4,6 @@ const multilingual = require('../../utils/multilingual');
 const Car = require('../../models/carModel');
 const Booking = require('../../models/bookingModel');
 const BookingReq = require('../../models/bookingReqModel');
-const User = require('../../models/userModel');
 const Rating = require('../../models/ratingModel');
 const Notification = require('../../models/notificationModel');
 
