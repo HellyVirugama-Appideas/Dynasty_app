@@ -22,8 +22,8 @@
                         </div>
                         <div class="col s12 m6 l6 right-align-md">
                             <ol class="breadcrumbs mb-0">
-                                <li class="breadcrumb-item"><a href="/">Home</a></li>
-                                <li class="breadcrumb-item"><a href="/cms/faqs">FAQs</a></li>
+                                <li class="breadcrumb-item"><a href="/admin">Home</a></li>
+                                <li class="breadcrumb-item"><a href="/admin/cms/faqs">FAQs</a></li>
                                 <li class="breadcrumb-item active">Add FAQ</li>
                             </ol>
                         </div>
@@ -40,7 +40,7 @@
                                         <%- messages('messages', locals) %>
                                         <div class="row">
                                             <div class="col s12">
-                                                <form method="POST" onsubmit="validate()" action="/cms/faqs/add" id="form">
+                                                <form method="POST" onsubmit="validate()" action="/admin/cms/faqs/add" id="form">
                                                     <h4 class="card-title">English</h4>
                                                     <div class="input-field col s12">
                                                         <input placeholder="Question" id="EnQue" name="EnQue" type="text">

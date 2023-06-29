@@ -23,7 +23,7 @@
                         </div>
                         <div class="col s12 m6 l6 right-align-md">
                             <ol class="breadcrumbs mb-0">
-                                <li class="breadcrumb-item"><a href="/">Home</a></li>
+                                <li class="breadcrumb-item"><a href="/admin">Home</a></li>
                                 <li class="breadcrumb-item active">Terms & Conditions</li>
                             </ol>
                         </div>
@@ -40,7 +40,7 @@
                                         <div class="row">
                                             <div class="col s12">
                                                 <%- messages('messages', locals) %>
-                                                <form method="POST" action="/cms/terms">
+                                                <form method="POST" action="/admin/cms/terms">
                                                     <h4 class="card-title">English</h4>
                                                     <div class="form-group">
                                                         <textarea name="EnContent" class="form-control ta" id="ta1" cols="30" rows="10" placeholder="content"> <%= page.en?.content %> </textarea>

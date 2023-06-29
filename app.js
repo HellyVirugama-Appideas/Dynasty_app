@@ -118,18 +118,18 @@ app.use(function (req, res, next) {
     next();
 });
 
-app.use('/', require('./routes/admin/authRoutes'));
-app.use('/cms', require('./routes/admin/cmsRoutes'));
-app.use('/user', require('./routes/admin/userRoutes'));
-app.use('/driver', require('./routes/admin/driverRoutes'));
-app.use('/', require('./routes/admin/adminRoutes'));
+app.use('/admin/', require('./routes/admin/authRoutes'));
+app.use('/admin/cms', require('./routes/admin/cmsRoutes'));
+app.use('/admin/user', require('./routes/admin/userRoutes'));
+app.use('/admin/driver', require('./routes/admin/driverRoutes'));
+app.use('/admin/', require('./routes/admin/adminRoutes'));
 
 // 404 admin
 app.all('/*', (req, res) => {
     res.status(404).render('404', { message: 'Page not found!' });
 });
 
-// 4) ERROR HANDLING
+// 5) ERROR HANDLING
 app.use(globalErrorHandler);
 
 module.exports = app;

@@ -27,7 +27,7 @@
                             <h5 class="breadcrumbs-title mt-0 mb-0"><span>Country List</span></h5>
                         </div>
                         <div class="col s12 m6 l6 right-align-md">
-                            <a class="btn gradient-45deg-purple-deep-orange pull-right btn-breadcrumbs" href="/country/add">Add Country</a>
+                            <a class="btn gradient-45deg-purple-deep-orange pull-right btn-breadcrumbs" href="/admin/country/add">Add Country</a>
                         </div>
                     </div>
                 </div>
@@ -63,8 +63,8 @@
                                                             <td><%= countries[i].ar.name %></td>
                                                             <td><img src="<%= countries[i].image %>" alt="alt" width="50" onerror="this.onerror=null; this.src='/uploads/no_image_available_3.jpg';"></td>
                                                             <td style="max-width: 70px;">
-                                                                <a href="/country/edit/<%= countries[i].id %>"><i class="material-icons">create</i></a>
-                                                                <a href="/country/delete/<%= countries[i].id %>" onclick="return confirm('Are you sure?')"><i class="material-icons">delete</i></a>
+                                                                <a href="/admin/country/edit/<%= countries[i].id %>"><i class="material-icons">create</i></a>
+                                                                <a href="/admin/country/delete/<%= countries[i].id %>" onclick="return confirm('Are you sure?')"><i class="material-icons">delete</i></a>
                                                             </td>
                                                         </tr>
                                                         <% } %>

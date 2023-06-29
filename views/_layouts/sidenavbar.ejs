@@ -18,10 +18,10 @@
                 </ul>
                 <ul class="dropdown-content" id="profile-dropdown">
                     <li>
-                        <a class="grey-text text-darken-1" href="/changepass"><i class="material-icons">lock_outline</i>Change Password</a>
+                        <a class="grey-text text-darken-1" href="/admin/changepass"><i class="material-icons">lock_outline</i>Change Password</a>
                     </li>
                     <li>
-                        <a class="grey-text text-darken-1" href="/logout" onclick="return confirm('Are you sure?');"><i class="material-icons">keyboard_tab</i>Logout</a>
+                        <a class="grey-text text-darken-1" href="/admin/logout" onclick="return confirm('Are you sure?');"><i class="material-icons">keyboard_tab</i>Logout</a>
                     </li>
                 </ul>
             </div>
@@ -33,7 +33,7 @@
 <aside class="sidenav-main nav-expanded nav-lock nav-collapsible sidenav-dark sidenav-active-rounded">
     <div class="brand-sidebar">
         <h1 class="logo-wrapper">
-            <a class="brand-logo darken-1" href="/" style="  display: flex; align-items: center; justify-content: center;">
+            <a class="brand-logo darken-1" href="/admin" style="  display: flex; align-items: center; justify-content: center;">
                 <img class="hide-on-med-and-down " src="/app-assets/images/logo/Logo.png" alt="materialize logo">
                 <img class="show-on-medium-and-down hide-on-med-and-up" src="/app-assets/images/logo/Logo.png" alt="materialize logo" />
                 <span class="logo-text hide-on-med-and-down test" style="  display: inline-block; vertical-align: middle;">Dynasty</span>
@@ -42,7 +42,7 @@
     </div>
     <ul class="sidenav sidenav-collapsible leftside-navigation collapsible sidenav-fixed menu-shadow" id="slide-out" data-menu="menu-navigation" data-collapsible="accordion">
         <li class="bold">
-            <a class="waves-effect waves-cyan <%= url == '/' ? 'active' : '' %>" href="/">
+            <a class="waves-effect waves-cyan <%= url == '/admin' ? 'active' : '' %>" href="/admin">
                 <i class="material-icons">desktop_windows</i>
                 <span class="menu-title" data-i18n="Dashboard">Dashboard</span>
             </a>
@@ -51,7 +51,7 @@
             <a class="navigation-header-text">manage</a>
             <i class="navigation-header-icon material-icons">more_horiz</i>
         </li>
-        <li class="bold <%= url.startsWith('/cms') ? 'active' : '' %>">
+        <li class="bold <%= url.startsWith('/admin/cms') ? 'active' : '' %>">
             <a class="collapsible-header waves-effect waves-cyan" href="javascript:void(0);">
                 <i class="material-icons">content_paste</i>
                 <span class="menu-title" data-i18n="Pages">Content Pages</span>
@@ -59,13 +59,13 @@
             <div class="collapsible-body">
                 <ul class="collapsible collapsible-sub" data-collapsible="accordion">
                     <li>
-                        <a class="<%= url == '/cms/terms' ? 'active' : '' %>" href="/cms/terms">
+                        <a class="<%= url == '/admin/cms/terms' ? 'active' : '' %>" href="/admin/cms/terms">
                             <i class="material-icons">radio_button_unchecked</i>
                             <span data-i18n="Blog">Terms & Conditions</span>
                         </a>
                     </li>
                     <li>
-                        <a class="<%= url.startsWith('/cms/faqs') ? 'active' : '' %>" href="/cms/faqs">
+                        <a class="<%= url.startsWith('/admin/cms/faqs') ? 'active' : '' %>" href="/admin/cms/faqs">
                             <i class="material-icons">radio_button_unchecked</i>
                             <span data-i18n="Blog">FAQs</span>
                         </a>
@@ -73,7 +73,7 @@
                 </ul>
             </div>
         </li>
-        <li class="bold <%= url.startsWith('/country') || url.startsWith('/city') ? 'active' : '' %>">
+        <li class="bold <%= url.startsWith('/admin/country') || url.startsWith('/admin/city') ? 'active' : '' %>">
             <a class="collapsible-header waves-effect waves-cyan" href="javascript:void(0);">
                 <i class="material-icons">gps_fixed</i>
                 <span class="menu-title" data-i18n="Pages">Locations</span>
@@ -81,13 +81,13 @@
             <div class="collapsible-body">
                 <ul class="collapsible collapsible-sub" data-collapsible="accordion">
                     <li>
-                        <a class="<%= url.startsWith('/country') ? 'active' : '' %>" href="/country">
+                        <a class="<%= url.startsWith('/admin/country') ? 'active' : '' %>" href="/admin/country">
                             <i class="material-icons">radio_button_unchecked</i>
                             <span data-i18n="Blog">Country</span>
                         </a>
                     </li>
                     <li>
-                        <a class="<%= url.startsWith('/city') ? 'active' : '' %>" href="/city">
+                        <a class="<%= url.startsWith('/admin/city') ? 'active' : '' %>" href="/admin/city">
                             <i class="material-icons">radio_button_unchecked</i>
                             <span data-i18n="Blog">City</span>
                         </a>
@@ -96,19 +96,19 @@
             </div>
         </li>
         <li class="bold">
-            <a class="waves-effect waves-cyan <%= url.startsWith('/banner') ? 'active' : '' %>" href="/banner">
+            <a class="waves-effect waves-cyan <%= url.startsWith('/admin/banner') ? 'active' : '' %>" href="/admin/banner">
                 <i class="material-icons">collections</i>
                 <span class="menu-title">Banners</span>
             </a>
         </li>
         <li class="bold">
-            <a class="waves-effect waves-cyan <%= url.startsWith('/type') ? 'active' : '' %>" href="/type">
+            <a class="waves-effect waves-cyan <%= url.startsWith('/admin/type') ? 'active' : '' %>" href="/admin/type">
                 <i class="material-icons">local_taxi</i>
                 <span class="menu-title">Vehicle Types</span>
             </a>
         </li>
         <li class="bold">
-            <a class="waves-effect waves-cyan <%= url.startsWith('/charge') ? 'active' : '' %>" href="/charge">
+            <a class="waves-effect waves-cyan <%= url.startsWith('/admin/charge') ? 'active' : '' %>" href="/admin/charge">
                 <i class="material-icons">attach_money</i>
                 <span class="menu-title">Charges</span>
             </a>
@@ -119,7 +119,7 @@
             <i class="navigation-header-icon material-icons">more_horiz</i>
         </li>
         <li class="bold">
-            <a class="waves-effect waves-cyan <%= url.startsWith('/user') ? 'active' : '' %>" href="/user">
+            <a class="waves-effect waves-cyan <%= url.startsWith('/admin/user') ? 'active' : '' %>" href="/admin/user">
                 <i class="material-icons">person</i>
                 <span class="menu-title">User Management</span>
             </a>
@@ -130,7 +130,7 @@
             <i class="navigation-header-icon material-icons">more_horiz</i>
         </li>
         <li class="bold">
-            <a class="waves-effect waves-cyan <%= url.startsWith('/driver') ? 'active' : '' %>" href="/driver">
+            <a class="waves-effect waves-cyan <%= url.startsWith('/admin/driver') ? 'active' : '' %>" href="/admin/driver">
                 <i class="material-icons">people</i>
                 <span class="menu-title">Driver Management</span>
             </a>

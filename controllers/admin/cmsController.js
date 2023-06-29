@@ -8,7 +8,7 @@ exports.getTerms = async (req, res) => {
         res.render('terms', { page });
     } catch (error) {
         req.flash('red', error.message);
-        res.redirect('/');
+        res.redirect('/admin');
     }
 };
 
@@ -21,7 +21,7 @@ exports.postTerms = async (req, res) => {
         await page.save();
 
         req.flash('green', 'Terms & Conditions updated successfully.');
-        res.redirect('/cms/terms');
+        res.redirect('/admin/cms/terms');
     } catch (error) {
         req.flash('red', error.message);
         res.redirect(req.originalUrl);
@@ -34,7 +34,7 @@ exports.getFAQs = async (req, res) => {
         res.render('faqs', { faqs });
     } catch (error) {
         req.flash('red', error.message);
-        res.redirect('/');
+        res.redirect('/admin');
     }
 };
 
@@ -58,7 +58,7 @@ exports.postAddFAQ = async (req, res) => {
         });
 
         req.flash('green', 'FAQ added successfully.');
-        res.redirect('/cms/faqs');
+        res.redirect('/admin/cms/faqs');
     } catch (error) {
         req.flash('red', error.message);
         res.redirect(req.originalUrl);
@@ -70,17 +70,17 @@ exports.getEditFAQ = async (req, res) => {
         const faq = await FAQs.findById(req.params.id);
         if (faq == null) {
             req.flash('red', 'FAQ not found!');
-            return res.redirect('/cms/faqs');
+            return res.redirect('/admin/cms/faqs');
         }
 
         res.render('faqs_edit', { faq });
     } catch (error) {
         if (error.name === 'CastError') {
             req.flash('red', 'FAQ not found!');
-            res.redirect('/cms/faqs');
+            res.redirect('/admin/cms/faqs');
         } else {
             req.flash('red', error.message);
-            res.redirect('/cms/faqs');
+            res.redirect('/admin/cms/faqs');
         }
     }
 };
@@ -90,7 +90,7 @@ exports.postEditFAQ = async (req, res) => {
         const faq = await FAQs.findById(req.params.id);
         if (faq == null) {
             req.flash('red', 'FAQ not found!');
-            return res.redirect('/cms/faqs');
+            return res.redirect('/admin/cms/faqs');
         }
 
         faq.en.question = req.body.EnQue;
@@ -102,11 +102,11 @@ exports.postEditFAQ = async (req, res) => {
         await faq.save();
 
         req.flash('green', 'FAQ edited successfully.');
-        res.redirect('/cms/faqs');
+        res.redirect('/admin/cms/faqs');
     } catch (error) {
         if (error.name === 'CastError') {
             req.flash('red', 'FAQ not found!');
-            res.redirect('/cms/faqs');
+            res.redirect('/admin/cms/faqs');
         } else {
             req.flash('red', error.message);
             res.redirect(req.originalUrl);
@@ -119,14 +119,14 @@ exports.getdeleteFAQ = async (req, res) => {
         await FAQs.findByIdAndRemove(req.params.id);
 
         req.flash('green', 'FAQ deleted successfully.');
-        res.redirect('/cms/faqs');
+        res.redirect('/admin/cms/faqs');
     } catch (error) {
         if (error.name === 'CastError' || error.name === 'TypeError') {
             req.flash('red', 'FAQ not found!');
-            res.redirect('/cms/faqs');
+            res.redirect('/admin/cms/faqs');
         } else {
             req.flash('red', error.message);
-            res.redirect('/cms/faqs');
+            res.redirect('/admin/cms/faqs');
         }
     }
 };

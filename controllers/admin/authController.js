@@ -22,7 +22,7 @@ exports.checkAdmin = async (req, res, next) => {
 
         if (!token) {
             req.flash('red', 'Please login as admin first!');
-            return res.redirect('/login');
+            return res.redirect('/admin/login');
         }
 
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
@@ -30,7 +30,7 @@ exports.checkAdmin = async (req, res, next) => {
 
         if (!admin) {
             req.flash('red', 'Please login as admin first!');
-            return res.redirect('/login');
+            return res.redirect('/admin/login');
         }
 
         req.admin = admin;
@@ -41,7 +41,7 @@ exports.checkAdmin = async (req, res, next) => {
         if (error.message == 'invalid signature')
             req.flash('red', 'Invalid token! Please login again.');
         else req.flash('red', error.message);
-        res.redirect('/login');
+        res.redirect('/admin/login');
     }
 };
 
@@ -84,7 +84,7 @@ exports.getLogin = async (req, res) => {
             const admin = await Admin.findById(decoded._id);
             if (!admin) return res.render('login');
 
-            res.redirect('/');
+            res.redirect('/admin');
         } else {
             res.render('login');
         }
@@ -112,7 +112,7 @@ exports.postLogin = async (req, res) => {
             expires: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000),
             httpOnly: true,
         });
-        res.redirect('/');
+        res.redirect('/admin');
     } catch (error) {
         req.flash('red', error.message);
         res.redirect(req.originalUrl);
@@ -121,7 +121,7 @@ exports.postLogin = async (req, res) => {
 
 exports.logout = (req, res) => {
     res.clearCookie('jwtAdmin');
-    res.redirect('/login');
+    res.redirect('/admin/login');
 };
 
 exports.getForgot = (req, res) => {
@@ -150,7 +150,7 @@ exports.postForgot = async (req, res) => {
         // sendOtp(admin.email, otp);
 
         req.session.adminId = admin.id;
-        res.redirect('/reset');
+        res.redirect('/admin/reset');
     } catch (error) {
         req.flash('red', error.message);
         res.redirect(req.originalUrl);
@@ -160,7 +160,7 @@ exports.postForgot = async (req, res) => {
 exports.getReset = (req, res) => {
     if (!req.session.adminId) {
         req.flash('red', 'Please try again.');
-        return res.redirect('/forgot');
+        return res.redirect('/admin/forgot');
     }
     res.render('pass_reset', { adminId: req.session.adminId });
 };
@@ -170,14 +170,14 @@ exports.postReset = async (req, res) => {
         const admin = await Admin.findById(req.body.adminId);
         if (!admin) {
             req.flash('red', 'No admin with this email.');
-            return res.redirect('/forgot');
+            return res.redirect('/admin/forgot');
         }
 
         // verify otp
         let otp = await OTP.findOne({ adminId: admin.id });
         if (otp?.otp != req.body.otp) {
             req.flash('red', 'OTP is incorrect or expired, Please try again.');
-            return res.redirect('/forgot');
+            return res.redirect('/admin/forgot');
         }
 
         // reset pass
@@ -186,10 +186,10 @@ exports.postReset = async (req, res) => {
         await admin.save();
 
         req.flash('green', 'Password updated, try logging in.');
-        return res.redirect('/login');
+        return res.redirect('/admin/login');
     } catch (error) {
         req.flash('red', error.message);
-        res.redirect('/forgot');
+        res.redirect('/admin/forgot');
     }
 };
 

@@ -27,7 +27,7 @@
                             <h5 class="breadcrumbs-title mt-0 mb-0"><span>City List</span></h5>
                         </div>
                         <div class="col s12 m6 l6 right-align-md">
-                            <a class="btn gradient-45deg-purple-deep-orange pull-right btn-breadcrumbs" href="/city/add">Add City</a>
+                            <a class="btn gradient-45deg-purple-deep-orange pull-right btn-breadcrumbs" href="/admin/city/add">Add City</a>
                         </div>
                     </div>
                 </div>
@@ -63,8 +63,8 @@
                                                             <td><%= cities[i].ar.name %></td>
                                                             <td><%= cities[i].country?.en?.name %></td>
                                                             <td style="max-width: 70px;">
-                                                                <a href="/city/edit/<%= cities[i].id %>"><i class="material-icons">create</i></a>
-                                                                <a href="/city/delete/<%= cities[i].id %>" onclick="return confirm('Are you sure?')"><i class="material-icons">delete</i></a>
+                                                                <a href="/admin/city/edit/<%= cities[i].id %>"><i class="material-icons">create</i></a>
+                                                                <a href="/admin/city/delete/<%= cities[i].id %>" onclick="return confirm('Are you sure?')"><i class="material-icons">delete</i></a>
                                                             </td>
                                                         </tr>
                                                         <% } %>

@@ -23,7 +23,7 @@
                             <h5 class="breadcrumbs-title mt-0 mb-0"><span>FAQs</span></h5>
                         </div>
                         <div class="col s12 m6 l6 right-align-md">
-                            <a class="btn gradient-45deg-purple-deep-orange pull-right btn-breadcrumbs" href="/cms/faqs/add">Add FAQ</a>
+                            <a class="btn gradient-45deg-purple-deep-orange pull-right btn-breadcrumbs" href="/admin/cms/faqs/add">Add FAQ</a>
                         </div>
                     </div>
                 </div>
@@ -56,8 +56,8 @@
                                                             <td style="max-width: 300px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"><%= faqs[i].en.question %></td>
                                                             <td style="max-width: 400px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"><%= faqs[i].en.answer %></td>
                                                             <td style="max-width: 70px;">
-                                                                <a href="/cms/faqs/edit/<%= faqs[i].id %>"><i class="material-icons">create</i></a>
-                                                                <a href="/cms/faqs/delete/<%= faqs[i].id %>" onclick="return confirm('Are you sure?')"><i class="material-icons">delete</i></a>
+                                                                <a href="/admin/cms/faqs/edit/<%= faqs[i].id %>"><i class="material-icons">create</i></a>
+                                                                <a href="/admin/cms/faqs/delete/<%= faqs[i].id %>" onclick="return confirm('Are you sure?')"><i class="material-icons">delete</i></a>
                                                             </td>
                                                         </tr>
                                                         <% } %>

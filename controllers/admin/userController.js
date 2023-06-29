@@ -6,7 +6,7 @@ exports.getAllUsers = async (req, res) => {
         res.render('user', { users });
     } catch (error) {
         req.flash('red', error.message);
-        res.redirect('/');
+        res.redirect('/admin');
     }
 };
 
@@ -18,14 +18,14 @@ exports.viewUser = async (req, res) => {
 
         if (!user) {
             req.flash('red', 'User not found!');
-            return res.redirect('/user');
+            return res.redirect('/admin/user');
         }
 
         res.render('user_view', { user });
     } catch (error) {
         if (error.name === 'CastError') req.flash('red', 'User not found!');
         else req.flash('red', error.message);
-        res.redirect('/user');
+        res.redirect('/admin/user');
     }
 };
 
@@ -37,12 +37,12 @@ exports.blockUser = async (req, res) => {
             { strict: false }
         );
         req.flash('green', `'${user.name}' blocked successfully.`);
-        res.redirect('/user');
+        res.redirect('/admin/user');
     } catch (error) {
         if (error.name === 'CastError' || error.name === 'TypeError')
             req.flash('red', 'User not found!');
         else req.flash('red', error.message);
-        res.redirect('/user');
+        res.redirect('/admin/user');
     }
 };
 
@@ -54,11 +54,11 @@ exports.unblockUser = async (req, res) => {
             { strict: false }
         );
         req.flash('green', `'${user.name}' unblocked successfully.`);
-        res.redirect('/user');
+        res.redirect('/admin/user');
     } catch (error) {
         if (error.name === 'CastError' || error.name === 'TypeError')
             req.flash('red', 'User not found!');
         else req.flash('red', error.message);
-        res.redirect('/user');
+        res.redirect('/admin/user');
     }
 };

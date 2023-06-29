@@ -12,7 +12,7 @@ exports.getCountries = async (req, res) => {
         res.render('country', { countries });
     } catch (error) {
         req.flash('red', error.message);
-        res.redirect('/');
+        res.redirect('/admin');
     }
 };
 
@@ -30,10 +30,10 @@ exports.postAddCountry = async (req, res) => {
         });
 
         req.flash('green', 'Country added successfully.');
-        res.redirect('/country');
+        res.redirect('/admin/country');
     } catch (error) {
         req.flash('red', error.message);
-        res.redirect('/country');
+        res.redirect('/admin/country');
     }
 };
 
@@ -42,14 +42,14 @@ exports.getEditCountry = async (req, res) => {
         const country = await Country.findById(req.params.id);
         if (!country) {
             req.flash('red', 'Country not found!');
-            return res.redirect('/country');
+            return res.redirect('/admin/country');
         }
 
         res.render('country_edit', { country });
     } catch (error) {
         if (error.name === 'CastError') req.flash('red', 'Country not found!');
         else req.flash('red', error.message);
-        res.redirect('/country');
+        res.redirect('/admin/country');
     }
 };
 
@@ -58,7 +58,7 @@ exports.postEditCountry = async (req, res) => {
         const country = await Country.findById(req.params.id);
         if (!country) {
             req.flash('red', 'Country not found!');
-            return res.redirect('/country');
+            return res.redirect('/admin/country');
         }
 
         const oldImage = country.image;
@@ -75,10 +75,10 @@ exports.postEditCountry = async (req, res) => {
         req.file && oldImage && deleteFile(oldImage);
 
         req.flash('green', 'Country edited successfully.');
-        res.redirect('/country');
+        res.redirect('/admin/country');
     } catch (error) {
         req.flash('red', error.message);
-        res.redirect('/country');
+        res.redirect('/admin/country');
     }
 };
 
@@ -94,12 +94,12 @@ exports.getDeleteCountry = async (req, res) => {
         deleteFile(country.image);
 
         req.flash('green', 'Country deleted successfully.');
-        res.redirect('/country');
+        res.redirect('/admin/country');
     } catch (error) {
         if (error.name === 'CastError' || error.name === 'TypeError')
             req.flash('red', 'Country not found!');
         else req.flash('red', error.message);
-        res.redirect('/country');
+        res.redirect('/admin/country');
     }
 };
 
@@ -109,7 +109,7 @@ exports.getCities = async (req, res) => {
         res.render('city', { cities });
     } catch (error) {
         req.flash('red', error.message);
-        res.redirect('/');
+        res.redirect('/admin');
     }
 };
 
@@ -119,7 +119,7 @@ exports.getAddCity = async (req, res) => {
         res.render('city_add', { countries });
     } catch (error) {
         req.flash('red', error.message);
-        res.redirect('/');
+        res.redirect('/admin');
     }
 };
 
@@ -133,10 +133,10 @@ exports.postAddCity = async (req, res) => {
         });
 
         req.flash('green', 'City added successfully.');
-        res.redirect('/city');
+        res.redirect('/admin/city');
     } catch (error) {
         req.flash('red', error.message);
-        res.redirect('/city');
+        res.redirect('/admin/city');
     }
 };
 
@@ -149,14 +149,14 @@ exports.getEditCity = async (req, res) => {
 
         if (!city) {
             req.flash('red', 'City not found!');
-            return res.redirect('/city');
+            return res.redirect('/admin/city');
         }
 
         res.render('city_edit', { city, countries });
     } catch (error) {
         if (error.name === 'CastError') req.flash('red', 'City not found!');
         else req.flash('red', error.message);
-        res.redirect('/city');
+        res.redirect('/admin/city');
     }
 };
 
@@ -165,7 +165,7 @@ exports.postEditCity = async (req, res) => {
         const city = await City.findById(req.params.id);
         if (!city) {
             req.flash('red', 'City not found!');
-            return res.redirect('/city');
+            return res.redirect('/admin/city');
         }
 
         city.en.name = req.body.nameEn;
@@ -176,10 +176,10 @@ exports.postEditCity = async (req, res) => {
         await city.save();
 
         req.flash('green', 'City edited successfully.');
-        res.redirect('/city');
+        res.redirect('/admin/city');
     } catch (error) {
         req.flash('red', error.message);
-        res.redirect('/city');
+        res.redirect('/admin/city');
     }
 };
 
@@ -188,12 +188,12 @@ exports.getDeleteCity = async (req, res) => {
         await City.findByIdAndDelete(req.params.id);
 
         req.flash('green', 'City deleted successfully.');
-        res.redirect('/city');
+        res.redirect('/admin/city');
     } catch (error) {
         if (error.name === 'CastError' || error.name === 'TypeError')
             req.flash('red', 'City not found!');
         else req.flash('red', error.message);
-        res.redirect('/city');
+        res.redirect('/admin/city');
     }
 };
 
@@ -203,7 +203,7 @@ exports.getBanners = async (req, res) => {
         res.render('banner', { banners });
     } catch (error) {
         req.flash('red', error.message);
-        res.redirect('/');
+        res.redirect('/admin');
     }
 };
 
@@ -216,10 +216,10 @@ exports.postAddBanner = async (req, res) => {
         await Banner.create({ image });
 
         req.flash('green', 'Banner added successfully.');
-        res.redirect('/banner');
+        res.redirect('/admin/banner');
     } catch (error) {
         req.flash('red', error.message);
-        res.redirect('/banner');
+        res.redirect('/admin/banner');
     }
 };
 
@@ -228,14 +228,14 @@ exports.getEditBanner = async (req, res) => {
         const banner = await Banner.findById(req.params.id);
         if (!banner) {
             req.flash('red', 'Banner not found!');
-            return res.redirect('/banner');
+            return res.redirect('/admin/banner');
         }
 
         res.render('banner_edit', { banner });
     } catch (error) {
         if (error.name === 'CastError') req.flash('red', 'Banner not found!');
         else req.flash('red', error.message);
-        res.redirect('/banner');
+        res.redirect('/admin/banner');
     }
 };
 
@@ -244,7 +244,7 @@ exports.postEditBanner = async (req, res) => {
         const banner = await Banner.findById(req.params.id);
         if (!banner) {
             req.flash('red', 'Banner not found!');
-            return res.redirect('/banner');
+            return res.redirect('/admin/banner');
         }
 
         const oldImage = banner.image;
@@ -257,10 +257,10 @@ exports.postEditBanner = async (req, res) => {
         req.file && oldImage && deleteFile(oldImage);
 
         req.flash('green', 'Banner edited successfully.');
-        res.redirect('/banner');
+        res.redirect('/admin/banner');
     } catch (error) {
         req.flash('red', error.message);
-        res.redirect('/banner');
+        res.redirect('/admin/banner');
     }
 };
 
@@ -272,12 +272,12 @@ exports.getDeleteBanner = async (req, res) => {
         deleteFile(banner.image);
 
         req.flash('green', 'Banner deleted successfully.');
-        res.redirect('/banner');
+        res.redirect('/admin/banner');
     } catch (error) {
         if (error.name === 'CastError' || error.name === 'TypeError')
             req.flash('red', 'Banner not found!');
         else req.flash('red', error.message);
-        res.redirect('/banner');
+        res.redirect('/admin/banner');
     }
 };
 
@@ -287,7 +287,7 @@ exports.getTypes = async (req, res) => {
         res.render('type', { types });
     } catch (error) {
         req.flash('red', error.message);
-        res.redirect('/');
+        res.redirect('/admin');
     }
 };
 
@@ -308,10 +308,10 @@ exports.postAddType = async (req, res) => {
         });
 
         req.flash('green', 'Type added successfully.');
-        res.redirect('/type');
+        res.redirect('/admin/type');
     } catch (error) {
         req.flash('red', error.message);
-        res.redirect('/type');
+        res.redirect('/admin/type');
     }
 };
 
@@ -320,14 +320,14 @@ exports.getEditType = async (req, res) => {
         const type = await Type.findById(req.params.id);
         if (!type) {
             req.flash('red', 'Type not found!');
-            return res.redirect('/type');
+            return res.redirect('/admin/type');
         }
 
         res.render('type_edit', { type });
     } catch (error) {
         if (error.name === 'CastError') req.flash('red', 'Type not found!');
         else req.flash('red', error.message);
-        res.redirect('/type');
+        res.redirect('/admin/type');
     }
 };
 
@@ -336,7 +336,7 @@ exports.postEditType = async (req, res) => {
         const type = await Type.findById(req.params.id);
         if (!type) {
             req.flash('red', 'Type not found!');
-            return res.redirect('/type');
+            return res.redirect('/admin/type');
         }
 
         const oldImage = type.image;
@@ -356,10 +356,10 @@ exports.postEditType = async (req, res) => {
         req.file && oldImage && deleteFile(oldImage);
 
         req.flash('green', 'Type edited successfully.');
-        res.redirect('/type');
+        res.redirect('/admin/type');
     } catch (error) {
         req.flash('red', error.message);
-        res.redirect('/type');
+        res.redirect('/admin/type');
     }
 };
 
@@ -369,7 +369,7 @@ exports.getCharges = async (req, res) => {
         res.render('charge', { charge });
     } catch (error) {
         req.flash('red', error.message);
-        res.redirect('/');
+        res.redirect('/admin');
     }
 };
 
@@ -378,9 +378,9 @@ exports.postCharges = async (req, res) => {
         await Charge.findOneAndUpdate({}, req.body);
 
         req.flash('green', 'Charges updated successfully.');
-        res.redirect('/charge');
+        res.redirect('/admin/charge');
     } catch (error) {
         req.flash('red', error.message);
-        res.redirect('/charge');
+        res.redirect('/admin/charge');
     }
 };

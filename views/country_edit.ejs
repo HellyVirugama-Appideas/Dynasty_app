@@ -23,8 +23,8 @@
                         </div>
                         <div class="col s12 m6 l6 right-align-md">
                             <ol class="breadcrumbs mb-0">
-                                <li class="breadcrumb-item"><a href="/">Home</a></li>
-                                <li class="breadcrumb-item"><a href="/country">Country</a></li>
+                                <li class="breadcrumb-item"><a href="/admin">Home</a></li>
+                                <li class="breadcrumb-item"><a href="/admin/country">Country</a></li>
                                 <li class="breadcrumb-item active">Edit Country</li>
                             </ol>
                         </div>
@@ -39,7 +39,7 @@
                                 <%- messages('messages', locals) %>
                             </div>
                         </div>
-                        <form method="POST" onsubmit="validate()" action="/country/edit/<%= country.id %>" id="form" enctype="multipart/form-data">
+                        <form method="POST" onsubmit="validate()" action="/admin/country/edit/<%= country.id %>" id="form" enctype="multipart/form-data">
                             <div class="col s12">
                                 <div class="card">
                                     <div class="card-content">

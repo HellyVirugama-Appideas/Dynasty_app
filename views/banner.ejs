@@ -27,7 +27,7 @@
                             <h5 class="breadcrumbs-title mt-0 mb-0"><span>Banner List</span></h5>
                         </div>
                         <div class="col s12 m6 l6 right-align-md">
-                            <a class="btn gradient-45deg-purple-deep-orange pull-right btn-breadcrumbs" href="/banner/add">Add Banner</a>
+                            <a class="btn gradient-45deg-purple-deep-orange pull-right btn-breadcrumbs" href="/admin/banner/add">Add Banner</a>
 
                         </div>
                     </div>
@@ -58,8 +58,8 @@
                                                             <td><%= i+1 %></td>
                                                             <td><img src="<%= banners[i].image %>" alt="alt" width="100" onerror="this.onerror=null; this.src='/uploads/no_image_available_3.jpg';"></td>
                                                             <td style="max-width: 70px;">
-                                                                <a href="/banner/edit/<%= banners[i].id %>"><i class="material-icons">create</i></a>
-                                                                <a href="/banner/delete/<%= banners[i].id %>" onclick="return confirm('Are you sure?')"><i class="material-icons">delete</i></a>
+                                                                <a href="/admin/banner/edit/<%= banners[i].id %>"><i class="material-icons">create</i></a>
+                                                                <a href="/admin/banner/delete/<%= banners[i].id %>" onclick="return confirm('Are you sure?')"><i class="material-icons">delete</i></a>
                                                             </td>
                                                         </tr>
                                                         <% } %>

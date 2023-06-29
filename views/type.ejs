@@ -27,7 +27,7 @@
                             <h5 class="breadcrumbs-title mt-0 mb-0"><span>Vehicle Types</span></h5>
                         </div>
                         <div class="col s12 m6 l6 right-align-md">
-                            <a class="btn gradient-45deg-purple-deep-orange pull-right btn-breadcrumbs" href="/type/add">Add Type</a>
+                            <a class="btn gradient-45deg-purple-deep-orange pull-right btn-breadcrumbs" href="/admin/type/add">Add Type</a>
                         </div>
                     </div>
                 </div>
@@ -65,7 +65,7 @@
                                                             <td><%= types[i].typeFor %></td>
                                                             <td><img src="<%= types[i].image %>" alt="alt" width="70" onerror="this.onerror=null; this.src='/uploads/no_image_available_3.jpg';"></td>
                                                             <td style="max-width: 70px;">
-                                                                <a href="/type/edit/<%= types[i].id %>"><i class="material-icons">create</i></a>
+                                                                <a href="/admin/type/edit/<%= types[i].id %>"><i class="material-icons">create</i></a>
                                                             </td>
                                                         </tr>
                                                         <% } %>

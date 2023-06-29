@@ -14,7 +14,7 @@ exports.getAllDrivers = async (req, res) => {
         res.render('driver', { drivers });
     } catch (error) {
         req.flash('red', error.message);
-        res.redirect('/');
+        res.redirect('/admin');
     }
 };
 
@@ -33,7 +33,7 @@ exports.getAddDriver = async (req, res) => {
         res.render('driver_add', { cities, countries, types });
     } catch (error) {
         req.flash('red', error.message);
-        res.redirect('/');
+        res.redirect('/admin');
     }
 };
 
@@ -69,7 +69,7 @@ exports.postAddDriver = async (req, res) => {
         });
 
         req.flash('green', 'Driver added successfully.');
-        res.redirect('/driver');
+        res.redirect('/admin/driver');
     } catch (error) {
         // delete images
         if (req.files.profile)
@@ -85,7 +85,7 @@ exports.postAddDriver = async (req, res) => {
                 `${Object.values(error.keyValue)[0]} is already registered.`
             );
         else req.flash('red', error.message);
-        res.redirect('/driver');
+        res.redirect('/admin/driver');
     }
 };
 
@@ -108,7 +108,7 @@ exports.getEditDriver = async (req, res) => {
 
         if (!driver) {
             req.flash('red', 'Driver not found!');
-            return res.redirect('/driver');
+            return res.redirect('/admin/driver');
         }
 
         res.render('driver_edit', {
@@ -121,7 +121,7 @@ exports.getEditDriver = async (req, res) => {
     } catch (error) {
         if (error.name === 'CastError') req.flash('red', 'Driver not found!');
         else req.flash('red', error.message);
-        res.redirect('/driver');
+        res.redirect('/admin/driver');
     }
 };
 
@@ -130,7 +130,7 @@ exports.postEditDriver = async (req, res) => {
         const driver = await Driver.findById(req.params.id);
         if (!driver) {
             req.flash('red', 'Driver not found!');
-            return res.redirect('/driver');
+            return res.redirect('/admin/driver');
         }
 
         driver.name = req.body.name;
@@ -169,11 +169,11 @@ exports.postEditDriver = async (req, res) => {
         if (oldRC) deleteFile(oldRC);
 
         req.flash('green', 'Driver edited successfully.');
-        res.redirect('/driver');
+        res.redirect('/admin/driver');
     } catch (error) {
         console.log(error);
         req.flash('red', error.message);
-        res.redirect('/driver');
+        res.redirect('/admin/driver');
     }
 };
 
@@ -185,12 +185,12 @@ exports.blockDriver = async (req, res) => {
             { strict: false }
         );
         req.flash('green', `'${driver.name}' blocked successfully.`);
-        res.redirect('/driver');
+        res.redirect('/admin/driver');
     } catch (error) {
         if (error.name === 'CastError' || error.name === 'TypeError')
             req.flash('red', 'Driver not found!');
         else req.flash('red', error.message);
-        res.redirect('/driver');
+        res.redirect('/admin/driver');
     }
 };
 
@@ -202,12 +202,12 @@ exports.unblockDriver = async (req, res) => {
             { strict: false }
         );
         req.flash('green', `'${driver.name}' unblocked successfully.`);
-        res.redirect('/driver');
+        res.redirect('/admin/driver');
     } catch (error) {
         if (error.name === 'CastError' || error.name === 'TypeError')
             req.flash('red', 'Driver not found!');
         else req.flash('red', error.message);
-        res.redirect('/driver');
+        res.redirect('/admin/driver');
     }
 };
 
@@ -220,11 +220,11 @@ exports.approveDriver = async (req, res) => {
         );
 
         req.flash('green', `'${driver.name}' approved successfully.`);
-        res.redirect('/driver');
+        res.redirect('/admin/driver');
     } catch (error) {
         if (error.name === 'CastError' || error.name === 'TypeError')
             req.flash('red', 'Driver not found!');
         else req.flash('red', error.message);
-        res.redirect('/driver');
+        res.redirect('/admin/driver');
     }
 };
