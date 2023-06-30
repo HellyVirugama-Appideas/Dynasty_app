@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html class="loading" lang="en" data-textdirection="ltr">
+<!-- BEGIN: Head-->
+
+<head>
+    <%- include('_layouts/head') %>
+    <title>Message View | <%= title %></title>
+</head>
+<!-- END: Head-->
+
+<body class="vertical-layout page-header-light vertical-menu-collapsible vertical-dark-menu preload-transitions 2-columns" data-open="click" data-menu="vertical-dark-menu" data-col="2-columns">
+    <%- include('_layouts/sidenavbar') %>
+
+    <!-- BEGIN: Page Main-->
+    <div id="main">
+        <div class="row">
+            <div id="breadcrumbs-wrapper" data-image="/app-assets/images/gallery/breadcrumb-bg.jpg">
+                <div class="container">
+                    <div class="row">
+                        <div class="col s12 m6 l6">
+                            <h5 class="breadcrumbs-title mt-0 mb-0"><span>Message view</span></h5>
+                        </div>
+                        <div class="col s12 m6 l6 right-align-md">
+                            <ol class="breadcrumbs mb-0">
+                                <li class="breadcrumb-item"><a href="/admin">Home</a></li>
+                                <li class="breadcrumb-item"><a href="/admin/message">Messages</a></li>
+                                <li class="breadcrumb-item active">Message view</li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col s12">
+                <div class="container">
+                    <div class="section section-data-tables">
+                        <!-- Page Length Options -->
+                        <div class="row">
+                            <div class="col s12">
+                                <div class="card">
+                                    <div class="card-content">
+                                        <div class="row">
+                                            <div class="col s12">
+                                                <table class="display striped">
+                                                    <tbody>
+                                                        <tr>
+                                                            <th>Name</th>
+                                                            <td><%= message.name %></td>
+                                                        </tr>
+                                                        <tr>
+                                                            <th>Email</th>
+                                                            <td><a style="color: inherit;" href="mailto:<%= message.email %>"><%= message.email %></a></td>
+                                                        </tr>
+                                                        <tr>
+                                                            <th>Message</th>
+                                                            <td><%= message.message %></td>
+                                                        </tr>
+                                                        <tr>
+                                                            <th>Date and Time</th>
+                                                            <td><%= message.date.toLocaleDateString('en-GB', { hour: "2-digit", minute: "2-digit", hour12: true }) %></td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <a onclick="history.back()" class="btn btn-danger mt-2" style="margin-left: 15px;">Back</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="content-overlay"></div>
+            </div>
+        </div>
+    </div>
+    <!-- END: Page Main-->
+
+    <%- include('_layouts/commonJs') %>
+</body>
+
+</html>
