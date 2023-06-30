@@ -6,6 +6,7 @@ const i18n = require('i18next');
 const i18nFsBackend = require('i18next-fs-backend');
 const i18nMiddleware = require('i18next-http-middleware');
 
+const landingController = require('./controllers/landingController');
 const globalErrorHandler = require('./controllers/errorController');
 // const uploadController = require('./controllers/admin/uploadController');
 
@@ -125,9 +126,18 @@ app.use('/admin/driver', require('./routes/admin/driverRoutes'));
 app.use('/admin/', require('./routes/admin/adminRoutes'));
 
 // 404 admin
-app.all('/*', (req, res) => {
+app.all('/admin/*', (req, res) => {
     res.status(404).render('404', { message: 'Page not found!' });
 });
+
+// 4) LANDING ROUTES
+app.get('/', landingController.home);
+app.get('/fr', landingController.fr);
+app.get('/en', landingController.en);
+app.get('/privacy', landingController.privacy);
+app.get('/terms', landingController.terms);
+app.post('/contact', landingController.contact);
+app.get('/*', (req, res) => res.redirect('/'));
 
 // 5) ERROR HANDLING
 app.use(globalErrorHandler);
