@@ -1,0 +1,1084 @@
+/**
+ * Template Name: RXapp Landing Page
+ * Description: A responsive App Landing HTML template
+ * Version: 1.0
+ * Author: EcologyTheme
+ * Template URI: http://ecologytheme.com
+ * License URI: http://ecologytheme.com/
+ * Tags: white,two-columns,flexible-width,custom-background,threaded-comments
+ */
+/* ------------------------------------------------------------------
+[Table of contents]
+
+1.  Body
+2.  Header
+3.  Intro 
+4.  Feature 
+5.  App Description
+6.  Benifits
+7.  Screenshot
+8.  Pricing Table
+9.  Subscribe
+10. Video
+11. App download
+12. Contact
+13. Footer
+14. Helper Classes
+
+------------------------------------------------------------------- */
+/* ------------------------------------------------------------------
+                    Default Style
+------------------------------------------------------------------- */
+body { font-family: 'Exo', sans-serif }
+p {
+    color: #969595;
+    line-height: 23px;
+    font-family: "Roboto", sans-serif;
+}
+.heading {
+    text-align: center;
+    margin-bottom: 50px;
+}
+.heading h2 {
+    color: rgba(55, 55, 55, 0.8);
+    font-size: 35px;
+    font-weight: 300;
+    margin-bottom: 30px;
+    margin-top: 0;
+    padding-bottom: 20px;
+    position: relative;
+    text-transform: uppercase;
+}
+.heading h2:before {
+    border-left: 55px solid #dadada;
+    border-right: 55px solid #dadada;
+    bottom: 0;
+    content: "";
+    height: 1px;
+    left: 50%;
+    margin-left: -70px;
+    position: absolute;
+    width: 130px;
+}
+.heading h2:after {
+    background: #008dd5 none repeat scroll 0 0 padding-box content-box;
+    border-bottom: 1px solid #dadada;
+    border-left: 1px solid #dadada;
+    bottom: -7px;
+    content: "";
+    height: 15px;
+    left: 50%;
+    margin-left: -13px;
+    padding: 0 0 5px 5px;
+    position: absolute;
+    -webkit-transform: rotate(-45deg);
+            transform: rotate(-45deg);
+    width: 15px;
+}
+.heading p {
+    color: #969595;
+    margin: 0 auto;
+    width: 65%;
+    line-height: 24px;
+    font-size: 15px;
+    font-weight: 300;
+}
+#feature { padding: 100px 0px }
+
+/* ===[ Variables ]=== */
+.primary-button {
+    background: #008DD5;
+    color: #fff;
+    border-radius: 3px;
+}
+
+/* ------------------------------------------------------------------
+                    Header Style
+------------------------------------------------------------------- */
+header {
+    background: url('../images/intro-bg.jpg') no-repeat center center;
+    min-height: 800px;
+    background-size: cover;
+}
+.navbar {
+    border: 0 none;
+    border-radius: 0;
+    padding-top: 15px;
+    -webkit-transition: .3s ease;
+    transition: .3s ease;
+}
+.navbar a { color: rgba(35,35,35,.8) }
+ul.nav a {
+    font-family: 'Exo', sans-serif;
+    background: none;
+    text-transform: uppercase;
+    font-size: 15px;
+    font-weight: 400px;
+}
+.nav > li > a:focus,
+.nav > li > a:hover {
+    background: none;
+    color: #008dd5;
+}
+.nav > li.active a { color: #008dd5 }
+.is-sticky .nav > li > a:focus,
+.is-sticky .nav > li > a:hover {
+    background: none;
+    color: #008dd5 !important;
+}
+.is-sticky .nav > li.active a { color: #008dd5 !important }
+.is-sticky .navbar {
+    background: #fff;
+    padding: 10px 0;
+    -webkit-transition: all 0.3s ease 0s;
+    transition: all 0.3s ease 0s;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+}
+.is-sticky .navbar ul.nav a {
+    color: rgba(55,55,55,.8);
+    -webkit-transition: .3s ease;
+    transition: .3s ease;
+}
+.is-sticky .navbar a.navbar-brand { color: #282828; }
+
+/* ------------------------------------------------------------------
+                ====[ Intro Style ]====
+------------------------------------------------------------------- */
+#intro {
+    color: #282828;
+    font-family: 'Exo', sans-serif;
+    position: relative;
+}
+.intro-text {
+    position: absolute;
+    top: 50%;
+    -webkit-transform: translateY(50%);
+            transform: translateY(50%);
+    margin-top: 60px;
+}
+.intro-text h1 {
+    font-size: 42px;
+    font-weight: 300;
+    line-height: 52px;
+    margin-top: 0;
+    text-transform: uppercase;
+}
+.intro-text h4 { font-size: 17px }
+.intro-text h1 span { color: #008dd5 }
+.intro-text a.btn {
+    border-radius: 5px;
+    margin-top: 42px;
+    padding: 15px 40px;
+    background: #008DD5;
+    border: none;
+    transition: 0.3s ease;
+    -webkit-transition: 0.3s ease;
+}
+.intro-text a.btn:hover {
+    background: #fff;
+    color: #000;
+}
+.intro-image img { margin-top: 90px }
+
+/* ------------------------------------------------------------------
+                ====[ Features ]====
+------------------------------------------------------------------- */
+#app-features {
+    padding: 100px 0;
+    background: #F7F8FA;
+}
+#app-features .single-feature {
+    margin-bottom: 80px;
+    -webkit-transition: 0.5s ease;
+    transition: 0.5s ease;
+}
+#app-features .single-feature:first-child { margin-top: 30px }
+#app-features .single-feature:last-child { margin-bottom: 0 }
+#app-features .single-feature .single-feature-content { text-align: right }
+#app-features .single-feature .single-feature-content h3 {
+    margin-top: 0;
+    font-size: 25px;
+    color: rgba(55, 55, 55, 0.8);
+    font-weight: 300;
+}
+#app-features .single-feature .single-feature-content p {
+    font-size: 15px;
+    line-height: 24px;
+    font-weight: 300;
+}
+#app-features .single-feature .single-feature-icon .feature-icon-box {
+    font-size: 35px;
+    color: #dadada;
+    text-align: center;
+    position: relative;
+    height: 85px;
+    margin-top: 10px;
+}
+#app-features .single-feature .single-feature-icon .feature-icon-box:before {
+    border: 2px solid #dadada;
+    content: "";
+    height: 100%;
+    left: 0;
+    position: absolute;
+    -webkit-transform: skewY(-6deg);
+            transform: skewY(-6deg);
+    width: 100%;
+}
+#app-features .single-feature .single-feature-icon .feature-icon-box:after {
+    border: 2px solid #dadada;
+    content: "";
+    height: 100%;
+    left: 0;
+    position: absolute;
+    -webkit-transform: skewY(6deg);
+            transform: skewY(6deg);
+    width: 100%;
+    top: 0;
+}
+#app-features .single-feature .single-feature-icon .feature-icon-box .icon-hover {
+    display: inline-block;
+    height: 55px;
+    margin-top: 15px;
+    padding-top: 5px;
+    width: 65px;
+    position: relative;
+    -webkit-transition: 0.5s ease;
+    transition: 0.5s ease;
+}
+#app-features .single-feature .single-feature-icon .feature-icon-box .icon-hover:after {
+    border-bottom: 5px solid #f7f8fa;
+    border-left: 33px solid transparent;
+    border-right: 33px solid transparent;
+    bottom: 0;
+    content: "";
+    height: 0;
+    left: 0;
+    position: absolute;
+    width: 0;
+    z-index: 2;
+}
+#app-features .single-feature .single-feature-icon .feature-icon-box .icon-hover:before {
+    border-left: 33px solid transparent;
+    border-right: 33px solid transparent;
+    border-top: 5px solid #f7f8fa;
+    content: "";
+    height: 0;
+    left: 0;
+    position: absolute;
+    top: 0;
+    width: 0;
+    z-index: 1;
+}
+#app-features .single-feature:hover .icon-hover {
+    background: #008DD5;
+    color: #fff;
+}
+#app-features .single-feature:hover .icon-hover:after { visibility: visible }
+#app-features .single-feature:hover .icon-hover:before { visibility: visible }
+#app-features .sf-top .single-feature-icon:before {
+    position: absolute;
+    content: "";
+    background: #008DD5;
+    width: 12px;
+    height: 12px;
+    left: 50%;
+    margin-left: -5px;
+    bottom: -5px;
+    border-radius: 100px;
+    z-index: 1;
+}
+#app-features .sf-center { position: relative }
+#app-features .sf-center:before {
+    border-right: 2px dashed #dadada;
+    content: "";
+    height: 100px;
+    position: absolute;
+    right: 48px;
+    top: -100px;
+}
+#app-features .sf-center:after {
+    border-right: 2px dashed #dadada;
+    content: "";
+    height: 100px;
+    position: absolute;
+    right: 48px;
+    bottom: -80px;
+}
+#app-features .sf-center .single-feature-icon:before {
+    position: absolute;
+    content: "";
+    background: #008DD5;
+    width: 12px;
+    height: 12px;
+    left: 50%;
+    margin-left: -5px;
+    top: 5px;
+    border-radius: 100px;
+    z-index: 1;
+}
+#app-features .sf-center .single-feature-icon:after {
+    position: absolute;
+    content: "";
+    background: #008DD5;
+    width: 12px;
+    height: 12px;
+    left: 50%;
+    margin-left: -5px;
+    bottom: -5px;
+    border-radius: 100px;
+    z-index: 1;
+}
+#app-features .sf-bottom .single-feature-icon:before {
+    position: absolute;
+    content: "";
+    background: #008DD5;
+    width: 12px;
+    height: 12px;
+    left: 50%;
+    margin-left: -5px;
+    top: 5px;
+    border-radius: 100px;
+    z-index: 1;
+}
+#app-features .featured-center img {
+    display: block;
+    margin: 0 auto;
+}
+#app-features .features-right .single-feature .single-feature-content { text-align: left }
+#app-features .features-right .sf-center:before {
+    left: 50px;
+    right: auto;
+}
+#app-features .features-right .sf-center:after {
+    left: 50px;
+    right: auto;
+}
+
+/* ------------------------------------------------------------------
+                ====[ App Description ]====
+------------------------------------------------------------------- */
+.app-description { padding: 100px 0 125px 0 }
+.app-description .heading {
+    text-align: left;
+    margin-bottom: 0;
+    padding-bottom: 0;
+}
+.app-description .heading h2:before {
+    left: 0;
+    margin-left: 0;
+}
+.app-description .heading h2:after {
+    left: 0;
+    margin-left: 58px;
+}
+.app-description .ad-mobiles { position: relative }
+.app-description .ad-mobiles .ad-frame-one {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 2;
+}
+.app-description .ad-mobiles .ad-frame-one img {
+    height: auto;
+    width: 240px;
+}
+.app-description .ad-mobiles .ad-frame-two {
+    position: absolute;
+    top: 26px;
+    left: 31%;
+    z-index: 1;
+}
+.app-description .ad-mobiles .ad-frame-two img {
+    height: auto;
+    width: 230px;
+}
+.app-description .app-description-content p {
+    font-size: 15px;
+    font-weight: 300;
+    line-height: 28px;
+    margin-bottom: 20px;
+}
+.app-description .app-description-content p:last-child { margin-bottom: 0 }
+
+/* ------------------------------------------------------------------
+                ====[ App Benifits ]====
+------------------------------------------------------------------- */
+.benifits {
+    padding: 100px 0 0 0;
+    background: #F7F8FA;
+}
+.benifits .benefits-left {
+    text-align: right;
+    margin-top: 80px;
+}
+.benifits .benefits-left .row:hover h3 { color: #008DD5 }
+.benifits .benefits-left .row:hover .bl-icon {
+    background: #008DD5;
+    color: #fff;
+}
+.benifits .benefits-left h3 {
+    font-size: 18px;
+    font-weight: 300;
+    color: rgba(55, 55, 55, 0.8);
+    margin-bottom: 30px;
+    -webkit-transition: 0.5s ease;
+    transition: 0.5s ease;
+}
+.benifits .benefits-left p {
+    font-size: 15px;
+    font-weight: 300;
+}
+.benifits .benefits-left .bl-icon {
+    background: #dadada none repeat scroll 0 0;
+    height: 35px;
+    margin: 10px auto 0 auto;
+    padding-top: 7px;
+    text-align: center;
+    width: 35px;
+    border-radius: 100px;
+    position: relative;
+    -webkit-transition: 0.5s ease;
+    transition: 0.5s ease;
+}
+.benifits .benefits-left .bl-icon:before {
+    background: #d8d9db none repeat scroll 0 0;
+    bottom: -35px;
+    content: "";
+    height: 25px;
+    left: 50%;
+    position: absolute;
+    width: 1px;
+}
+.benifits .benefits-left .bl-icon:after {
+    background: #d8d9db none repeat scroll 0 0;
+    bottom: -36px;
+    content: "";
+    height: 1px;
+    position: absolute;
+    right: -183px;
+    width: 200px;
+    z-index: 1;
+}
+.benifits .benefits-left .bl-icon i {
+    font-size: 15px;
+    color: #fff;
+}
+.benifits .benefits-right {
+    text-align: left;
+    margin-top: 80px;
+}
+.benifits .benefits-right .row:hover h3 { color: #008DD5 }
+.benifits .benefits-right .row:hover .br-icon {
+    background: #008DD5;
+    color: #fff;
+}
+.benifits .benefits-right h3 {
+    font-size: 18px;
+    font-weight: 300;
+    color: rgba(55, 55, 55, 0.8);
+    margin-bottom: 30px;
+    -webkit-transition: 0.5s ease;
+    transition: 0.5s ease;
+}
+.benifits .benefits-right p {
+    font-size: 15px;
+    font-weight: 300;
+}
+.benifits .benefits-right .br-icon {
+    background: #dadada none repeat scroll 0 0;
+    height: 35px;
+    margin: 10px auto 0 auto;
+    padding-top: 7px;
+    text-align: center;
+    width: 35px;
+    border-radius: 100px;
+    position: relative;
+    -webkit-transition: 0.5s ease;
+    transition: 0.5s ease;
+}
+.benifits .benefits-right .br-icon:before {
+    background: #d8d9db none repeat scroll 0 0;
+    bottom: -35px;
+    content: "";
+    height: 25px;
+    left: 50%;
+    position: absolute;
+    width: 1px;
+}
+.benifits .benefits-right .br-icon:after {
+    background: #d8d9db none repeat scroll 0 0;
+    bottom: -36px;
+    content: "";
+    height: 1px;
+    position: absolute;
+    right: 17px;
+    width: 200px;
+    z-index: 1;
+}
+.benifits .benefits-right .br-icon i {
+    font-size: 15px;
+    color: #fff;
+}
+.benifits .center-mobile-frame { position: relative }
+.benifits .center-mobile-frame .benifits-image img {
+    display: block;
+    margin: 0 auto;
+}
+.benifits .center-mobile-frame span.bullets-left {
+    display: block;
+    height: 10px;
+    left: 50%;
+    margin-left: -44px;
+    position: absolute;
+    top: 153px;
+    width: 88px;
+}
+.benifits .center-mobile-frame span.bullets-left::before {
+    border: 2px solid #fff;
+    border-radius: 100px;
+    content: "";
+    height: 15px;
+    position: absolute;
+    width: 15px;
+    left: 0;
+}
+.benifits .center-mobile-frame span.bullets-left::after {
+    border: 2px solid #fff;
+    border-radius: 100px;
+    content: "";
+    height: 15px;
+    position: absolute;
+    width: 15px;
+    right: 0;
+}
+.benifits .center-mobile-frame span.bullets-right {
+    display: block;
+    height: 10px;
+    left: 50%;
+    margin-left: -44px;
+    position: absolute;
+    bottom: 130px;
+    width: 88px;
+}
+.benifits .center-mobile-frame span.bullets-right::before {
+    border: 2px solid #fff;
+    border-radius: 100px;
+    content: "";
+    height: 15px;
+    position: absolute;
+    width: 15px;
+    left: 0;
+}
+.benifits .center-mobile-frame span.bullets-right::after {
+    border: 2px solid #fff;
+    border-radius: 100px;
+    content: "";
+    height: 15px;
+    position: absolute;
+    width: 15px;
+    right: 0;
+}
+
+/* ------------------------------------------------------------------
+                ====[ App Screenshot ]====
+------------------------------------------------------------------- */
+.app-screenshot {
+    padding: 100px 0;
+    height: 906px;
+}
+.app-screenshot .heading { margin-bottom: 0 }
+.app-screenshot .screenshots { position: relative }
+.app-screenshot .screenshots .owl-wrapper-outer {
+    padding-top: 65px;
+    padding-bottom: 65px;
+}
+.app-screenshot .screenshots .owl-item {
+    padding: 0 10px;
+    -webkit-transition: .5s ease;
+    transition: .5s ease;
+}
+.app-screenshot .screenshots .owl-item img {
+    width: 100%;
+    display: block;
+    margin: 0 auto;
+    -webkit-transition: 0.5s ease;
+    transition: 0.5s ease;
+}
+.app-screenshot .screenshots .owl-item.active {
+    box-shadow: 0 0 50px rgba(0, 0, 0, 0.3);
+    position: relative;
+    top: 0;
+    -webkit-transition: .3s ease;
+    transition: .3s ease;
+}
+.app-screenshot .screenshots .owl-item.active img {
+    -webkit-transform: scale(1.1);
+            transform: scale(1.1);
+    -webkit-transition: 0.5s ease;
+    transition: 0.5s ease;
+}
+.app-screenshot .screenshots .owl-controls .owl-buttons {
+    display: inline-block;
+    margin-top: -40px;
+    position: absolute;
+    top: 50%;
+    width: 100%;
+}
+.app-screenshot .screenshots .owl-controls .owl-buttons .owl-prev {
+    float: left;
+    border-right: 2px solid #dadada;
+    border-top: 2px solid #dadada;
+    height: 40px;
+    -webkit-transform: rotate(-135deg);
+            transform: rotate(-135deg);
+    width: 40px;
+    margin-left: -22px;
+    text-indent: 9999px;
+    -webkit-transition: 0.5s ease;
+    transition: 0.5s ease;
+}
+.app-screenshot .screenshots .owl-controls .owl-buttons .owl-prev:hover { border-color: #008DD5 }
+.app-screenshot .screenshots .owl-controls .owl-buttons .owl-next {
+    float: right;
+    border-right: 2px solid #dadada;
+    border-top: 2px solid #dadada;
+    height: 40px;
+    -webkit-transform: rotate(45deg);
+            transform: rotate(45deg);
+    width: 40px;
+    margin-right: -22px;
+    text-indent: -9999px;
+    -webkit-transition: 0.5s ease;
+    transition: 0.5s ease;
+}
+.app-screenshot .screenshots .owl-controls .owl-buttons .owl-next:hover { border-color: #008DD5 }
+.app-screenshot .screenshots .owl-controls .owl-pagination {
+    text-align: center;
+    margin-top: 40px;
+}
+.app-screenshot .screenshots .owl-controls .owl-pagination .owl-page {
+    display: inline-block;
+    width: 5px;
+    height: 15px;
+    background: #dadada;
+    margin-right: 15px;
+    text-indent: -9999px;
+    -webkit-transition: 0.5s ease;
+    transition: 0.5s ease;
+}
+.app-screenshot .screenshots .owl-controls .owl-pagination .owl-page:last-child { margin-right: 0 }
+.app-screenshot .screenshots .owl-controls .owl-pagination .owl-page.active {
+    background: #008DD5;
+    height: 30px;
+    -webkit-transition: 0.5s ease;
+    transition: 0.5s ease;
+    -webkit-transform: translateY(-15px);
+            transform: translateY(-15px);
+}
+
+/* ------------------------------------------------------------------
+                ====[ Pricing Plans ]====
+------------------------------------------------------------------- */
+.pricing-plan {
+    background: #F7F8FA;
+    padding: 100px 0;
+    font-family: "Exo", sans-serif;
+}
+.pricing-plan .heading { margin-bottom: 100px }
+.pricing-plan .plan-single {
+    background: #fff;
+    border: 1px solid #dadada;
+}
+.pricing-plan .plan-single .pricing-header { text-align: center }
+.pricing-plan .plan-single .pricing-header h4 {
+    margin-top: 40px;
+    font-size: 25px;
+    font-weight: 300;
+    color: rgba(55, 55, 55, 0.8);
+}
+.pricing-plan .plan-single .pricing-header p {
+    font-size: 18px;
+    font-weight: 300;
+}
+.pricing-plan .plan-single .price {
+    text-align: center;
+    margin: 70px 0 40px 0;
+}
+.pricing-plan .plan-single .price p {
+    font-size: 50px;
+    font-weight: 300;
+    font-family: "Exo", sans-serif;
+    display: inline-block;
+    position: relative;
+}
+.pricing-plan .plan-single .price p sup {
+    font-size: 20px;
+    position: absolute;
+    top: 0;
+    left: -15px;
+}
+.pricing-plan .plan-single .price p sub {
+    position: relative;
+    font-size: 16px;
+    bottom: 0;
+}
+.pricing-plan .plan-single .price p sub:before {
+    content: "/";
+    position: absolute;
+    left: -8px;
+    bottom: 12px;
+}
+.pricing-plan .plan-single .pricing-content { padding: 0 50px }
+.pricing-plan .plan-single .pricing-content ul li {
+    padding-bottom: 20px;
+    font-size: 15px;
+    color: #969595;
+}
+.pricing-plan .plan-single .pricing-content ul li:last-child { padding-bottom: 0 }
+.pricing-plan .plan-single .pricing-content ul li span {
+    float: right;
+    display: inline-block;
+}
+.pricing-plan .plan-single .pricing-content p {
+    text-align: center;
+    margin-bottom: 40px;
+    margin-top: 45px;
+}
+.pricing-plan .plan-single .pricing-content p a.choose-plan-btn {
+    font-family: "Exo",sans-serif;
+    font-size: 17px;
+    background: #969595;
+    color: #fff;
+    padding: 15px 40px;
+    border-radius: 3px;
+    display: inline-block;
+    -webkit-transition: 0.5s ease;
+    transition: 0.5s ease;
+}
+.pricing-plan .plan-single .pricing-content p a.choose-plan-btn:hover {
+    text-decoration: none;
+    background: #008DD5;
+    color: #fff;
+}
+.pricing-plan .f-plan {
+    width: 355px;
+    margin-left: 46px;
+}
+.pricing-plan .featured-plan {
+    width: 100%;
+    border: 1px solid #008DD5;
+    position: relative;
+    z-index: 1;
+    top: -13px;
+    box-shadow: 0 0 54px rgba(0, 0, 0, 0.2);
+}
+.pricing-plan .featured-plan .pricing-header h4 {
+    margin-top: 50px;
+    font-size: 30px;
+    color: #008DD5;
+}
+.pricing-plan .featured-plan .pricing-header p {
+    font-size: 20px;
+    color: #008DD5;
+}
+.pricing-plan .featured-plan .price p {
+    color: #008DD5;
+    font-size: 50px;
+}
+.pricing-plan .featured-plan .price p sub { color: #969595 }
+.pricing-plan .featured-plan .pricing-content ul li {
+    font-size: 15px;
+    color: rgba(55, 55, 55, 0.8);
+}
+.pricing-plan .featured-plan .pricing-content p { margin-bottom: 50px }
+.pricing-plan .featured-plan .pricing-content p a.choose-plan-btn {
+    font-size: 20px;
+    border: 1px solid #008DD5;
+    background: #008DD5;
+}
+.pricing-plan .featured-plan .pricing-content p a.choose-plan-btn:hover {
+    background: #fff;
+    color: rgba(55, 55, 55, 0.8);
+}
+.pricing-plan .t-plan {
+    width: 355px;
+    margin-left: -1px;
+}
+
+/* ------------------------------------------------------------------
+                ====[ Subscribe ]====
+------------------------------------------------------------------- */
+.subscribe {
+    background: url(../images/update-bg.jpg);
+    background-position: center;
+    background-attachment: fixed;
+    background-repeat: no-repeat;
+    background-size: cover;
+    padding: 150px 0;
+    position: relative;
+}
+.subscribe:before {
+    position: absolute;
+    content: "";
+    width: 100%;
+    height: 100%;
+    background: rgba(34, 34, 34, 0.9);
+    left: 0;
+    top: 0;
+}
+.subscribe p {
+    font-size: 40px;
+    font-family: "Exo", sans-serif;
+    text-transform: uppercase;
+    color: #fff;
+    margin-top: 21px;
+}
+.subscribe form { text-align: right }
+.subscribe form input[type="text"] {
+    width: 470px;
+    height: 60px;
+    border: 0 none;
+    border-radius: 3px;
+    padding: 0 15px;
+    font-size: 18px;
+    font-family: "Roboto", sans-serif;
+    font-weight: 300;
+}
+.subscribe form input[type="submit"] {
+    background: #008DD5;
+    border: medium none;
+    border-radius: 3px;
+    color: #fff;
+    display: inline-block;
+    font-size: 24px;
+    height: 60px;
+    padding: 0 40px;
+    margin-left: 30px;
+    position: relative;
+    top: 2px;
+    -webkit-transition: 0.5s ease;
+    transition: 0.5s ease;
+}
+.subscribe form input[type="submit"]:hover {
+    text-decoration: none;
+    background: #fff;
+    color: #000;
+}
+
+/* ------------------------------------------------------------------
+                ====[ App Video ]====
+------------------------------------------------------------------- */
+.app-video { padding: 100px 0 }
+.app-video .video-wrapper iframe {
+    display: block;
+    margin: 0 auto;
+}
+
+/* ------------------------------------------------------------------
+                ====[ Download App ]====
+------------------------------------------------------------------- */
+.app-downloads {
+    background: url(../images/intro-bg.jpg);
+    background-position: center;
+    background-attachment: fixed;
+    background-repeat: no-repeat;
+    background-size: cover;
+    padding: 100px 0;
+    position: relative;
+    min-height: 826px;
+}
+.app-downloads:before {
+    position: absolute;
+    content: "";
+    width: 100%;
+    height: 100%;
+    background: rgba(34, 34, 34, 0.9);
+    left: 0;
+    top: 0;
+}
+.app-downloads .heading h2 { color: #fff }
+.app-downloads .heading h2 span { color: #008DD5 }
+.app-downloads .heading p { color: #fff }
+.app-downloads .app-download-btns { margin-top: 30px }
+.app-downloads .app-download-btns ul { text-align: center }
+.app-downloads .app-download-btns ul li { display: inline-block }
+.app-downloads .app-download-btns ul li:first-child { margin-right: 25px }
+.app-downloads .app-download-btns ul li a {
+    background: #008DD5;
+    color: #fff;
+    padding: 20px 60px;
+    font-size: 28px;
+    font-weight: 700;
+    border-radius: 3px;
+    -webkit-transition: 0.5s ease;
+    transition: 0.5s ease;
+}
+.app-downloads .app-download-btns ul li a:hover {
+    text-decoration: none;
+    background: #fff;
+    color: #000;
+}
+.app-downloads .review-carousel {
+    padding: 0 250px;
+    margin-top: 80px;
+}
+.app-downloads .review-carousel #app-reviews .review-content p {
+    text-align: center;
+    color: #fff;
+    font-size: 15px;
+    font-family: "Roboto", sans-serif;
+    font-weight: 300;
+}
+.app-downloads .review-carousel #app-reviews .client-details {
+    text-align: center;
+    margin-top: 40px;
+}
+.app-downloads .review-carousel #app-reviews .client-details img {
+    display: inline;
+    height: 80px;
+    width: 80px;
+}
+.app-downloads .review-carousel #app-reviews .client-details p {
+    display: inline-block;
+    text-align: center;
+    margin-left: 20px;
+    text-transform: uppercase;
+    position: relative;
+    top: 10px;
+    font-family: "Exo", sans-serif;
+    font-weight: 700;
+}
+.app-downloads .review-carousel #app-reviews .client-details p span { display: block }
+.app-downloads .review-carousel #app-reviews .client-details p span:first-child {
+    color: #008DD5;
+    font-size: 15px;
+}
+.app-downloads .review-carousel #app-reviews .client-details p span:last-child {
+    color: #fff;
+    font-size: 13px;
+}
+.app-downloads .review-carousel #app-reviews .owl-controls .owl-pagination {
+    text-align: center;
+    margin-top: 60px;
+}
+.app-downloads .review-carousel #app-reviews .owl-controls .owl-pagination .owl-page {
+    display: inline-block;
+    width: 5px;
+    height: 15px;
+    background: #dadada;
+    margin-right: 15px;
+    text-indent: -9999px;
+    -webkit-transition: 0.5s ease;
+    transition: 0.5s ease;
+}
+.app-downloads .review-carousel #app-reviews .owl-controls .owl-pagination .owl-page:last-child { margin-right: 0 }
+.app-downloads .review-carousel #app-reviews .owl-controls .owl-pagination .owl-page.active {
+    background: #008DD5;
+    height: 30px;
+    -webkit-transition: 0.5s ease;
+    transition: 0.5s ease;
+    -webkit-transform: translateY(-15px);
+            transform: translateY(-15px);
+}
+
+/* ------------------------------------------------------------------
+                ====[ Contact ]====
+------------------------------------------------------------------- */
+.contact { padding: 100px 0 }
+.contact .contact-form form {
+    font-family: "Roboto", sans-serif;
+    font-weight: 300;
+}
+.contact .contact-form form .form-group input[type="text"] {
+    width: 100%;
+    height: 50px;
+    border-left: 0;
+    border-top: 0;
+    border-right: 0;
+    border-bottom: 2px solid #008DD5;
+    -webkit-transition: 0.5s ease;
+    transition: 0.5s ease;
+}
+.contact .contact-form form .form-group input[type="text"]:focus { border-bottom-color: #222 }
+.contact .contact-form form .form-group input[type="email"] {
+    width: 100%;
+    height: 50px;
+    border-left: 0;
+    border-top: 0;
+    border-right: 0;
+    border-bottom: 2px solid #008DD5;
+    -webkit-transition: 0.5s ease;
+    transition: 0.5s ease;
+}
+.contact .contact-form form .form-group input[type="email"]:focus { border-bottom-color: #222 }
+.contact .contact-form form .form-group textarea {
+    margin-top: 20px;
+    width: 100%;
+    height: 100px;
+    border-left: 0;
+    border-top: 0;
+    border-right: 0;
+    border-bottom: 2px solid #008DD5;
+    -webkit-transition: 0.5s ease;
+    transition: 0.5s ease;
+}
+.contact .contact-form form .form-group textarea:focus { border-bottom-color: #222 }
+.contact .contact-form form .form-group .form-btn {
+    text-align: center;
+    margin-top: 50px;
+    font-family: "Exo", sans-serif;
+}
+.contact .contact-form form .form-group .form-btn button {
+    background: #008DD5;
+    color: #fff;
+    font-size: 20px;
+    border: 1px solid #008DD5;
+    padding: 10px 30px;
+    border-radius: 3px;
+    -webkit-transition: 0.5s ease;
+    transition: 0.5s ease;
+}
+.contact .contact-form form .form-group .form-btn button:hover {
+    background: #fff;
+    color: #282828;
+}
+/* ------------------------------------------------------------------
+                ====[ Footer ]====
+------------------------------------------------------------------- */
+.footer {
+    padding: 50px 0;
+    background: #282828;
+}
+.footer .footer-content {
+    text-align: center;
+    color: #fff;
+}
+.footer .footer-content h4 {
+    font-size: 30px;
+    margin-bottom: 20px;
+}
+.footer .footer-content p {
+    font-size: 16px;
+    color: #fff;
+    font-family: "Roboto", sans-serif;
+    font-weight: 300;
+    margin-bottom: 20px;
+}
+.footer .footer-content ul { margin-bottom: 0 }
+.footer .footer-content ul li {
+    list-style-type: none;
+    display: inline;
+    padding-right: 30px;
+}
+.footer .footer-content ul li:last-child { padding-right: 0 }
+.footer .footer-content ul li a { -webkit-transition: 0.5s ease; transition: 0.5s ease }
+.footer .footer-content ul li a:hover { color: #fff }
+
+/* ------------------------------------------------------------------
+                    Helping Classes
+------------------------------------------------------------------- */
+.no-padding {
+    padding-left: 0;
+    padding-right: 0;
+}
+

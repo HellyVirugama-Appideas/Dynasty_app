@@ -1,0 +1,126 @@
+/* -----------------------
+COLOR : ORANGE 
+COLOR CODE: #f39c12
+------------------------- */
+.navbar-brand span {
+  color: #f39c12;
+}
+.nav > li.active a {
+  color: #f39c12;
+}
+.nav li.active::before {
+  border-left: 1px solid #f39c12;
+  border-top: 1px solid #f39c12;
+}
+.nav li.active::after {
+  border-bottom: 1px solid #f39c12;
+  border-right: 1px solid #f39c12;
+}
+.nav > li > a:focus, .nav > li > a:hover {
+  color: #f39c12;
+}
+.intro-text a.btn:hover {
+  color: #f39c12;
+}
+.is-sticky .nav > li.active a {
+  color: #f39c12 !important;
+}
+.is-sticky .nav > li > a:focus, .is-sticky .nav > li > a:hover {
+  color: #f39c12 !important;
+}
+.intro-text h1 span {
+  color: #f39c12;
+}
+.intro-text a.btn {
+  background: #f39c12 none repeat scroll 0 0;
+  border: 1px solid #f39c12;
+}
+.heading h2::after {
+  background: #f39c12 none repeat scroll 0 0 padding-box content-box;
+}
+#app-features .sf-top .single-feature-icon::before {
+  background: #f39c12 none repeat scroll 0 0;
+}
+#app-features .sf-center .single-feature-icon::before {
+  background: #f39c12 none repeat scroll 0 0;
+}
+#app-features .sf-center .single-feature-icon::after {
+  background: #f39c12 none repeat scroll 0 0;
+}
+#app-features .sf-bottom .single-feature-icon::before {
+  background: #f39c12 none repeat scroll 0 0;
+}
+#app-features .single-feature:hover .icon-hover {
+  background: #f39c12 none repeat scroll 0 0;
+}
+.benifits .benefits-right .row:hover h3 {
+  color: #f39c12;
+}
+.benifits .benefits-right .row:hover .br-icon {
+  background: #f39c12 none repeat scroll 0 0;
+}
+.benifits .benefits-left .row:hover h3 {
+  color: #f39c12;
+}
+.benifits .benefits-left .row:hover .bl-icon {
+  background: #f39c12 none repeat scroll 0 0;
+}
+.app-screenshot .screenshots .owl-controls .owl-buttons .owl-next:hover {
+  border-color: #f39c12;
+}
+.app-screenshot .screenshots .owl-controls .owl-buttons .owl-prev:hover {
+  border-color: #f39c12;
+}
+.app-screenshot .screenshots .owl-controls .owl-pagination .owl-page.active {
+  background: #f39c12 none repeat scroll 0 0;
+}
+.pricing-plan .featured-plan .pricing-header h4 {
+  color: #f39c12;
+}
+.pricing-plan .featured-plan .pricing-header p {
+  color: #f39c12;
+}
+.pricing-plan .featured-plan .price p {
+  color: #f39c12;
+}
+.pricing-plan .featured-plan .pricing-content p a.choose-plan-btn {
+  background: #f39c12 none repeat scroll 0 0;
+  border: 1px solid #f39c12;
+}
+.subscribe form input[type="submit"] {
+  background: #f39c12 none repeat scroll 0 0;
+}
+.app-downloads .heading h2 span {
+  color: #f39c12;
+}
+.app-downloads .app-download-btns ul li a {
+  background: #f39c12 none repeat scroll 0 0;
+}
+.app-downloads .review-carousel #app-reviews .client-details p span:first-child {
+  color: #f39c12;
+}
+.app-downloads .review-carousel #app-reviews .owl-controls .owl-pagination .owl-page.active {
+  background: #f39c12 none repeat scroll 0 0;
+}
+.pricing-plan .plan-single .pricing-content p a.choose-plan-btn:hover {
+  background: #f39c12 none repeat scroll 0 0;
+}
+.pricing-plan .plan-single.featured-plan .pricing-content p a.choose-plan-btn:hover {
+  background: #fff;
+}
+.contact .contact-form form .form-group input[type="text"] {
+  border-color:#f39c12;
+}
+.contact .contact-form form .form-group input[type="email"] {
+  border-color: #f39c12;
+}
+.contact .contact-form form .form-group textarea {
+  border-color: #f39c12;
+}
+.contact .contact-form form .form-group .form-btn button {
+  background: #f39c12 none repeat scroll 0 0;
+  border: 1px solid #f39c12;
+}
+.footer .footer-content ul li a {
+  color:#f39c12;
+}
