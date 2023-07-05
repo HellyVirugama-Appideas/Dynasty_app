@@ -35,6 +35,12 @@ module.exports = (error, req, res, next) => {
 
     if (error.name == 'MulterError') error.status = 413;
 
+    if (error.code === 16755)
+        return res.status(400).json({
+            code: '0',
+            message: 'longitude/latitude is out of bounds.',
+        });
+
     if (
         error.message.toString().includes(': ') &&
         error.name == 'BadRequestError'
