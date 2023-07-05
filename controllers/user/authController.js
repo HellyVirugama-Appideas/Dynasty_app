@@ -300,15 +300,18 @@ exports.createSocialProfile = async (req, res, next) => {
         // if (!country) return next(createError.BadRequest('Invalid country_id'));
 
         // images validation
-        if (!req.files.profile)
-            throw createError.BadRequest('profile is required.');
         if (!req.files.licenseFront)
             throw createError.BadRequest('licenseFront is required.');
         if (!req.files.licenseBack)
             throw createError.BadRequest('licenseBack is required.');
 
+        if (!req.body.latitude || !req.body.longitude)
+            throw createError.BadRequest('Please select valid address.');
+
         // images
-        const profile = `/uploads/${req.files.profile[0].filename}`;
+        const profile = req.files.profile
+            ? `/uploads/${req.files.profile[0].filename}`
+            : undefined;
         const licenseFront = `/uploads/${req.files.licenseFront[0].filename}`;
         const licenseBack = `/uploads/${req.files.licenseBack[0].filename}`;
 
