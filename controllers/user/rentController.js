@@ -121,7 +121,7 @@ exports.bookCar = async (req, res, next) => {
             return next(createError.BadRequest('Invalid date format'));
 
         const currentDate = new Date();
-        if (bookedFrom < currentDate || bookedTo < currentDate)
+        if (bookedFrom <= currentDate || bookedTo <= currentDate)
             return next(createError.BadRequest('Dates must be in the future.'));
 
         const car = await Car.findById(req.body.carId).populate(

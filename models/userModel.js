@@ -41,7 +41,7 @@ const userSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Address',
     },
-    profile: String,
+    profile: { type: String, default: '/uploads/default_user.jpg' },
     licenseFront: String,
     licenseBack: String,
     blocked: {

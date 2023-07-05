@@ -1,5 +1,6 @@
 const multilingual = require('../../utils/multilingual');
 const multilingualUser = require('../../utils/multilingualUser');
+const deleteFile = require('../../utils/deleteFile');
 
 const Driver = require('../../models/driverModel');
 const Country = require('../../models/countryModel');
@@ -34,9 +35,18 @@ exports.editProfile = async (req, res, next) => {
         delete req.body.facebookId;
         delete req.body.appleId;
 
+        let oldProfile;
+        if (req.file && req.driver.profile !== '/uploads/default_user.jpg') {
+            oldProfile = req.driver.profile;
+            req.body.profile = `/uploads/${req.file.filename}`;
+        }
+
         let driver = await Driver.findByIdAndUpdate(req.driver.id, req.body, {
             new: true,
         }).populate('city country');
+
+        // remove old images
+        if (oldProfile) deleteFile(oldProfile);
 
         driver = multilingualUser(driver, req);
 

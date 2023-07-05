@@ -1,6 +1,6 @@
 const { promisify } = require('util');
 const createError = require('http-errors');
-const validator = require('validator');
+// const validator = require('validator');
 const multilingual = require('../../utils/multilingual');
 const multilingualUser = require('../../utils/multilingualUser');
 const jwt = require('jsonwebtoken');
@@ -145,6 +145,9 @@ exports.createProfile = async (req, res, next) => {
         // if (!city) return next(createError.BadRequest('Invalid city_id'));
         // if (!country) return next(createError.BadRequest('Invalid country_id'));
 
+        // profile
+        const profile = req.file ? `/uploads/${req.file.filename}` : undefined;
+
         // create driver
         let driver = await Driver.create({
             name: req.body.name,
@@ -155,6 +158,7 @@ exports.createProfile = async (req, res, next) => {
             country: country?.id,
             address: req.body.address,
             useFor: req.body.useFor,
+            profile,
         });
 
         const token = await driver.generateAuthToken();
@@ -174,6 +178,8 @@ exports.createProfile = async (req, res, next) => {
             driver,
         });
     } catch (error) {
+        if (req.file) deleteFile(`/uploads/${req.file.filename}`);
+
         if (error.name == 'JsonWebTokenError')
             return next(createError.BadRequest('token.invalid'));
         if (error.name == 'TokenExpiredError')
@@ -273,6 +279,9 @@ exports.createSocialProfile = async (req, res, next) => {
         // if (!city) return next(createError.BadRequest('Invalid city_id'));
         // if (!country) return next(createError.BadRequest('Invalid country_id'));
 
+        // profile
+        const profile = req.file ? `/uploads/${req.file.filename}` : undefined;
+
         // create driver
         let driver = await Driver.create({
             name: req.body.name,
@@ -286,6 +295,7 @@ exports.createSocialProfile = async (req, res, next) => {
             googleId: req.body.googleId,
             facebookId: req.body.facebookId,
             appleId: req.body.appleId,
+            profile,
         });
 
         const token = await driver.generateAuthToken();
@@ -305,6 +315,8 @@ exports.createSocialProfile = async (req, res, next) => {
             driver,
         });
     } catch (error) {
+        if (req.file) deleteFile(`/uploads/${req.file.filename}`);
+
         if (error.name == 'JsonWebTokenError')
             return next(createError.BadRequest('token.invalid'));
         if (error.name == 'TokenExpiredError')

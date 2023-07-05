@@ -42,7 +42,7 @@ const driverSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Type',
     },
-    profile: String,
+    profile: { type: String, default: '/uploads/default_user.jpg' },
     licence: String,
     pan: String,
     rc: String,
