@@ -29,6 +29,17 @@ exports.listCars = async (req, res, next) => {
 
             if (isNaN(dateFrom.getTime()) || isNaN(dateTo.getTime()))
                 return next(createError.BadRequest('Invalid date format'));
+            const currentDate = new Date();
+            if (dateFrom <= currentDate || dateTo <= currentDate)
+                return next(
+                    createError.BadRequest('Dates must be in the future.')
+                );
+            if (dateTo <= dateFrom)
+                return next(
+                    createError.BadRequest(
+                        'To date should be greater than From date.'
+                    )
+                );
 
             // Find the cars that are not booked within the date range
             const bookedCarIds = await Booking.distinct('car', {
@@ -123,6 +134,13 @@ exports.bookCar = async (req, res, next) => {
         const currentDate = new Date();
         if (bookedFrom <= currentDate || bookedTo <= currentDate)
             return next(createError.BadRequest('Dates must be in the future.'));
+
+        if (bookedTo <= bookedFrom)
+            return next(
+                createError.BadRequest(
+                    'To date should be greater than From date.'
+                )
+            );
 
         const car = await Car.findById(req.body.carId).populate(
             'driver',

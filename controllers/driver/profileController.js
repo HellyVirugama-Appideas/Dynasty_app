@@ -66,6 +66,7 @@ exports.editProfile = async (req, res, next) => {
 
 exports.deleteProfile = async (req, res, next) => {
     try {
+        // TODO soft delete
         // Delete driver
         await Driver.findByIdAndDelete(req.driver.id);
 

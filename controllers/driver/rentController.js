@@ -1,5 +1,6 @@
 const createError = require('http-errors');
 
+const Booking = require('../../models/bookingModel');
 const BookingReq = require('../../models/bookingReqModel');
 const Notification = require('../../models/notificationModel');
 
@@ -70,4 +71,20 @@ exports.rejectRequest = async (req, res, next) => {
             return next(createError.BadRequest('Invalid request id.'));
         next(error);
     }
+};
+
+exports.currentBookings = async (req, res, next) => {
+    try {
+        // TODO find current bookings
+        const bookings = await Booking.find({ driver: req.driver.id });
+
+        res.json({ code: '1', message: req.t('success'), bookings });
+    } catch (error) {
+        next();
+    }
+};
+
+exports.pastBookings = async (req, res, next) => {
+    // find past bookings
+    next(createError.NotImplemented());
 };

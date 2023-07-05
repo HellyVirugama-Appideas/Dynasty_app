@@ -17,8 +17,10 @@ module.exports = (error, req, res, next) => {
                 errors[key] = `Invalid value for ${error.errors[key].path}`;
             else errors[key] = req.t(error.errors[key].message);
         });
+        const errorMessage = Object.values(errors)[0] || 'Validation Error';
         return res.status(400).json({
             code: '0',
+            message: errorMessage,
             errors,
         });
     }

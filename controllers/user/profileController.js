@@ -59,7 +59,8 @@ exports.editProfile = async (req, res, next) => {
         }).populate('city country address');
 
         // remove old images
-        if (oldProfile) deleteFile(oldProfile);
+        if (oldProfile && oldProfile !== '/uploads/default_user.jpg')
+            deleteFile(oldProfile);
         if (oldLicenceFront) deleteFile(oldLicenceFront);
         if (oldLicenceBack) deleteFile(oldLicenceBack);
 
@@ -76,6 +77,7 @@ exports.editProfile = async (req, res, next) => {
 
 exports.deleteProfile = async (req, res, next) => {
     try {
+        // TODO soft delete
         // Delete user, addresses
         await Promise.all([
             User.findByIdAndDelete(req.user.id),
