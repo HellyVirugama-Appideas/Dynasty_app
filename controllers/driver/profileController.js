@@ -28,12 +28,21 @@ exports.getProfile = async (req, res, next) => {
 
 exports.editProfile = async (req, res, next) => {
     try {
-        // Not allowed to change
-        delete req.body.country_code;
-        delete req.body.phone;
-        delete req.body.googleId;
-        delete req.body.facebookId;
-        delete req.body.appleId;
+        // Properties not allowed to change
+        const disallowedProperties = [
+            'country_code',
+            'phone',
+            'googleId',
+            'facebookId',
+            'appleId',
+            'profile',
+            'licence',
+            'pan',
+            'rc',
+        ];
+        disallowedProperties.forEach(property => {
+            delete req.body[property];
+        });
 
         let oldProfile;
         if (req.file) {
