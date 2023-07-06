@@ -36,7 +36,7 @@ exports.editProfile = async (req, res, next) => {
         delete req.body.appleId;
 
         let oldProfile;
-        if (req.file && req.driver.profile !== '/uploads/default_user.jpg') {
+        if (req.file) {
             oldProfile = req.driver.profile;
             req.body.profile = `/uploads/${req.file.filename}`;
         }
@@ -46,7 +46,8 @@ exports.editProfile = async (req, res, next) => {
         }).populate('city country');
 
         // remove old images
-        if (oldProfile) deleteFile(oldProfile);
+        if (oldProfile && oldProfile !== '/uploads/default_user.jpg')
+            deleteFile(oldProfile);
 
         driver = multilingualUser(driver, req);
 
