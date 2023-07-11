@@ -9,7 +9,20 @@ exports.getRequests = async (req, res, next) => {
         const bookings = await BookingReq.find({
             driver: req.driver.id,
             status: 'requested',
-        }).populate('user', 'name');
+        })
+            .populate('user', 'name email profile')
+            .populate('car', 'pics name')
+            .lean();
+
+        // Extracting the first image from the 'pics' array
+        bookings.forEach(booking => {
+            if (booking.car?.pics && booking.car.pics.length > 0) {
+                booking.car.pic = booking.car.pics[0];
+                delete booking.car.pics;
+            } else {
+                booking.car.pic = '/uploads/no_image_available_3.jpg';
+            }
+        });
 
         res.json({
             code: '1',
