@@ -54,7 +54,7 @@ exports.acceptRequest = async (req, res, next) => {
             console.log('Error creating notification: ', error);
         });
 
-        res.json({ code: '1', message: req.t('success') });
+        res.json({ code: '1', message: req.t('ride.accepted') });
     } catch (error) {
         if (error.name === 'CastError')
             return next(createError.BadRequest('Invalid request id.'));
@@ -78,7 +78,7 @@ exports.rejectRequest = async (req, res, next) => {
             console.log('Error creating notification: ', error);
         });
 
-        res.json({ code: '1', message: req.t('success') });
+        res.json({ code: '1', message: req.t('ride.rejected') });
     } catch (error) {
         if (error.name === 'CastError')
             return next(createError.BadRequest('Invalid request id.'));

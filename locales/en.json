@@ -48,7 +48,9 @@
     },
     "ride": {
         "success": "Your ride has been successfully scheduled.",
-        "already": "Ride request has already been accepted by another driver."
+        "already": "Ride request has already been accepted by another driver.",
+        "accepted": "Booking request accepted.",
+        "rejected": "Booking request rejected."
     },
     "car": {
         "added": "Car added successfully.",

@@ -48,7 +48,9 @@
     },
     "ride": {
         "success": "Votre trajet a été programmé avec succès.",
-        "already": "La demande de conduite a déjà été acceptée par un autre conducteur."
+        "already": "La demande de conduite a déjà été acceptée par un autre conducteur.",
+        "accepted": "Demande de réservation acceptée.",
+        "rejected": "Demande de réservation rejetée."
     },
     "car": {
         "added": "La voiture a ajouté avec succès.",
