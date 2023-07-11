@@ -20,9 +20,17 @@ exports.getVehicleTypes = async (req, res, next) => {
 
 exports.getCars = async (req, res, next) => {
     try {
-        const cars = await Car.find({ driver: req.driver.id, isDeleted: false })
-            .select('-driver')
-            .sort('-_id');
+        let cars = await Car.find({ driver: req.driver.id, isDeleted: false })
+            .select('-driver -__v')
+            .sort('-_id')
+            .lean();
+
+        cars = updatedCars = cars.map(car => {
+            const updatedPics = car.pics.map(pic => {
+                return { pic, status: 0 };
+            });
+            return { ...car, pics: updatedPics };
+        });
 
         res.json({ code: '1', message: req.t('success'), cars });
     } catch (error) {
@@ -80,7 +88,7 @@ exports.createCar = async (req, res, next) => {
 exports.editCar = async (req, res, next) => {
     try {
         let pics = [];
-        if (req.files.length)
+        if (req.files?.length)
             req.files.map(file => pics.push(`/uploads/${file.filename}`));
 
         const { latitude, longitude } = req.body;
@@ -128,7 +136,7 @@ exports.deleteCar = async (req, res, next) => {
 exports.addImage = async (req, res, next) => {
     try {
         let pics = [];
-        if (req.files.length)
+        if (req.files?.length)
             req.files.map(file => pics.push(`/uploads/${file.filename}`));
 
         await Car.findOneAndUpdate(

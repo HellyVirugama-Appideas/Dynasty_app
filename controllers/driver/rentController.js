@@ -12,6 +12,7 @@ exports.getRequests = async (req, res, next) => {
         })
             .populate('user', 'name email country_code phone profile')
             .populate('car', 'pics name')
+            .sort('-_id')
             .lean();
 
         // Extracting the first image from the 'pics' array
