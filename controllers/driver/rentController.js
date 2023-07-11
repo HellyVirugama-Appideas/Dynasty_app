@@ -10,7 +10,7 @@ exports.getRequests = async (req, res, next) => {
             driver: req.driver.id,
             status: 'requested',
         })
-            .populate('user', 'name email profile')
+            .populate('user', 'name email phone profile')
             .populate('car', 'pics name')
             .lean();
 
