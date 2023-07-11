@@ -23,6 +23,21 @@ const bookingSchema = new mongoose.Schema({
     address: { type: String, required: [true, 'validation.address'] },
     bookedFrom: { type: Date, required: true },
     bookedTo: { type: Date, required: true },
+
+    pickupCheck: { type: Boolean, default: false },
+    pickupSign: {
+        type: String,
+        required: function () {
+            return this.pickupCheck;
+        },
+    },
+    returnCheck: { type: Boolean, default: false },
+    returnSign: {
+        type: String,
+        required: function () {
+            return this.returnCheck;
+        },
+    },
 });
 
 module.exports = mongoose.model('Booking', bookingSchema);

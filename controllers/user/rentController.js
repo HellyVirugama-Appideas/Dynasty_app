@@ -1,5 +1,6 @@
 const createError = require('http-errors');
 const multilingual = require('../../utils/multilingual');
+const deleteFile = require('../../utils/deleteFile');
 
 const Car = require('../../models/carModel');
 const Booking = require('../../models/bookingModel');
@@ -320,6 +321,32 @@ exports.getBookings = async (req, res, next) => {
 
         res.json({ code: '1', message: req.t('success'), bookings });
     } catch (error) {
+        next(error);
+    }
+};
+
+exports.uploadSignature = async (req, res, next) => {
+    try {
+        if (!req.file)
+            return next(createError.BadRequest('Please upload signature.'));
+
+        let update = {};
+        if (req.params.type === 'pickup')
+            update = {
+                pickupCheck: true,
+                pickupSign: `/uploads/${req.file.filename}`,
+            };
+        else
+            update = {
+                returnCheck: true,
+                returnSign: `/uploads/${req.file.filename}`,
+            };
+
+        await Booking.findByIdAndUpdate(req.body.bookingId, update);
+
+        res.json({ code: '1', message: req.t('success') });
+    } catch (error) {
+        if (req.file) deleteFile(`/uploads/${req.file.filename}`);
         next(error);
     }
 };

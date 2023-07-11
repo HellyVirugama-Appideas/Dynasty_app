@@ -25,7 +25,7 @@ exports.getCars = async (req, res, next) => {
             .sort('-_id')
             .lean();
 
-        cars = updatedCars = cars.map(car => {
+        cars = cars.map(car => {
             const updatedPics = car.pics.map(pic => {
                 return { pic, status: 0 };
             });

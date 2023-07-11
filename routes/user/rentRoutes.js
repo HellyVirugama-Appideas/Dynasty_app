@@ -1,6 +1,7 @@
 const router = require('express').Router();
 const fileUpload = require('express-fileupload');
 
+const { upload } = require('../../controllers/uploadController');
 const { checkUser } = require('../../controllers/user/authController');
 const rentController = require('../../controllers/user/rentController');
 
@@ -26,5 +27,12 @@ router.post('/give_rating', fileUpload(), checkUser, rentController.addRating);
 
 // booked
 router.get('/booked/:type', checkUser, rentController.getBookings);
+
+router.post(
+    '/signature/:type',
+    upload.single('sign'),
+    checkUser,
+    rentController.uploadSignature
+);
 
 module.exports = router;
