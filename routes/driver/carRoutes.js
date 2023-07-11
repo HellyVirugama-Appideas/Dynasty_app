@@ -13,7 +13,7 @@ router
     .post(
         checkDriver,
         upload.fields([
-            { name: 'pics', maxCount: 4 },
+            { name: 'pics', maxCount: 8 },
             { name: 'purchaseBill', maxCount: 1 },
             { name: 'insurance', maxCount: 1 },
             { name: 'rc', maxCount: 1 },

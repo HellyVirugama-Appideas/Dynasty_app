@@ -292,3 +292,34 @@ exports.addRating = async (req, res, next) => {
         next(error);
     }
 };
+
+exports.getBookings = async (req, res, next) => {
+    try {
+        const currentDate = new Date();
+        const queryOptions = {
+            user: req.user.id,
+            bookedTo:
+                req.params.type === 'current'
+                    ? { $gte: currentDate }
+                    : { $lt: currentDate },
+        };
+
+        const bookings = await Booking.find(queryOptions)
+            .populate('user', 'profile name email country_code phone')
+            .populate('car', 'name pics price kmsDriven')
+            .select('-__v')
+            .lean();
+
+        // Extracting the first image from the 'pics' array
+        bookings.forEach(booking => {
+            if (booking.car?.pics && booking.car.pics.length > 0)
+                booking.car.pic = booking.car.pics[0];
+            else booking.car.pic = '/uploads/no_image_available_3.jpg';
+            delete booking.car.pics;
+        });
+
+        res.json({ code: '1', message: req.t('success'), bookings });
+    } catch (error) {
+        next(error);
+    }
+};

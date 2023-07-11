@@ -9,8 +9,7 @@ router.get('/requests/accept/:id', checkDriver, rentController.acceptRequest);
 
 router.get('/requests/reject/:id', checkDriver, rentController.rejectRequest);
 
-router.get('/booked/current', checkDriver, rentController.currentBookings);
-
-router.get('/booked/past', checkDriver, rentController.pastBookings);
+// booked
+router.get('/booked/:type', checkDriver, rentController.getBookings);
 
 module.exports = router;

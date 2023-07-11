@@ -76,14 +76,18 @@
                                                     <th>E-mail</th>
                                                     <td><%= user.email %></td>
                                                 </tr>
+                                                <% if (user.city) { %>
                                                 <tr>
                                                     <th>City</th>
-                                                    <td><%= user.city?.en?.name || '-' %></td>
+                                                    <td><%= user.city.en.name  %></td>
                                                 </tr>
+                                                <% } %>
+                                                <% if (user.country) { %>
                                                 <tr>
                                                     <th>Country</th>
-                                                    <td><%= user.country?.en?.name || '-' %></td>
+                                                    <td><%= user.country.en.name  %></td>
                                                 </tr>
+                                                <% } %>
                                                 <tr>
                                                     <th>Date</th>
                                                     <td><%= user.date.toLocaleDateString('en-GB') %></td>

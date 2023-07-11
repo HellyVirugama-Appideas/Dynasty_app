@@ -16,12 +16,10 @@ exports.getRequests = async (req, res, next) => {
 
         // Extracting the first image from the 'pics' array
         bookings.forEach(booking => {
-            if (booking.car?.pics && booking.car.pics.length > 0) {
+            if (booking.car?.pics && booking.car.pics.length > 0)
                 booking.car.pic = booking.car.pics[0];
-                delete booking.car.pics;
-            } else {
-                booking.car.pic = '/uploads/no_image_available_3.jpg';
-            }
+            else booking.car.pic = '/uploads/no_image_available_3.jpg';
+            delete booking.car.pics;
         });
 
         res.json({
@@ -86,18 +84,33 @@ exports.rejectRequest = async (req, res, next) => {
     }
 };
 
-exports.currentBookings = async (req, res, next) => {
+exports.getBookings = async (req, res, next) => {
     try {
-        // TODO find current bookings
-        const bookings = await Booking.find({ driver: req.driver.id });
+        const currentDate = new Date();
+        const queryOptions = {
+            driver: req.driver.id,
+            bookedTo:
+                req.params.type === 'current'
+                    ? { $gte: currentDate }
+                    : { $lt: currentDate },
+        };
+
+        const bookings = await Booking.find(queryOptions)
+            .populate('user', 'profile name email country_code phone')
+            .populate('car', 'name pics price')
+            .select('-__v -driver')
+            .lean();
+
+        // Extracting the first image from the 'pics' array
+        bookings.forEach(booking => {
+            if (booking.car?.pics && booking.car.pics.length > 0)
+                booking.car.pic = booking.car.pics[0];
+            else booking.car.pic = '/uploads/no_image_available_3.jpg';
+            delete booking.car.pics;
+        });
 
         res.json({ code: '1', message: req.t('success'), bookings });
     } catch (error) {
-        next();
+        next(error);
     }
-};
-
-exports.pastBookings = async (req, res, next) => {
-    // find past bookings
-    next(createError.NotImplemented());
 };

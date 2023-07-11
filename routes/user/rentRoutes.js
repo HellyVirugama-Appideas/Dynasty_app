@@ -24,4 +24,7 @@ router.post(
 // Rating
 router.post('/give_rating', fileUpload(), checkUser, rentController.addRating);
 
+// booked
+router.get('/booked/:type', checkUser, rentController.getBookings);
+
 module.exports = router;
