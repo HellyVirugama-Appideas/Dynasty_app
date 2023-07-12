@@ -91,15 +91,12 @@ exports.editCar = async (req, res, next) => {
         if (req.files?.length)
             req.files.map(file => pics.push(`/uploads/${file.filename}`));
 
-        const { latitude, longitude } = req.body;
-        if (latitude && longitude)
-            req.body.location = {
-                type: 'Point',
-                coordinates: [longitude, latitude],
-            };
-
-        delete req.body.pics;
-        const updatedData = { ...req.body };
+        const updatedData = {
+            name: req.body.name,
+            condition: req.body.condition,
+            kmsDriven: req.body.kmsDriven,
+            price: req.body.price,
+        };
         if (pics.length) updatedData.$push = { pics: { $each: pics } };
 
         const car = await Car.findOneAndUpdate(
