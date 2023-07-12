@@ -98,6 +98,7 @@ exports.editCar = async (req, res, next) => {
                 coordinates: [longitude, latitude],
             };
 
+        delete req.body.pics;
         const updatedData = { ...req.body };
         if (pics.length) updatedData.$push = { pics: { $each: pics } };
 
@@ -139,11 +140,13 @@ exports.addImage = async (req, res, next) => {
         if (req.files?.length)
             req.files.map(file => pics.push(`/uploads/${file.filename}`));
 
-        await Car.findOneAndUpdate(
+        const car = await Car.findOneAndUpdate(
             { _id: req.body.carId, driver: req.driver.id, isDeleted: false },
             { $push: { pics: { $each: pics } } },
             { new: true }
         );
+
+        if (!car) return next(createError.NotFound('Car not found!'));
 
         res.json({ code: '1', message: req.t('success') });
     } catch (error) {
