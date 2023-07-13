@@ -27,7 +27,9 @@ exports.getCars = async (req, res, next) => {
 
         cars = cars.map(car => {
             const updatedPics = car.pics.map(pic => {
-                return { pic, status: 0 };
+                if (pic === '/uploads/no_image_available_3.jpg')
+                    return { pic, status: null };
+                else return { pic, status: 0 };
             });
             return { ...car, pics: updatedPics };
         });
