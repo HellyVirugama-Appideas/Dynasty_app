@@ -5,6 +5,7 @@ const notificationSchema = new mongoose.Schema(
         user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
         driver: { type: mongoose.Schema.Types.ObjectId, ref: 'Driver' },
         message: { type: String, required: true },
+        bookingId: String,
     },
     { timestamps: true }
 );

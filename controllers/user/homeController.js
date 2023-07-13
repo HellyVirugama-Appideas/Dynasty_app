@@ -1,5 +1,6 @@
 const createError = require('http-errors');
 const multilingualUser = require('../../utils/multilingualUser');
+const formatTimestamp = require('../../utils/formatTimestamp');
 
 const Country = require('../../models/countryModel');
 const City = require('../../models/cityModel');
@@ -69,6 +70,14 @@ exports.getNotifications = async (req, res, next) => {
             .select('-__v -user')
             .sort('-_id')
             .lean();
+
+        // Format timestamps
+        notifications.forEach(notification => {
+            notification.createdAt = formatTimestamp(
+                notification.createdAt,
+                req
+            );
+        });
 
         res.json({ code: '1', message: req.t('success'), notifications });
     } catch (error) {

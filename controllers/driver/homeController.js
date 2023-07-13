@@ -1,4 +1,5 @@
 const createError = require('http-errors');
+const formatTimestamp = require('../../utils/formatTimestamp');
 
 const Driver = require('../../models/driverModel');
 const RideReq = require('../../models/rideReqModel');
@@ -84,6 +85,14 @@ exports.getNotifications = async (req, res, next) => {
             .select('-__v -driver')
             .sort('-_id')
             .lean();
+
+        // Format timestamps
+        notifications.forEach(notification => {
+            notification.createdAt = formatTimestamp(
+                notification.createdAt,
+                req
+            );
+        });
 
         res.json({ code: '1', message: req.t('success'), notifications });
     } catch (error) {

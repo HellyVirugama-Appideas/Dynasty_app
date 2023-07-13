@@ -47,6 +47,7 @@ exports.acceptRequest = async (req, res, next) => {
         Notification.create({
             user: request.user,
             message: 'Booking request accepted.',
+            bookingId: request.id,
         }).catch(error => {
             console.log('Error creating notification: ', error);
         });
