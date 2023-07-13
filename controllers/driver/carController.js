@@ -27,7 +27,7 @@ exports.getCars = async (req, res, next) => {
 
         cars = cars.map(car => {
             const updatedPics = car.pics.map(pic => {
-                if (pic === '/uploads/no_image_available_3.jpg')
+                if (pic === '/uploads/car_404.jpg')
                     return { pic, status: null };
                 else return { pic, status: 0 };
             });
@@ -166,8 +166,7 @@ exports.deleteImage = async (req, res, next) => {
             { new: true }
         );
 
-        if (req.body.pic !== '/uploads/no_image_available_3.jpg')
-            deleteFile(req.body.pic);
+        if (req.body.pic !== '/uploads/car_404.jpg') deleteFile(req.body.pic);
 
         res.json({ code: '1', message: req.t('success') });
     } catch (error) {

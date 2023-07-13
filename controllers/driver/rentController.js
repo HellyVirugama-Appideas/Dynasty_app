@@ -17,9 +17,7 @@ exports.getRequests = async (req, res, next) => {
 
         // Extracting the first image from the 'pics' array
         bookings.forEach(booking => {
-            if (booking.car?.pics && booking.car.pics.length > 0)
-                booking.car.pic = booking.car.pics[0];
-            else booking.car.pic = '/uploads/no_image_available_3.jpg';
+            booking.car.pic = booking.car.pics[0];
             delete booking.car.pics;
         });
 
@@ -104,9 +102,7 @@ exports.getBookings = async (req, res, next) => {
 
         // Extracting the first image from the 'pics' array
         bookings.forEach(booking => {
-            if (booking.car?.pics && booking.car.pics.length > 0)
-                booking.car.pic = booking.car.pics[0];
-            else booking.car.pic = '/uploads/no_image_available_3.jpg';
+            booking.car.pic = booking.car.pics[0];
             delete booking.car.pics;
         });
 

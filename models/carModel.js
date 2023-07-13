@@ -45,13 +45,9 @@ carSchema.index({ location: '2dsphere' });
 
 carSchema.post('findOneAndUpdate', async function (doc) {
     if (doc) {
-        if (
-            doc.pics.length > 1 &&
-            doc.pics.includes('/uploads/no_image_available_3.jpg')
-        )
-            doc.pics.pull('/uploads/no_image_available_3.jpg');
-        if (doc.pics.length === 0)
-            doc.pics.push('/uploads/no_image_available_3.jpg');
+        if (doc.pics.length > 1 && doc.pics.includes('/uploads/car_404.jpg'))
+            doc.pics.pull('/uploads/car_404.jpg');
+        if (doc.pics.length === 0) doc.pics.push('/uploads/car_404.jpg');
         await doc.save();
     }
 });
