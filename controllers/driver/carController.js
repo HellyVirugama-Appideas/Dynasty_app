@@ -164,7 +164,8 @@ exports.deleteImage = async (req, res, next) => {
             { new: true }
         );
 
-        deleteFile(req.body.pic);
+        if (req.body.pic !== '/uploads/no_image_available_3.jpg')
+            deleteFile(req.body.pic);
 
         res.json({ code: '1', message: req.t('success') });
     } catch (error) {
