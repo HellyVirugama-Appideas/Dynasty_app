@@ -185,7 +185,8 @@ exports.bookCar = async (req, res, next) => {
 exports.tempPayment = async (req, res, next) => {
     try {
         const request = await BookingReq.findById(req.body.bookingId).lean();
-        if (!request) return next(createError.BadRequest('Invalid bookingId.'));
+        if (!request || !request.status !== 'accepted')
+            return next(createError.BadRequest('Invalid bookingId.'));
 
         const { _id, ...requestData } = request;
 
