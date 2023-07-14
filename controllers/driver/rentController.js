@@ -37,7 +37,7 @@ exports.acceptRequest = async (req, res, next) => {
             req.params.id,
             { status: 'accepted' },
             { new: true }
-        );
+        ).populate('car');
 
         if (!request)
             return next(createError.BadRequest('Invalid request id.'));
@@ -48,6 +48,7 @@ exports.acceptRequest = async (req, res, next) => {
             user: request.user,
             message: 'Booking request accepted.',
             bookingId: request.id,
+            paymentRequired: true,
         }).catch(error => {
             console.log('Error creating notification: ', error);
         });
