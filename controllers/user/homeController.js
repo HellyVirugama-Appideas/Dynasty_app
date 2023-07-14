@@ -64,17 +64,12 @@ exports.getBanners = async (req, res, next) => {
 
 exports.getNotifications = async (req, res, next) => {
     try {
-        const notifications = await Notification.find({
-            user: req.user.id,
-        })
+        const notifications = await Notification.find({ user: req.user.id })
             .select('-__v -user')
             .sort('-_id')
             .populate({
                 path: 'bookingId',
-                populate: {
-                    path: 'car',
-                    select: 'pics',
-                },
+                populate: { path: 'car', select: 'pics' },
                 select: '-user -__v',
             })
             .lean();
@@ -82,7 +77,7 @@ exports.getNotifications = async (req, res, next) => {
         // Format timestamps
         notifications.forEach(notification => {
             notification.image = notification.bookingId?.car?.pics[0];
-            notification.bookingId.car = undefined;
+            if (notification.bookingId) notification.bookingId.car = undefined;
 
             notification.createdAt = formatTimestamp(
                 notification.createdAt,
