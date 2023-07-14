@@ -17,7 +17,7 @@ exports.getRequests = async (req, res, next) => {
 
         // Extracting the first image from the 'pics' array
         bookings.forEach(booking => {
-            booking.car.pic = booking.car.pics[0];
+            if (booking.car.pics) booking.car.pic = booking.car.pics[0];
             delete booking.car.pics;
         });
 
