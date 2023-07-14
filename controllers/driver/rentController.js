@@ -37,7 +37,7 @@ exports.acceptRequest = async (req, res, next) => {
             req.params.id,
             { status: 'accepted' },
             { new: true }
-        ).populate('car');
+        );
 
         if (!request)
             return next(createError.BadRequest('Invalid request id.'));
@@ -63,7 +63,11 @@ exports.acceptRequest = async (req, res, next) => {
 
 exports.rejectRequest = async (req, res, next) => {
     try {
-        const request = await BookingReq.findByIdAndDelete(req.params.id);
+        const request = await BookingReq.findByIdAndUpdate(
+            req.params.id,
+            { status: 'rejected' },
+            { new: true }
+        );
 
         if (!request)
             return next(createError.BadRequest('Invalid request id.'));
@@ -73,6 +77,7 @@ exports.rejectRequest = async (req, res, next) => {
         Notification.create({
             user: request.user,
             message: 'Booking request rejected.',
+            bookingId: request.id,
         }).catch(error => {
             console.log('Error creating notification: ', error);
         });
