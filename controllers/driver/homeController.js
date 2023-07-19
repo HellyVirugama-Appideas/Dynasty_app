@@ -89,7 +89,7 @@ exports.getNotifications = async (req, res, next) => {
         // Format timestamps
         notifications.forEach(notification => {
             notification.createdAt = formatTimestamp(
-                notification.createdAt,
+                notification.updatedAt,
                 req
             );
         });

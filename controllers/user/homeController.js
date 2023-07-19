@@ -80,7 +80,7 @@ exports.getNotifications = async (req, res, next) => {
             if (notification.bookingId) notification.bookingId.car = undefined;
 
             notification.createdAt = formatTimestamp(
-                notification.createdAt,
+                notification.updatedAt,
                 req
             );
         });

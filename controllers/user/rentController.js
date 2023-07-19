@@ -192,8 +192,20 @@ exports.tempPayment = async (req, res, next) => {
 
         const booking = await Booking.create(requestData);
 
-        BookingReq.findByIdAndDelete(_id).catch(error => {
-            console.log('Error deleting booking request:', error);
+        await BookingReq.findByIdAndUpdate(_id, { status: 'completed' }).catch(
+            error => {
+                console.log('Error updating booking: ', error);
+            }
+        );
+
+        await Notification.findOneAndUpdate(
+            { bookingId: req.body.bookingId },
+            {
+                message: 'Booking has been completed.',
+                paymentRequired: false,
+            }
+        ).catch(error => {
+            console.log('Error updating booking: ', error);
         });
 
         res.json({ code: '1', message: req.t('success'), booking });

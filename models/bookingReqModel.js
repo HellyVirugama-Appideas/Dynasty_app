@@ -27,7 +27,7 @@ const bookingReqSchema = new mongoose.Schema({
     status: {
         type: String,
         default: 'requested',
-        enum: ['requested', 'accepted', 'rejected'],
+        enum: ['requested', 'accepted', 'rejected', 'completed'],
     },
 });
 
