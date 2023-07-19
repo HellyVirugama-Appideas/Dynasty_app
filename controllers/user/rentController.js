@@ -322,12 +322,24 @@ exports.getBookings = async (req, res, next) => {
             .populate('user', 'profile name email country_code phone')
             .populate('car', 'name pics price kmsDriven model')
             .select('-__v')
+            .sort('-_id')
+            .lean();
+
+        const carIds = [...new Set(bookings.map(booking => booking.car._id))];
+        const ratings = await Rating.find({
+            car: { $in: carIds },
+            user: req.user.id,
+        })
+            .select('car rating comment')
             .lean();
 
         // Extracting the first image from the 'pics' array
         bookings.forEach(booking => {
             if (booking.car.pics) booking.car.pic = booking.car.pics[0];
             delete booking.car.pics;
+            const rating = ratings.find(r => r.car.equals(booking.car._id));
+            booking.rating = rating ? rating.rating : null;
+            booking.comment = rating ? rating.comment : null;
         });
 
         res.json({ code: '1', message: req.t('success'), bookings });

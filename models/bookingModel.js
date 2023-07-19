@@ -23,6 +23,7 @@ const bookingSchema = new mongoose.Schema({
     address: { type: String, required: [true, 'validation.address'] },
     bookedFrom: { type: Date, required: true },
     bookedTo: { type: Date, required: true },
+    price: { type: Number, default: 10 },
 
     pickupCheck: { type: Boolean, default: false },
     pickupSign: {
