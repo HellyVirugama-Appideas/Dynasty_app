@@ -29,6 +29,13 @@ router.post('/give_rating', fileUpload(), checkUser, rentController.addRating);
 router.get('/booked/:type', checkUser, rentController.getBookings);
 
 router.post(
+    '/cancel_booking',
+    fileUpload(),
+    checkUser,
+    rentController.cancelBooking
+);
+
+router.post(
     '/signature/:type',
     upload.single('sign'),
     checkUser,

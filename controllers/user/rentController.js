@@ -46,6 +46,7 @@ exports.listCars = async (req, res, next) => {
             const bookedCarIds = await Booking.distinct('car', {
                 bookedFrom: { $lt: dateTo },
                 bookedTo: { $gt: dateFrom },
+                status: 'accepted',
             });
             filter._id = { $nin: bookedCarIds };
         }
@@ -311,6 +312,7 @@ exports.getBookings = async (req, res, next) => {
     try {
         const currentDate = new Date();
         const queryOptions = {
+            status: 'accepted',
             user: req.user.id,
             bookedTo:
                 req.params.type === 'current'
@@ -321,7 +323,7 @@ exports.getBookings = async (req, res, next) => {
         const bookings = await Booking.find(queryOptions)
             .populate('user', 'profile name email country_code phone')
             .populate('car', 'name pics price kmsDriven model')
-            .select('-__v')
+            .select('-__v -status')
             .sort('-_id')
             .lean();
 
@@ -343,6 +345,25 @@ exports.getBookings = async (req, res, next) => {
         });
 
         res.json({ code: '1', message: req.t('success'), bookings });
+    } catch (error) {
+        next(error);
+    }
+};
+
+exports.cancelBooking = async (req, res, next) => {
+    try {
+        const booking = await Booking.findOne({
+            _id: req.body.id,
+            user: req.user.id,
+            status: 'accepted',
+        });
+        if (!booking) return next(createError.NotFound('Booking not found!'));
+
+        booking.status = 'cancelled';
+        booking.reason = req.body.reason;
+        await booking.save();
+
+        res.json({ code: '1', message: req.t('success') });
     } catch (error) {
         next(error);
     }

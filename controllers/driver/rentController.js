@@ -94,6 +94,7 @@ exports.getBookings = async (req, res, next) => {
     try {
         const currentDate = new Date();
         const queryOptions = {
+            status: 'accepted',
             driver: req.driver.id,
             bookedTo:
                 req.params.type === 'current'
@@ -104,7 +105,8 @@ exports.getBookings = async (req, res, next) => {
         const bookings = await Booking.find(queryOptions)
             .populate('user', 'profile name email country_code phone')
             .populate('car', 'name pics price')
-            .select('-__v -driver')
+            .select('-__v -driver -status')
+            .sort('-_id')
             .lean();
 
         // Extracting the first image from the 'pics' array

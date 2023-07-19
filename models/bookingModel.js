@@ -39,6 +39,18 @@ const bookingSchema = new mongoose.Schema({
             return this.returnCheck;
         },
     },
+
+    status: {
+        type: String,
+        default: 'accepted',
+        enum: ['accepted', 'cancelled'],
+    },
+    reason: {
+        type: String,
+        required: function () {
+            return this.status === 'cancelled';
+        },
+    },
 });
 
 module.exports = mongoose.model('Booking', bookingSchema);
