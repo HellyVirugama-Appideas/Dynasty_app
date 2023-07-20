@@ -53,8 +53,6 @@
                                                             <th>Email</th>
                                                             <th>Date</th>
                                                             <th>Edit</th>
-                                                            <th>Status</th>
-                                                            <th>Action</th>
                                                         </tr>
                                                     </thead>
                                                     <tbody>
@@ -67,20 +65,6 @@
                                                             <td><%= drivers[i].email %></td>
                                                             <td><%= drivers[i].date.toLocaleDateString('en-GB') %></td>
                                                             <td style="max-width: 50px;"><a href="/admin/driver/edit/<%= drivers[i].id %>"><i class="material-icons">edit</i></a></td>
-                                                            <td>
-                                                                <% if (drivers[i].approved) { %>
-                                                                Approved
-                                                                <% } else { %>
-                                                                <a href="/admin/driver/approve/<%= drivers[i].id %>" class="waves-effect border-round waves-light btn gradient-45deg-green-teal" onclick="return confirm('Are you sure want to approve this driver?');">Approve</a>
-                                                                <% } %>
-                                                            </td>
-                                                            <td>
-                                                                <% if (drivers[i].blocked) { %>
-                                                                <a href="/admin/driver/unblock/<%= drivers[i].id %>" class="waves-effect border-round waves-light btn gradient-45deg-green-teal" onclick="return confirm('Are you sure want to unblock this driver?');">unblock</a>
-                                                                <% } else { %>
-                                                                <a href="/admin/driver/block/<%= drivers[i].id %>" class="waves-effect border-round waves-light btn gradient-45deg-red-pink" onclick="return confirm('Are you sure want to block this driver?');">block</a>
-                                                                <% } %>
-                                                            </td>
                                                         </tr>
                                                         <% } %>
                                                     </tbody>

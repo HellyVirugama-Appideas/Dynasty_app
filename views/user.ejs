@@ -56,7 +56,6 @@
                                                             <th>Email</th>
                                                             <th>Date</th>
                                                             <th>View</th>
-                                                            <th>Action</th>
                                                         </tr>
                                                     </thead>
                                                     <tbody>
@@ -69,13 +68,6 @@
                                                             <td><%= users[i].email %></td>
                                                             <td><%= users[i].date.toLocaleDateString('en-GB') %></td>
                                                             <td style="max-width: 50px;"><a href="/admin/user/<%= users[i].id %>"><i class="material-icons">remove_red_eye</i></a></td>
-                                                            <td>
-                                                                <% if (users[i].blocked) { %>
-                                                                <a href="/admin/user/unblock/<%= users[i].id %>" class="waves-effect border-round waves-light btn gradient-45deg-green-teal mr-1 mb-2" onclick="return confirm('Are you sure want to unblock this user?');">unblock</a>
-                                                                <% } else { %>
-                                                                <a href="/admin/user/block/<%= users[i].id %>" class="waves-effect border-round waves-light btn gradient-45deg-red-pink mr-1 mb-2" onclick="return confirm('Are you sure want to block this user?');">block</a>
-                                                                <% } %>
-                                                            </td>
                                                         </tr>
                                                         <% } %>
                                                     </tbody>
