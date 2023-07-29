@@ -5,10 +5,11 @@ const createError = require('http-errors');
 const i18n = require('i18next');
 const i18nFsBackend = require('i18next-fs-backend');
 const i18nMiddleware = require('i18next-http-middleware');
+const cron = require('node-cron');
 
 const landingController = require('./controllers/landingController');
 const globalErrorHandler = require('./controllers/errorController');
-// const uploadController = require('./controllers/admin/uploadController');
+const updateExpiredBookings = require('./utils/updateExpiredBookings');
 
 // Start express app
 const app = express();
@@ -107,12 +108,6 @@ app.use('/api', (req, res, next) => {
 });
 
 // 3) ADMIN ROUTES
-// app.post(
-//     '/upload',
-//     uploadController.upload.single('upload'),
-//     uploadController.uploadCmsImage
-// );
-
 app.use(function (req, res, next) {
     res.locals.url = req.originalUrl;
     res.locals.title = 'Dynasty';
@@ -142,5 +137,11 @@ app.get('/*', (req, res) => res.redirect('/'));
 
 // 5) ERROR HANDLING
 app.use(globalErrorHandler);
+
+// 6) CRON JOB
+// Schedule the job to run every hour
+cron.schedule('0 * * * *', () => {
+    updateExpiredBookings();
+});
 
 module.exports = app;
