@@ -86,11 +86,13 @@ exports.listCars = async (req, res, next) => {
     }
 };
 
+// TODO: add booked date array
 exports.carDetail = async (req, res, next) => {
     try {
         const carId = req.params.id;
+        const currentDate = new Date();
 
-        const [car, ratings, request] = await Promise.all([
+        const [car, ratings, request, bookings] = await Promise.all([
             Car.findById(carId)
                 .populate('driver', 'profile name')
                 .select('-__v -location -type')
@@ -104,6 +106,11 @@ exports.carDetail = async (req, res, next) => {
                 user: req.user.id,
                 status: 'requested',
             }),
+            Booking.find({
+                car: carId,
+                status: 'accepted',
+                bookedFrom: { $gte: currentDate },
+            }).select('bookedFrom bookedTo'),
         ]);
 
         if (!car) return next(createError.BadRequest('Invalid car id.'));
@@ -117,7 +124,12 @@ exports.carDetail = async (req, res, next) => {
         car.reviews = reviews;
         car.requested = request ? true : false;
 
-        res.json({ code: '1', message: req.t('success'), car });
+        res.json({
+            code: '1',
+            message: req.t('success'),
+            car,
+            bookedSlots: bookings,
+        });
     } catch (error) {
         if (error.name === 'CastError')
             return next(createError.BadRequest('Invalid car id.'));
