@@ -164,10 +164,8 @@ exports.bookCar = async (req, res, next) => {
         // Check if the car is already booked within the requested period
         const overlappingBooking = await Booking.findOne({
             car: req.body.carId,
-            $or: [
-                { bookedFrom: { $lt: bookedTo } },
-                { bookedTo: { $gt: bookedFrom } },
-            ],
+            bookedFrom: { $lt: bookedTo },
+            bookedTo: { $gt: bookedFrom },
         });
         if (overlappingBooking)
             return next(createError.Conflict('rent.already'));
