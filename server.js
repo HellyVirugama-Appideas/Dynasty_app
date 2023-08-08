@@ -1,9 +1,8 @@
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 const socketIO = require('socket.io');
-const jwt = require('jsonwebtoken');
 
-const ChatMessage = require('./models/chatMessageModel');
+const socketHandler = require('./utils/socketHandler');
 
 process.on('uncaughtException', err => {
     console.log('UNCAUGHT EXCEPTION! 💥 Shutting down...');
@@ -30,44 +29,7 @@ mongoose
 const server = require('http').createServer(app);
 const io = socketIO(server);
 
-io.on('connection', socket => {
-    socket.on('join', function (data) {
-        const decoded = jwt.verify(data.token, process.env.JWT_SECRET);
-        socket.join(decoded._id);
-    });
-
-    // Listen for get chat messages
-    socket.on('getChatMessages', async data => {
-        try {
-            const bookingId = data.bookingId;
-
-            const messages = await ChatMessage.find({ bookingId });
-
-            // Emit old messages to the client
-            socket.emit('chatMessages', messages);
-        } catch (error) {
-            console.error('Error retrieving old messages:', error.message);
-        }
-    });
-
-    // Listen for new chat messages
-    socket.on('sendMessage', async data => {
-        try {
-            const decoded = jwt.verify(data.token, process.env.JWT_SECRET);
-
-            const chatMessage = await ChatMessage.create({
-                bookingId: data.bookingId,
-                sender: decoded._id,
-                receiver: data.receiver,
-                message: data.message,
-            });
-
-            io.to(data.receiver).emit('receiveMessage', chatMessage);
-        } catch (error) {
-            console.error('Error saving message:', error.message);
-        }
-    });
-});
+socketHandler(io);
 
 const port = process.env.PORT || 3000;
 server.listen(port, () => {

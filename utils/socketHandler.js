@@ -1,0 +1,47 @@
+const jwt = require('jsonwebtoken');
+const ChatMessage = require('../models/chatMessageModel');
+
+module.exports = io => {
+    io.on('connection', socket => {
+        socket.on('join', data => {
+            try {
+                const decoded = jwt.verify(data.token, process.env.JWT_SECRET);
+                socket.join(decoded._id);
+            } catch (error) {
+                console.log('Invalid token.');
+            }
+        });
+
+        // Listen for get chat messages
+        socket.on('getChatMessages', async data => {
+            try {
+                const bookingId = data.bookingId;
+
+                const messages = await ChatMessage.find({ bookingId });
+
+                // Emit old messages to the client
+                socket.emit('chatMessages', messages);
+            } catch (error) {
+                console.error('Error retrieving old messages:', error.message);
+            }
+        });
+
+        // Listen for new chat messages
+        socket.on('sendMessage', async data => {
+            try {
+                const decoded = jwt.verify(data.token, process.env.JWT_SECRET);
+
+                const chatMessage = await ChatMessage.create({
+                    bookingId: data.bookingId,
+                    sender: decoded._id,
+                    receiver: data.receiver,
+                    message: data.message,
+                });
+
+                io.to(data.receiver).emit('receiveMessage', chatMessage);
+            } catch (error) {
+                console.error('Error saving message:', error.message);
+            }
+        });
+    });
+};
