@@ -52,6 +52,9 @@
         "accepted": "Booking request accepted.",
         "rejected": "Booking request rejected."
     },
+    "rent": {
+        "already": "Car is already booked for the requested period."
+    },
     "car": {
         "added": "Car added successfully.",
         "edited": "Car edited successfully.",

@@ -86,7 +86,6 @@ exports.listCars = async (req, res, next) => {
     }
 };
 
-// TODO: add booked date array
 exports.carDetail = async (req, res, next) => {
     try {
         const carId = req.params.id;
@@ -161,6 +160,17 @@ exports.bookCar = async (req, res, next) => {
             'address'
         );
         if (!car) return next(createError.BadRequest('Invalid carId.'));
+
+        // Check if the car is already booked within the requested period
+        const overlappingBooking = await Booking.findOne({
+            car: req.body.carId,
+            $or: [
+                { bookedFrom: { $lt: bookedTo } },
+                { bookedTo: { $gt: bookedFrom } },
+            ],
+        });
+        if (overlappingBooking)
+            return next(createError.Conflict('rent.already'));
 
         const { deliveryOption } = req.body;
         let address;

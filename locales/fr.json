@@ -52,6 +52,9 @@
         "accepted": "Demande de réservation acceptée.",
         "rejected": "Demande de réservation rejetée."
     },
+    "rent": {
+        "already": "La voiture est déjà réservée pour la période demandée."
+    },
     "car": {
         "added": "La voiture a ajouté avec succès.",
         "edited": "Car a été édité avec succès.",
