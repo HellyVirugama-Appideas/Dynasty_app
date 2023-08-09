@@ -89,6 +89,8 @@ exports.verifyOTP = async (req, res, next) => {
             .populate('city country');
 
         if (driver) {
+            driver.fcmToken = req.body.fcmToken;
+            await driver.save();
             const token = await driver.generateAuthToken();
 
             driver = multilingualUser(driver, req);
@@ -159,6 +161,7 @@ exports.createProfile = async (req, res, next) => {
             address: req.body.address,
             useFor: req.body.useFor,
             profile,
+            fcmToken: req.body.fcmToken,
         });
 
         const token = await driver.generateAuthToken();
@@ -245,6 +248,8 @@ exports.socialLogin = async (req, res, next) => {
             }
         }
 
+        driver.fcmToken = req.body.fcmToken;
+        await driver.save();
         const token = await driver.generateAuthToken();
         driver = multilingualUser(driver, req);
 
@@ -296,6 +301,7 @@ exports.createSocialProfile = async (req, res, next) => {
             facebookId: req.body.facebookId,
             appleId: req.body.appleId,
             profile,
+            fcmToken: req.body.fcmToken,
         });
 
         const token = await driver.generateAuthToken();

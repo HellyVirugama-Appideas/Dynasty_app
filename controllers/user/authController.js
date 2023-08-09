@@ -1,6 +1,6 @@
 const { promisify } = require('util');
 const createError = require('http-errors');
-const validator = require('validator');
+// const validator = require('validator');
 const jwt = require('jsonwebtoken');
 const multilingualUser = require('../../utils/multilingualUser');
 // const { sendOTP } = require('../../utils/sendSMS');
@@ -86,6 +86,8 @@ exports.verifyOTP = async (req, res, next) => {
             '-__v'
         );
         if (userExists) {
+            userExists.fcmToken = req.body.fcmToken;
+            await userExists.save();
             const token = await userExists.generateAuthToken();
             return res.json({
                 code: '1',
@@ -158,6 +160,7 @@ exports.createProfile = async (req, res, next) => {
             profile,
             licenseFront,
             licenseBack,
+            fcmToken: req.body.fcmToken,
         });
 
         // create address
@@ -271,6 +274,8 @@ exports.socialLogin = async (req, res, next) => {
             }
         }
 
+        user.fcmToken = req.body.fcmToken;
+        await user.save();
         const token = await user.generateAuthToken();
 
         user = multilingualUser(user, req);
@@ -329,6 +334,7 @@ exports.createSocialProfile = async (req, res, next) => {
             profile,
             licenseFront,
             licenseBack,
+            fcmToken: req.body.fcmToken,
         });
 
         // create address

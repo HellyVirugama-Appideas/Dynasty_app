@@ -51,6 +51,7 @@ const userSchema = new mongoose.Schema({
         immutable: true,
     },
     favorites: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Car' }],
+    fcmToken: { type: String, required: [true, 'fcmToken is required.'] },
     date: {
         type: Date,
         default: Date.now,
