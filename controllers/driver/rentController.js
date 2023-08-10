@@ -104,7 +104,7 @@ exports.getBookings = async (req, res, next) => {
 
         const bookings = await Booking.find(queryOptions)
             .populate('user', 'profile name email country_code phone')
-            .populate('car', 'name pics price')
+            .populate('car', 'name pics price model kmsDriven')
             .select('-__v -driver -status')
             .sort('-_id')
             .lean();
