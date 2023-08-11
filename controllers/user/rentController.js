@@ -190,6 +190,7 @@ exports.bookCar = async (req, res, next) => {
 
         Notification.create({
             driver: car.driver,
+            car: req.body.carId,
             message: 'New booking request.',
         }).catch(error => {
             console.log('Error creating notification: ', error);

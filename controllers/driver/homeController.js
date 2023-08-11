@@ -84,10 +84,14 @@ exports.getNotifications = async (req, res, next) => {
         })
             .select('-__v -driver')
             .sort('-_id')
+            .populate('car', 'pics')
             .lean();
 
         // Format timestamps
         notifications.forEach(notification => {
+            notification.image = notification.car?.pics[0];
+            notification.car = undefined;
+
             notification.createdAt = formatTimestamp(
                 notification.updatedAt,
                 req
