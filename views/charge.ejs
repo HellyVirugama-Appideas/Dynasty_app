@@ -64,6 +64,13 @@
                                                     <div id="error4" class="error"></div>
                                                 </small>
                                             </div>
+                                            <div class="input-field col m6 s12">
+                                                <input placeholder="Car Delivering Fee" id="carDeliveringFee" name="carDeliveringFee" type="text" value="<%= charge.carDeliveringFee %>" oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*?)\..*/g, '$1');">
+                                                <label for="carDeliveringFee">Car Delivering Fee</label>
+                                                <small>
+                                                    <div id="error5" class="error"></div>
+                                                </small>
+                                            </div>
                                             <div class="col s12">
                                                 <button type="submit" class="btn purple" id="submitBtn">Submit</button>
                                                 <a onclick="history.back()" class="btn btn-danger ml-1">Cancel</a>
@@ -94,6 +101,7 @@
             const baseFareValue = document.getElementById('baseFare').value.trim();
             const minimumFareValue = document.getElementById('minimumFare').value.trim();
             const bookingFeeValue = document.getElementById('bookingFee').value.trim();
+            const carDeliveringFeeValue = document.getElementById('carDeliveringFee').value.trim();
 
             if (baseFareValue == '') {
                 document.getElementById('error1').innerText = 'Please enter base fare.';
@@ -114,6 +122,13 @@
                 returnVal = false;
             } else {
                 document.getElementById('error4').innerText = '';
+            }
+
+            if (carDeliveringFeeValue == '') {
+                document.getElementById('error5').innerText = 'Please enter car delivering fee.';
+                returnVal = false;
+            } else {
+                document.getElementById('error5').innerText = '';
             }
 
             if (returnVal) {
