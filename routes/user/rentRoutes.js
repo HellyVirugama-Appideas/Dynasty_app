@@ -33,6 +33,9 @@ router.post('/give_rating', fileUpload(), checkUser, rentController.addRating);
 // booked
 router.get('/booked/:type', checkUser, rentController.getBookings);
 
+// history
+router.get('/history', checkUser, rentController.getHistory);
+
 router.post(
     '/cancel_booking',
     fileUpload(),

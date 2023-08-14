@@ -369,6 +369,36 @@ exports.getBookings = async (req, res, next) => {
     }
 };
 
+exports.getHistory = async (req, res, next) => {
+    try {
+        // Temp
+        const history = [
+            {
+                type: 'Refund',
+                amount: 39,
+                Date: '2023-08-14T10:33:25.864Z',
+                method: 'Cash',
+            },
+            {
+                type: 'Paid',
+                amount: 249,
+                Date: '2023-08-10T14:46:25.864Z',
+                method: 'Card',
+            },
+            {
+                type: 'Paid',
+                amount: 120,
+                Date: '2023-07-25T09:14:41.773Z',
+                method: 'Card',
+            },
+        ];
+
+        res.json({ code: '1', message: req.t('success'), history });
+    } catch (error) {
+        next(error);
+    }
+};
+
 exports.cancelBooking = async (req, res, next) => {
     try {
         const booking = await Booking.findOne({
