@@ -11,7 +11,12 @@ router.get('/car_detail/:id', checkUser, rentController.carDetail);
 
 router.post('/book_car', checkUser, fileUpload(), rentController.bookCar);
 
-router.post('/temp_payment', fileUpload(), rentController.tempPayment);
+router.post(
+    '/temp_payment',
+    checkUser,
+    fileUpload(),
+    rentController.tempPayment
+);
 
 // favorites
 router.get('/favorites', checkUser, rentController.getFavorites);

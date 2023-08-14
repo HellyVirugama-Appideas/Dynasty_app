@@ -1,12 +1,12 @@
 const createError = require('http-errors');
 const multilingual = require('../../utils/multilingual');
 const deleteFile = require('../../utils/deleteFile');
+const sendNotification = require('../../utils/sendNotification');
 
 const Car = require('../../models/carModel');
 const Booking = require('../../models/bookingModel');
 const BookingReq = require('../../models/bookingReqModel');
 const Rating = require('../../models/ratingModel');
-const Notification = require('../../models/notificationModel');
 
 exports.listCars = async (req, res, next) => {
     try {
@@ -157,7 +157,7 @@ exports.bookCar = async (req, res, next) => {
 
         const car = await Car.findById(req.body.carId).populate(
             'driver',
-            'address'
+            'address fcmToken'
         );
         if (!car) return next(createError.BadRequest('Invalid carId.'));
 
@@ -187,14 +187,14 @@ exports.bookCar = async (req, res, next) => {
         });
 
         // Notify driver
-
-        Notification.create({
+        const data = {
             driver: car.driver,
             car: req.body.carId,
-            message: 'New booking request.',
-        }).catch(error => {
-            console.log('Error creating notification: ', error);
-        });
+            requestId: booking.id,
+            title: 'New Booking Request',
+            body: 'You have a new booking request. Please review and respond.',
+        };
+        sendNotification(car.driver.fcmToken, data);
 
         res.json({ code: '1', message: req.t('success'), booking });
     } catch (error) {
@@ -206,9 +206,9 @@ exports.bookCar = async (req, res, next) => {
 
 exports.tempPayment = async (req, res, next) => {
     try {
-        const request = await BookingReq.findById(req.body.bookingId).lean();
+        const request = await BookingReq.findById(req.body.requestId).lean();
         if (!request || request.status !== 'accepted')
-            return next(createError.BadRequest('Invalid bookingId.'));
+            return next(createError.BadRequest('Invalid requestId.'));
 
         const { _id, ...requestData } = request;
 
@@ -220,18 +220,19 @@ exports.tempPayment = async (req, res, next) => {
             }
         );
 
-        await Notification.findOneAndUpdate(
-            { bookingId: req.body.bookingId },
-            {
-                message: 'Booking has been completed.',
-                paymentRequired: false,
-            }
-        ).catch(error => {
-            console.log('Error updating booking: ', error);
-        });
+        // Notify user
+        const data = {
+            user: req.user.id,
+            car: request.car,
+            requestId: request.id,
+            title: 'Booking has been completed.',
+            body: 'Your booking has been successfully completed. Thank you for using our service!',
+        };
+        sendNotification(req.user.fcmToken, data);
 
         res.json({ code: '1', message: req.t('success'), booking });
     } catch (error) {
+        console.log(error);
         next(error);
     }
 };

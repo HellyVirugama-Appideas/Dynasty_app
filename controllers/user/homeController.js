@@ -67,17 +67,13 @@ exports.getNotifications = async (req, res, next) => {
         const notifications = await Notification.find({ user: req.user.id })
             .select('-__v -user')
             .sort('-_id')
-            .populate({
-                path: 'bookingId',
-                populate: { path: 'car', select: 'pics' },
-                select: '-user -__v',
-            })
+            .populate('car', 'pics')
             .lean();
 
         // Format timestamps
         notifications.forEach(notification => {
-            notification.image = notification.bookingId?.car?.pics[0];
-            if (notification.bookingId) notification.bookingId.car = undefined;
+            notification.image = notification.car?.pics[0];
+            notification.car = undefined;
 
             notification.createdAt = formatTimestamp(
                 notification.updatedAt,
