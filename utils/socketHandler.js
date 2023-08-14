@@ -22,7 +22,7 @@ module.exports = io => {
                 // Emit old messages to the client
                 socket.emit('chatMessages', messages);
             } catch (error) {
-                console.error('Error retrieving old messages:', error.message);
+                console.log('Error retrieving old messages:', error.message);
             }
         });
 
@@ -40,7 +40,7 @@ module.exports = io => {
 
                 io.to(data.receiver).emit('receiveMessage', chatMessage);
             } catch (error) {
-                console.error('Error saving message:', error.message);
+                console.log('Error saving message:', error.message);
             }
         });
     });

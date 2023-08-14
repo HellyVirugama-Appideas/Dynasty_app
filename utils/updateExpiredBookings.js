@@ -25,6 +25,6 @@ module.exports = async () => {
             console.log('No expired booking requests found.');
         }
     } catch (error) {
-        console.error('Error while updating expired booking requests:', error);
+        console.log('Error while updating expired booking requests:', error);
     }
 };

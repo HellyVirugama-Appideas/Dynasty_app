@@ -215,9 +215,7 @@ exports.tempPayment = async (req, res, next) => {
         const booking = await Booking.create(requestData);
 
         await BookingReq.findByIdAndUpdate(_id, { status: 'completed' }).catch(
-            error => {
-                console.log('Error updating booking: ', error);
-            }
+            error => console.log('Error updating booking: ', error)
         );
 
         // Notify user
@@ -232,7 +230,6 @@ exports.tempPayment = async (req, res, next) => {
 
         res.json({ code: '1', message: req.t('success'), booking });
     } catch (error) {
-        console.log(error);
         next(error);
     }
 };

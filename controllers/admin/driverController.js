@@ -171,7 +171,6 @@ exports.postEditDriver = async (req, res) => {
         req.flash('green', 'Driver edited successfully.');
         res.redirect('/admin/driver');
     } catch (error) {
-        console.log(error);
         req.flash('red', error.message);
         res.redirect('/admin/driver');
     }
