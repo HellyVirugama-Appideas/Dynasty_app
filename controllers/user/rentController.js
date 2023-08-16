@@ -222,6 +222,8 @@ exports.tempPayment = async (req, res, next) => {
 
         // Calculate days
         const { bookedFrom, bookedTo } = request;
+        bookedFrom.setHours(0, 0, 0, 0);
+        bookedTo.setHours(0, 0, 0, 0);
         const days =
             Math.ceil((bookedTo - bookedFrom) / (1000 * 60 * 60 * 24)) + 1;
         if (days <= 0)
@@ -232,6 +234,8 @@ exports.tempPayment = async (req, res, next) => {
         if (request.deliveryOption == 'delivery')
             price += charge.carDeliveringFee;
         requestData.price = price;
+
+        return res.end();
 
         const booking = await Booking.create(requestData);
 
