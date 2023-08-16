@@ -221,7 +221,8 @@ exports.tempPayment = async (req, res, next) => {
         const { _id, ...requestData } = request;
 
         // Calculate days
-        const { bookedFrom, bookedTo } = request;
+        const bookedFrom = new Date(request.bookedFrom);
+        const bookedTo = new Date(request.bookedTo);
         bookedFrom.setHours(0, 0, 0, 0);
         bookedTo.setHours(0, 0, 0, 0);
         const days =
