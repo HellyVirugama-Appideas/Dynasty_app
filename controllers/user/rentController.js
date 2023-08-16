@@ -7,6 +7,7 @@ const Car = require('../../models/carModel');
 const Booking = require('../../models/bookingModel');
 const BookingReq = require('../../models/bookingReqModel');
 const Rating = require('../../models/ratingModel');
+const Charges = require('../../models/chargesModel');
 
 exports.listCars = async (req, res, next) => {
     try {
@@ -91,7 +92,7 @@ exports.carDetail = async (req, res, next) => {
         const carId = req.params.id;
         const currentDate = new Date();
 
-        const [car, ratings, request, bookings] = await Promise.all([
+        const [car, ratings, request, bookings, charge] = await Promise.all([
             Car.findById(carId)
                 .populate('driver', 'profile name')
                 .select('-__v -location -type')
@@ -110,6 +111,7 @@ exports.carDetail = async (req, res, next) => {
                 status: 'accepted',
                 bookedFrom: { $gte: currentDate },
             }).select('bookedFrom bookedTo'),
+            Charges.findOne(),
         ]);
 
         if (!car) return next(createError.BadRequest('Invalid car id.'));
@@ -128,6 +130,7 @@ exports.carDetail = async (req, res, next) => {
             message: req.t('success'),
             car,
             bookedSlots: bookings,
+            carDeliveringFee: charge.carDeliveringFee,
         });
     } catch (error) {
         if (error.name === 'CastError')
@@ -208,11 +211,27 @@ exports.bookCar = async (req, res, next) => {
 
 exports.tempPayment = async (req, res, next) => {
     try {
-        const request = await BookingReq.findById(req.body.requestId).lean();
+        const [request, charge] = await Promise.all([
+            BookingReq.findById(req.body.requestId).populate('car').lean(),
+            Charges.findOne(),
+        ]);
         if (!request || request.status !== 'accepted')
             return next(createError.BadRequest('Invalid requestId.'));
 
         const { _id, ...requestData } = request;
+
+        // Calculate days
+        const { bookedFrom, bookedTo } = request;
+        const days =
+            Math.ceil((bookedTo - bookedFrom) / (1000 * 60 * 60 * 24)) + 1;
+        if (days <= 0)
+            return next(createError.BadRequest('Invalid booking dates.'));
+
+        // Calculate the total rent price
+        let price = request.car.price * days;
+        if (request.deliveryOption == 'delivery')
+            price += charge.carDeliveringFee;
+        requestData.price = price;
 
         const booking = await Booking.create(requestData);
 
