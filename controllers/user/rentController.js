@@ -235,8 +235,6 @@ exports.tempPayment = async (req, res, next) => {
             price += charge.carDeliveringFee;
         requestData.price = price;
 
-        return res.end();
-
         const booking = await Booking.create(requestData);
 
         await BookingReq.findByIdAndUpdate(_id, { status: 'completed' }).catch(
