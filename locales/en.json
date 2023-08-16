@@ -12,7 +12,9 @@
         "longitude": "Please provide longitude.",
         "city": "Please provide city.",
         "country": "Please provide country.",
-        "type": "Please provide vehicle type."
+        "type": "Please provide vehicle type.",
+        "pickupTime": "Please provide pickup time.",
+        "returnTime": "Please provide return time."
     },
     "phone": {
         "verify": "Please verify mobile number."

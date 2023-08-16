@@ -19,10 +19,13 @@ const bookingSchema = new mongoose.Schema({
     deliveryOption: {
         type: String,
         required: [true, 'validation.deliveryOption'],
+        enum: ['delivery', 'pickup'],
     },
     address: { type: String, required: [true, 'validation.address'] },
     bookedFrom: { type: Date, required: true },
     bookedTo: { type: Date, required: true },
+    pickupTime: { type: String, require: true },
+    returnTime: { type: String, require: true },
     price: { type: Number, default: 10 },
 
     pickupCheck: { type: Boolean, default: false },

@@ -184,6 +184,8 @@ exports.bookCar = async (req, res, next) => {
             address,
             bookedFrom,
             bookedTo,
+            pickupTime: req.body.pickupTime,
+            returnTime: req.body.returnTime,
         });
 
         // Notify driver
