@@ -1,14 +1,32 @@
 const jwt = require('jsonwebtoken');
+
+const Driver = require('../models/driverModel');
 const ChatMessage = require('../models/chatMessageModel');
 
 module.exports = io => {
     io.on('connection', socket => {
+        // Join
         socket.on('join', data => {
             try {
                 const decoded = jwt.verify(data.token, process.env.JWT_SECRET);
                 socket.join(decoded._id);
             } catch (error) {
                 console.log('Invalid token.');
+            }
+        });
+
+        // Set status
+        socket.on('setStatus', async data => {
+            try {
+                const status = data.status;
+                const decoded = jwt.verify(data.token, process.env.JWT_SECRET);
+
+                await Driver.findByIdAndUpdate(decoded._id, { status });
+
+                // Emit status
+                socket.emit('getStatus', { status });
+            } catch (error) {
+                console.log('Error retrieving old messages:', error.message);
             }
         });
 
