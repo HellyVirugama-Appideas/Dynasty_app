@@ -13,10 +13,29 @@ exports.getVehicleTypes = async (req, res, next) => {
         if (!pickupLat || !pickupLng || !endLat || !endLng)
             return next(createError.BadRequest('Invalid coordinates.'));
 
+        // Find nearby drivers within a certain distance (e.g., 10 km)
+        const radiusInMeters = 10000;
+        const nearbyDrivers = await Driver.find({
+            location: {
+                $near: {
+                    $geometry: {
+                        type: 'Point',
+                        coordinates: [pickupLng, pickupLat],
+                    },
+                    $maxDistance: radiusInMeters,
+                },
+            },
+            status: 'online',
+        });
+
         let [types, charges] = await Promise.all([
             Type.find({ typeFor: 'Taxi' }).select('-__v -typeFor'),
             Charges.findOne(),
         ]);
+
+        types = types.filter(type =>
+            nearbyDrivers.some(driver => driver.type.toString() === type.id)
+        );
         types = types.map(type => multilingual(type, req));
 
         // calculate ride distance
