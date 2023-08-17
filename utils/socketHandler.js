@@ -26,7 +26,21 @@ module.exports = io => {
                 // Emit status
                 socket.emit('getStatus', { status });
             } catch (error) {
-                console.log('Error retrieving old messages:', error.message);
+                console.log('Error:', error.message);
+            }
+        });
+
+        // Get status
+        socket.on('getStatus', async data => {
+            try {
+                const decoded = jwt.verify(data.token, process.env.JWT_SECRET);
+
+                const driver = await Driver.findById(decoded._id);
+
+                // Emit status
+                socket.emit('getStatus', { status: driver.status });
+            } catch (error) {
+                console.log('Error:', error.message);
             }
         });
 
