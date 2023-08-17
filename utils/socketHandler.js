@@ -21,7 +21,11 @@ module.exports = io => {
                 const status = data.status;
                 const decoded = jwt.verify(data.token, process.env.JWT_SECRET);
 
-                await Driver.findByIdAndUpdate(decoded._id, { status });
+                await Driver.findByIdAndUpdate(
+                    decoded._id,
+                    { status },
+                    { new: true }
+                );
 
                 // Emit status
                 socket.emit('getStatus', { status });

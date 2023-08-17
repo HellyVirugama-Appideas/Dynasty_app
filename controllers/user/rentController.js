@@ -60,7 +60,7 @@ exports.listCars = async (req, res, next) => {
                         type: 'Point',
                         coordinates: [req.body.longitude, req.body.latitude],
                     },
-                    $maxDistance: 10000, // radiusInMeters
+                    $maxDistance: process.env.radiusInMeters,
                 },
             };
 

@@ -13,8 +13,7 @@ exports.getVehicleTypes = async (req, res, next) => {
         if (!pickupLat || !pickupLng || !endLat || !endLng)
             return next(createError.BadRequest('Invalid coordinates.'));
 
-        // Find nearby drivers within a certain distance (e.g., 10 km)
-        const radiusInMeters = 10000;
+        // Find nearby drivers
         const nearbyDrivers = await Driver.find({
             location: {
                 $near: {
@@ -22,7 +21,7 @@ exports.getVehicleTypes = async (req, res, next) => {
                         type: 'Point',
                         coordinates: [pickupLng, pickupLat],
                     },
-                    $maxDistance: radiusInMeters,
+                    $maxDistance: process.env.radiusInMeters,
                 },
             },
             status: 'online',
@@ -65,7 +64,6 @@ exports.getVehicleTypes = async (req, res, next) => {
 
 exports.bookRide = async (req, res, next) => {
     try {
-        const radiusInMeters = 10000;
         const nearbyDrivers = await Driver.find({
             location: {
                 $near: {
@@ -73,7 +71,7 @@ exports.bookRide = async (req, res, next) => {
                         type: 'Point',
                         coordinates: [req.body.pickupLng, req.body.pickupLat],
                     },
-                    $maxDistance: radiusInMeters,
+                    $maxDistance: process.env.radiusInMeters,
                 },
             },
             type: req.body.type,
