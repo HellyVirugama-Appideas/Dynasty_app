@@ -1,6 +1,7 @@
 const geolib = require('geolib');
 const createError = require('http-errors');
 const multilingual = require('../../utils/multilingual');
+const notifyDrivers = require('../../utils/notifyDrivers');
 
 const Type = require('../../models/typeModel');
 const Charges = require('../../models/chargesModel');
@@ -76,12 +77,10 @@ exports.bookRide = async (req, res, next) => {
             },
             type: req.body.type,
             status: 'online',
-        });
+        }).limit(5); // Limit to 5 closest drivers
 
         if (nearbyDrivers.length === 0)
             return next(createError.BadRequest('No available drivers nearby.'));
-
-        // Notify nearbyDrivers
 
         const ride = await RideReq.create({
             user: req.user.id,
@@ -93,6 +92,12 @@ exports.bookRide = async (req, res, next) => {
             endLng: req.body.endLng,
             type: req.body.type,
         });
+
+        // Notify drivers
+        notifyDrivers(
+            nearbyDrivers.map(driver => driver.id),
+            ride
+        );
 
         res.json({ code: '1', message: req.t('ride.success'), ride });
     } catch (error) {

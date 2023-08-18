@@ -27,7 +27,7 @@ mongoose
 
 // Socket.IO integration
 const server = require('http').createServer(app);
-const io = socketIO(server);
+global.io = socketIO(server);
 
 socketHandler(io);
 
