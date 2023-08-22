@@ -93,11 +93,25 @@ exports.bookRide = async (req, res, next) => {
             type: req.body.type,
         });
 
+        // Calculate distance for each driver
+        const drivers = nearbyDrivers.map(driver => {
+            const driverLocation = {
+                latitude: driver.location.coordinates[1],
+                longitude: driver.location.coordinates[0],
+            };
+            const pickupLocation = {
+                latitude: ride.pickupLat,
+                longitude: ride.pickupLng,
+            };
+
+            // Calculate distance
+            const distance = geolib.getDistance(driverLocation, pickupLocation);
+
+            return { id: driver.id, distance };
+        });
+
         // Notify drivers
-        notifyDrivers(
-            nearbyDrivers.map(driver => driver.id),
-            ride
-        );
+        notifyDrivers(drivers, ride);
 
         res.json({ code: '1', message: req.t('ride.success'), ride });
     } catch (error) {
