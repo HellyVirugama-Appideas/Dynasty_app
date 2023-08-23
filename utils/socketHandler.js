@@ -48,6 +48,24 @@ module.exports = io => {
             }
         });
 
+        // Set location
+        socket.on('setLocation', async data => {
+            try {
+                const { lat, lng } = data;
+                const decoded = jwt.verify(data.token, process.env.JWT_SECRET);
+
+                await Driver.findByIdAndUpdate(
+                    decoded._id,
+                    { 'location.coordinates': [lng, lat] },
+                    { new: true }
+                );
+            } catch (error) {
+                console.log('Error:', error.message);
+            }
+        });
+
+        // Live navigation
+
         // Listen for get chat messages
         socket.on('getChatMessages', async data => {
             try {
