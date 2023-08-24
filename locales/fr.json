@@ -49,13 +49,14 @@
         "invalidApple": "ID de pomme non valide."
     },
     "ride": {
-        "success": "Votre trajet a été programmé avec succès.",
-        "already": "La demande de conduite a déjà été acceptée par un autre conducteur.",
-        "accepted": "Demande de réservation acceptée.",
-        "rejected": "Demande de réservation rejetée."
+        "success": "Votre trajet a été réservé avec succès!",
+        "fail": "Pas de conducteurs disponibles pour le moment. Veuillez réessayer plus tard.",
+        "already": "La demande de conduite a déjà été acceptée par un autre conducteur."
     },
     "rent": {
-        "already": "La voiture est déjà réservée pour la période demandée."
+        "already": "La voiture est déjà réservée pour la période demandée.",
+        "accepted": "Demande de réservation acceptée.",
+        "rejected": "Demande de réservation rejetée."
     },
     "car": {
         "added": "La voiture a ajouté avec succès.",

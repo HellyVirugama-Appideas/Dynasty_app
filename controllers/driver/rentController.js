@@ -53,7 +53,7 @@ exports.acceptRequest = async (req, res, next) => {
         };
         sendNotification(request.user.fcmToken, data);
 
-        res.json({ code: '1', message: req.t('ride.accepted') });
+        res.json({ code: '1', message: req.t('rent.accepted') });
     } catch (error) {
         if (error.name === 'CastError')
             return next(createError.BadRequest('Invalid request id.'));
@@ -82,7 +82,7 @@ exports.rejectRequest = async (req, res, next) => {
         };
         sendNotification(request.user.fcmToken, data);
 
-        res.json({ code: '1', message: req.t('ride.rejected') });
+        res.json({ code: '1', message: req.t('rent.rejected') });
     } catch (error) {
         if (error.name === 'CastError')
             return next(createError.BadRequest('Invalid request id.'));

@@ -68,6 +68,7 @@ const driverSchema = new mongoose.Schema({
         select: false,
         immutable: true,
     },
+    isHandlingRequest: { type: Boolean, default: false },
     fcmToken: { type: String, required: [true, 'fcmToken is required.'] },
     date: {
         type: Date,

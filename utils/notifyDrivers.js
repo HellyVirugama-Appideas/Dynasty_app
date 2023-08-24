@@ -1,13 +1,18 @@
+const Driver = require('../models/driverModel');
+
 module.exports = async function notifyDrivers(drivers, ride) {
     const notificationTimeout = 30000; // 30 seconds
 
-    const notifyDriver = async driver => {
-        return new Promise(resolve => {
+    const notifyDriver = async driverId => {
+        return new Promise(async resolve => {
+            const driver = await Driver.findById(driverId);
+
+            if (driver.isHandlingRequest) return false;
+
             const driverRoomName = `${driver.id}_${ride._id}`;
             const driverRoom = io.sockets.adapter.rooms.get(driver.id);
 
             if (!driverRoom) {
-                console.log(`Driver id ${driver.id} is not connected.`);
                 resolve(false);
                 return;
             }
@@ -16,7 +21,6 @@ module.exports = async function notifyDrivers(drivers, ride) {
             const driverSocket = io.sockets.sockets.get(driverSocketId);
 
             if (!driverSocket) {
-                console.log(`Socket id ${driverSocketId} is not available.`);
                 resolve(false);
                 return;
             }
@@ -26,7 +30,6 @@ module.exports = async function notifyDrivers(drivers, ride) {
             const acceptHandler = () => {
                 if (acceptTimeout) {
                     clearTimeout(acceptTimeout);
-                    console.log(`Driver ID ${driver.id} accepted the ride.`);
                     cleaup();
                     resolve(true);
                 }
@@ -35,7 +38,6 @@ module.exports = async function notifyDrivers(drivers, ride) {
             const rejectHandler = () => {
                 if (acceptTimeout) {
                     clearTimeout(acceptTimeout);
-                    console.log(`Driver ID ${driver.id} rejected the ride.`);
                     cleaup();
                     resolve(false);
                 }
@@ -43,6 +45,9 @@ module.exports = async function notifyDrivers(drivers, ride) {
 
             driverSocket.join(driverRoomName);
 
+            await Driver.findByIdAndUpdate(driver.id, {
+                isHandlingRequest: true,
+            });
             driverSocket.emit('newRideRequest', {
                 ...ride._doc,
                 distance: driver.distance,
@@ -53,12 +58,16 @@ module.exports = async function notifyDrivers(drivers, ride) {
 
             acceptTimeout = setTimeout(() => {
                 acceptTimeout = null;
-                console.log(`Driver ID ${driver.id} didn't respond in time.`);
+                // driverSocket.emit('timeout', ride);
                 cleaup();
                 resolve(false);
             }, notificationTimeout);
 
-            function cleaup() {
+            async function cleaup() {
+                await Driver.findByIdAndUpdate(driver.id, {
+                    isHandlingRequest: false,
+                });
+                driverSocket.emit('timeout', ride);
                 driverSocket.off('accept', acceptHandler);
                 driverSocket.off('reject', rejectHandler);
                 driverSocket.leave(driverRoomName);
@@ -67,15 +76,12 @@ module.exports = async function notifyDrivers(drivers, ride) {
     };
 
     for (const driver of drivers) {
-        const accepted = await notifyDriver(driver, ride._id);
+        const accepted = await notifyDriver(driver.id, ride._id);
 
-        if (accepted) {
-            // Notify the user and stop the process
-            io.to(ride.user).emit('booked', ride);
-            return;
-        }
+        // Return driver id that accept
+        if (accepted) return driver.id;
     }
 
-    // If none of the drivers accepted, notify the user
-    io.to(ride.user).emit('noAvailableDrivers');
+    // If none of the drivers accepted return null
+    return null;
 };

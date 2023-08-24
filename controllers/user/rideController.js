@@ -6,6 +6,7 @@ const notifyDrivers = require('../../utils/notifyDrivers');
 const Type = require('../../models/typeModel');
 const Charges = require('../../models/chargesModel');
 const RideReq = require('../../models/rideReqModel');
+const Ride = require('../../models/rideModel');
 const Driver = require('../../models/driverModel');
 
 exports.getVehicleTypes = async (req, res, next) => {
@@ -45,7 +46,7 @@ exports.getVehicleTypes = async (req, res, next) => {
         );
 
         // calculate estimated price
-        types.map(type => {
+        types.forEach(type => {
             const distanceCharge = (distance / 1000) * type.distanceRate;
             const price = (
                 Math.max(
@@ -55,6 +56,25 @@ exports.getVehicleTypes = async (req, res, next) => {
             ).toFixed(2); // ride price
             type.price = price;
             type.distanceRate = undefined;
+
+            // Calculate average time for drivers of this type to reach user
+            const driversOfType = nearbyDrivers.filter(
+                driver => driver.type.toString() === type._id.toString()
+            );
+            const averageTimeMinutes =
+                driversOfType.reduce((totalTime, driver) => {
+                    const driverDistanceKm =
+                        geolib.getDistance(
+                            {
+                                latitude: driver.location.coordinates[1],
+                                longitude: driver.location.coordinates[0],
+                            },
+                            { latitude: pickupLat, longitude: pickupLng }
+                        ) / 1000;
+                    const timeForDriver = driverDistanceKm / 30; // Est. speed 30 km/h
+                    return totalTime + timeForDriver;
+                }, 0) / driversOfType.length;
+            type.time = Math.ceil(averageTimeMinutes);
         });
 
         res.json({ code: '1', message: req.t('success'), data: { types } });
@@ -80,7 +100,7 @@ exports.bookRide = async (req, res, next) => {
         }).limit(5); // Limit to 5 closest drivers
 
         if (nearbyDrivers.length === 0)
-            return next(createError.BadRequest('No available drivers nearby.'));
+            return next(createError.BadRequest('ride.fail'));
 
         const ride = await RideReq.create({
             user: req.user.id,
@@ -111,12 +131,44 @@ exports.bookRide = async (req, res, next) => {
         });
 
         // Notify drivers
-        notifyDrivers(drivers, ride);
+        const acceptedDriverId = await notifyDrivers(drivers, ride);
+        console.log('acceptedDriverId', acceptedDriverId);
 
-        res.json({ code: '1', message: req.t('ride.success'), ride });
+        // If no one accepted
+        if (acceptedDriverId === null)
+            return res.json({ code: '0', message: req.t('ride.fail') });
+
+        // TODO: generate OTP
+
+        // Create ride
+        let rideResponse = await Ride.create({
+            ...ride._doc,
+            driver: acceptedDriverId,
+        });
+
+        // Populate driver with type
+        await rideResponse.populate({
+            path: 'driver',
+            populate: {
+                path: 'type',
+                select: '-__v -distanceRate -typeFor -capacity',
+            },
+            select: 'name profile phone',
+        });
+
+        rideResponse = rideResponse._doc;
+        rideResponse.type = multilingual(rideResponse.driver.type, req);
+        rideResponse.driver.type = undefined;
+        rideResponse.__v = undefined;
+
+        res.json({
+            code: '1',
+            message: req.t('ride.success'),
+            ride: rideResponse,
+        });
     } catch (error) {
         if (error.name == 'CastError')
-            return next(createError.BadRequest('Invalid driverId.'));
+            return next(createError.BadRequest('Invalid type id.'));
         next(error);
     }
 };
