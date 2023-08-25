@@ -71,7 +71,7 @@ exports.getVehicleTypes = async (req, res, next) => {
                             },
                             { latitude: pickupLat, longitude: pickupLng }
                         ) / 1000;
-                    const timeForDriver = driverDistanceKm / 30; // Est. speed 30 km/h
+                    const timeForDriver = (driverDistanceKm / 30) * 60; // Est. speed 30 km/h
                     return totalTime + timeForDriver;
                 }, 0) / driversOfType.length;
             type.time = Math.ceil(averageTimeMinutes);
@@ -132,7 +132,6 @@ exports.bookRide = async (req, res, next) => {
 
         // Notify drivers
         const acceptedDriverId = await notifyDrivers(drivers, ride);
-        console.log('acceptedDriverId', acceptedDriverId);
 
         // If no one accepted
         if (acceptedDriverId === null)
