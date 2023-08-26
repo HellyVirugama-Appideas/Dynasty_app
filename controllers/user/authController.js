@@ -3,6 +3,7 @@ const createError = require('http-errors');
 // const validator = require('validator');
 const jwt = require('jsonwebtoken');
 const multilingualUser = require('../../utils/multilingualUser');
+const generateCode = require('../../utils/generateCode');
 // const { sendOTP } = require('../../utils/sendSMS');
 const deleteFile = require('../../utils/deleteFile');
 
@@ -387,13 +388,4 @@ exports.createSocialProfile = async (req, res, next) => {
 
         next(error);
     }
-};
-
-// generate random code
-const generateCode = length => {
-    const digits = '0123456789';
-    let generated = '';
-    for (let i = 0; i < length; i++)
-        generated += digits[Math.floor(Math.random() * 10)];
-    return generated;
 };

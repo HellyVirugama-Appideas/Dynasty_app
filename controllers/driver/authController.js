@@ -3,6 +3,7 @@ const createError = require('http-errors');
 // const validator = require('validator');
 const multilingual = require('../../utils/multilingual');
 const multilingualUser = require('../../utils/multilingualUser');
+const generateCode = require('../../utils/generateCode');
 const jwt = require('jsonwebtoken');
 const deleteFile = require('../../utils/deleteFile');
 // const { sendOTP } = require('../../utils/sendSMS');
@@ -526,13 +527,4 @@ exports.uploadRC = async (req, res, next) => {
     } catch (error) {
         next(error);
     }
-};
-
-// generate random code
-const generateCode = length => {
-    const digits = '0123456789';
-    let generated = '';
-    for (let i = 0; i < length; i++)
-        generated += digits[Math.floor(Math.random() * 10)];
-    return generated;
 };

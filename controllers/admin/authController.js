@@ -1,20 +1,12 @@
 const { promisify } = require('util');
 const jwt = require('jsonwebtoken');
+const generateCode = require('../../utils/generateCode');
 // const { sendOtp } = require('../../utils/sendMail');
 
 const Admin = require('../../models/adminModel');
 const OTP = require('../../models/adminOtpModel');
 const User = require('../../models/userModel');
 const Driver = require('../../models/driverModel');
-
-const generateCode = length => {
-    var digits = '0123456789';
-    let generated = '';
-    for (let i = 0; i < length; i++) {
-        generated += digits[Math.floor(Math.random() * 10)];
-    }
-    return generated;
-};
 
 exports.checkAdmin = async (req, res, next) => {
     try {
