@@ -90,6 +90,7 @@ exports.verifyOTP = async (req, res, next) => {
             .populate('city country');
 
         if (driver) {
+            driver.isHandlingRequest = false;
             driver.fcmToken = req.body.fcmToken;
             await driver.save();
             const token = await driver.generateAuthToken();
@@ -249,6 +250,7 @@ exports.socialLogin = async (req, res, next) => {
             }
         }
 
+        driver.isHandlingRequest = false;
         driver.fcmToken = req.body.fcmToken;
         await driver.save();
         const token = await driver.generateAuthToken();

@@ -64,7 +64,11 @@ module.exports = io => {
             }
         });
 
-        // Live navigation
+        // Live tracking
+        socket.on('sendLiveTracking', data => {
+            const { user, latitude, longitude } = data;
+            io.to(user).emit('receiveLiveTracking', { latitude, longitude });
+        });
 
         // Listen for get chat messages
         socket.on('getChatMessages', async data => {
