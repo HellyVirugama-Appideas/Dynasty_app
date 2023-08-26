@@ -2,6 +2,7 @@ const geolib = require('geolib');
 const createError = require('http-errors');
 const multilingual = require('../../utils/multilingual');
 const notifyDrivers = require('../../utils/notifyDrivers');
+const generateCode = require('../../utils/generateCode');
 
 const Type = require('../../models/typeModel');
 const Charges = require('../../models/chargesModel');
@@ -137,12 +138,11 @@ exports.bookRide = async (req, res, next) => {
         if (acceptedDriverId === null)
             return res.json({ code: '0', message: req.t('ride.fail') });
 
-        // TODO: generate OTP
-
         // Create ride
         let rideResponse = await Ride.create({
             ...ride._doc,
             driver: acceptedDriverId,
+            otp: generateCode(6),
         });
 
         // Populate driver with type

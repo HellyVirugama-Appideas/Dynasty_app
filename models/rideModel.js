@@ -11,12 +11,16 @@ const rideSchema = new mongoose.Schema({
         ref: 'Driver',
         required: true,
     },
+
     pickupAddress: { type: String, required: true },
     pickupLat: { type: String, required: true },
     pickupLng: { type: String, required: true },
+
     endAddress: { type: String, required: true },
     endLat: { type: String, required: true },
     endLng: { type: String, required: true },
+
+    otp: { type: Number, required: true },
     status: {
         type: String,
         enum: ['accepted', 'ongoing', 'completed', 'cancelled'],
