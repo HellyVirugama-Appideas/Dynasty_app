@@ -38,6 +38,7 @@ module.exports = async function notifyDrivers(drivers, ride) {
             const rejectHandler = () => {
                 if (acceptTimeout) {
                     clearTimeout(acceptTimeout);
+                    driverSocket.emit('timeout', ride);
                     cleaup();
                     resolve(false);
                 }
@@ -55,7 +56,7 @@ module.exports = async function notifyDrivers(drivers, ride) {
 
             acceptTimeout = setTimeout(() => {
                 acceptTimeout = null;
-                // driverSocket.emit('timeout', ride);
+                driverSocket.emit('timeout', ride);
                 cleaup();
                 resolve(false);
             }, notificationTimeout);
@@ -64,7 +65,7 @@ module.exports = async function notifyDrivers(drivers, ride) {
                 await Driver.findByIdAndUpdate(driver.id, {
                     isHandlingRequest: false,
                 });
-                driverSocket.emit('timeout', ride);
+                // driverSocket.emit('timeout', ride);
                 driverSocket.off('accept', acceptHandler);
                 driverSocket.off('reject', rejectHandler);
                 driverSocket.leave(driverRoomName);
