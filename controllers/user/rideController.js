@@ -113,6 +113,7 @@ exports.bookRide = async (req, res, next) => {
             endLng: req.body.endLng,
             type: req.body.type,
         });
+        await ride.populate('user', 'name phone');
 
         // Calculate distance for each driver
         const drivers = nearbyDrivers.map(driver => {
@@ -126,7 +127,15 @@ exports.bookRide = async (req, res, next) => {
             };
 
             // Calculate distance
-            const distance = geolib.getDistance(driverLocation, pickupLocation);
+            const distanceInMeters = geolib.getDistance(
+                driverLocation,
+                pickupLocation
+            );
+
+            const distance =
+                distanceInMeters < 100
+                    ? `${distanceInMeters} meter away`
+                    : `${(distanceInMeters / 1000).toFixed(1)} km away`;
 
             return { id: driver.id, distance };
         });
