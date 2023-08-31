@@ -131,13 +131,20 @@ exports.bookRide = async (req, res, next) => {
                 driverLocation,
                 pickupLocation
             );
+            const distanceInKm = (distanceInMeters / 1000).toFixed(1);
+
+            const timeInMinutes = (distanceInKm / 30) * 60; // Est. speed 30 km/h
+            const time =
+                timeInMinutes < 1
+                    ? 'less than a minute away'
+                    : `${Math.round(timeInMinutes)} minutes away`;
 
             const distance =
                 distanceInMeters < 100
                     ? `${distanceInMeters} meter away`
-                    : `${(distanceInMeters / 1000).toFixed(1)} km away`;
+                    : `${distanceInKm} km away`;
 
-            return { id: driver.id, distance };
+            return { id: driver.id, distance, time };
         });
 
         // Notify drivers

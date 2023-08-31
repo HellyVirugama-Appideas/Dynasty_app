@@ -3,7 +3,7 @@ const Driver = require('../models/driverModel');
 module.exports = async function notifyDrivers(drivers, ride) {
     const notificationTimeout = 30000; // 30 seconds
 
-    const notifyDriver = async (driverId, distance) => {
+    const notifyDriver = async (driverId, distance, time) => {
         return new Promise(async resolve => {
             const driver = await Driver.findById(driverId);
 
@@ -49,7 +49,11 @@ module.exports = async function notifyDrivers(drivers, ride) {
             await Driver.findByIdAndUpdate(driver.id, {
                 isHandlingRequest: true,
             });
-            driverSocket.emit('newRideRequest', { ...ride._doc, distance });
+            driverSocket.emit('newRideRequest', {
+                ...ride._doc,
+                distance,
+                time,
+            });
 
             driverSocket.once('accept', acceptHandler);
             driverSocket.once('reject', rejectHandler);
@@ -74,7 +78,11 @@ module.exports = async function notifyDrivers(drivers, ride) {
     };
 
     for (const driver of drivers) {
-        const accepted = await notifyDriver(driver.id, driver.distance);
+        const accepted = await notifyDriver(
+            driver.id,
+            driver.distance,
+            driver.time
+        );
 
         // Return driver id that accept
         if (accepted) return driver.id;
