@@ -18,14 +18,6 @@ router.post(
     homeController.setLocation
 );
 
-// rides
-router.post(
-    '/accept_ride',
-    fileUpload(),
-    checkDriver,
-    homeController.acceptRide
-);
-
 // notifications
 router.get('/notification', checkDriver, homeController.getNotifications);
 

@@ -2,8 +2,6 @@ const createError = require('http-errors');
 const formatTimestamp = require('../../utils/formatTimestamp');
 
 const Driver = require('../../models/driverModel');
-const RideReq = require('../../models/rideReqModel');
-const Ride = require('../../models/rideModel');
 const Notification = require('../../models/notificationModel');
 
 exports.getStatus = (req, res, next) => {
@@ -51,28 +49,6 @@ exports.setLocation = async (req, res, next) => {
 
         res.json({ code: '1', message: req.t('success') });
     } catch (error) {
-        next(error);
-    }
-};
-
-exports.acceptRide = async (req, res, next) => {
-    try {
-        // Ride req to ride collection
-        const rideReq = await RideReq.findById(req.body.id).lean();
-        if (!rideReq) return next(createError.Conflict('ride.already'));
-
-        const ride = new Ride({ ...rideReq, driver: req.driver.id });
-        await Promise.all([
-            ride.save(),
-            ride.populate('user', 'name country_code phone'),
-        ]);
-
-        // Notify user
-
-        res.json({ code: '1', message: req.t('success'), ride });
-    } catch (error) {
-        if (error.code == 11000 && error.keyPattern._id)
-            return next(createError.Conflict('ride.already'));
         next(error);
     }
 };

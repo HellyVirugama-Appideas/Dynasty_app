@@ -159,6 +159,7 @@ exports.bookRide = async (req, res, next) => {
             ...ride._doc,
             driver: acceptedDriverId,
             otp: generateCode(6),
+            status: 'ongoing',
         });
 
         // Populate driver with type
@@ -184,6 +185,19 @@ exports.bookRide = async (req, res, next) => {
     } catch (error) {
         if (error.name == 'CastError')
             return next(createError.BadRequest('Invalid type id.'));
+        next(error);
+    }
+};
+
+exports.getRides = async (req, res, next) => {
+    try {
+        const rides = await Ride.find({ user: req.user.id })
+            .populate('driver', 'name profile phone')
+            .select('-user -__v -otp')
+            .sort('-_id');
+
+        res.json({ code: '1', message: req.t('success'), rides });
+    } catch (error) {
         next(error);
     }
 };

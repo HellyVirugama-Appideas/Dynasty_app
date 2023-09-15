@@ -23,13 +23,16 @@ const rideSchema = new mongoose.Schema({
     otp: { type: Number, required: true },
     status: {
         type: String,
-        enum: ['accepted', 'ongoing', 'completed', 'cancelled'],
-        default: 'accepted',
+        enum: ['ongoing', 'upcoming', 'completed', 'cancelled'],
+        required: true,
     },
-    createdAt: {
-        type: Date,
-        default: Date.now,
+    rideStatus: {
+        type: String,
+        enum: ['start', 'wayToPickup', 'wayToDone', 'complete'],
+        default: 'start',
     },
+
+    createdAt: { type: Date, default: Date.now },
 });
 
 module.exports = new mongoose.model('Ride', rideSchema);
