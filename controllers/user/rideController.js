@@ -159,7 +159,7 @@ exports.bookRide = async (req, res, next) => {
             ...ride._doc,
             driver: acceptedDriverId,
             otp: generateCode(6),
-            status: 'ongoing',
+            status: 'Ongoing',
         });
 
         // Populate driver with type
