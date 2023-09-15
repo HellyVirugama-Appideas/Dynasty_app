@@ -20,6 +20,9 @@ const rideSchema = new mongoose.Schema({
     endLat: { type: String, required: true },
     endLng: { type: String, required: true },
 
+    time: String,
+    distance: String,
+
     otp: { type: Number, required: true },
     status: {
         type: String,

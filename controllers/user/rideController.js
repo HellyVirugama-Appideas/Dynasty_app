@@ -148,16 +148,18 @@ exports.bookRide = async (req, res, next) => {
         });
 
         // Notify drivers
-        const acceptedDriverId = await notifyDrivers(drivers, ride);
+        const { driverId, time, distance } = await notifyDrivers(drivers, ride);
 
         // If no one accepted
-        if (acceptedDriverId === null)
+        if (driverId === null)
             return res.json({ code: '0', message: req.t('ride.fail') });
 
         // Create ride
         let rideResponse = await Ride.create({
             ...ride._doc,
-            driver: acceptedDriverId,
+            driver: driverId,
+            time,
+            distance,
             otp: generateCode(6),
             status: 'Ongoing',
         });

@@ -48,7 +48,7 @@ const driverSchema = new mongoose.Schema({
     rc: String,
     status: {
         type: String,
-        enum: ['online', 'offline'],
+        enum: ['online', 'offline', 'busy'],
         default: 'offline',
     },
     location: {

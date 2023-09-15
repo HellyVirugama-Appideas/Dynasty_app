@@ -85,9 +85,14 @@ module.exports = async function notifyDrivers(drivers, ride) {
         );
 
         // Return driver id that accept
-        if (accepted) return driver.id;
+        if (accepted)
+            return {
+                driverId: driver.id,
+                distance: driver.distance,
+                time: driver.time,
+            };
     }
 
     // If none of the drivers accepted return null
-    return null;
+    return { driverId: null };
 };
