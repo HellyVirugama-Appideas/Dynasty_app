@@ -85,7 +85,7 @@ exports.verifyOTP = async (req, res, next) => {
         if (!otpVerified) return next(createError.BadRequest('otp.fail'));
 
         // if driver exists, login else send verifyToken
-        let driver = await Driver.findOne({ country_code, phone })
+        let driver = await Driver.findOne({ phone })
             .select('-__v')
             .populate('city country');
 
