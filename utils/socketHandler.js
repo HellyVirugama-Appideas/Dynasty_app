@@ -11,7 +11,7 @@ module.exports = io => {
                 const decoded = jwt.verify(data.token, process.env.JWT_SECRET);
                 socket.join(decoded._id);
             } catch (error) {
-                console.log('Invalid token in join.', token);
+                console.log('Invalid token in join.', data.token);
             }
         });
 
