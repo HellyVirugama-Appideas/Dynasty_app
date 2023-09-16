@@ -100,6 +100,7 @@ exports.bookRide = async (req, res, next) => {
             status: 'online',
         }).limit(5); // Limit to 5 closest drivers
 
+        console.log('💥', 'nearbyDrivers.length:', nearbyDrivers.length);
         if (nearbyDrivers.length === 0)
             return next(createError.BadRequest('ride.fail'));
 
