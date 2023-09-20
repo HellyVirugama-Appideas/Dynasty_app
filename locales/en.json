@@ -51,6 +51,7 @@
     "ride": {
         "success": "Your ride has been successfully booked!",
         "fail": "No available drivers at the moment. Please try again later.",
+        "cancel": "Ride successfully cancelled.",
         "already": "Ride request has already been accepted by another driver."
     },
     "rent": {

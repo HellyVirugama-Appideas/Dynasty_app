@@ -192,6 +192,25 @@ exports.bookRide = async (req, res, next) => {
     }
 };
 
+exports.cancelRide = async (req, res, next) => {
+    try {
+        const ride = await Ride.findById(req.body.rideId);
+
+        if (!ride || ['Completed', 'Cancelled'].includes(ride.status))
+            return next(createError.NotFound('Ride not found with given id.'));
+
+        ride.status = 'Cancelled';
+        await ride.save();
+
+        // Notify driver
+        io.to(ride.driver.toString()).emit('cancelRide', { ride });
+
+        res.json({ code: '1', message: req.t('ride.cancel') });
+    } catch (error) {
+        next(error);
+    }
+};
+
 exports.getRides = async (req, res, next) => {
     try {
         const rides = await Ride.find({ user: req.user.id })
