@@ -202,6 +202,7 @@ exports.cancelRide = async (req, res, next) => {
         ride.status = 'Cancelled';
         await ride.save();
 
+        // update driver : online
         // Notify driver
         io.to(ride.driver.toString()).emit('cancelRide', { ride });
 
