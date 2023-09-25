@@ -11,6 +11,14 @@ router.post('/book_ride', fileUpload(), checkUser, rideController.bookRide);
 
 router.post('/cancel_ride', fileUpload(), rideController.cancelRide);
 
+// Schedule
+router.post(
+    '/schedule_ride',
+    fileUpload(),
+    checkUser,
+    rideController.scheduleRide
+);
+
 // Rides
 router.get('/rides', checkUser, rideController.getRides);
 

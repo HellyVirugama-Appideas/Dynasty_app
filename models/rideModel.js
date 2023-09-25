@@ -35,6 +35,7 @@ const rideSchema = new mongoose.Schema({
         default: 'start',
     },
 
+    scheduleTime: Date,
     createdAt: { type: Date, default: Date.now },
 });
 

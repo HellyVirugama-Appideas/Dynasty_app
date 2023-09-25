@@ -49,7 +49,8 @@
         "invalidApple": "ID de pomme non valide."
     },
     "ride": {
-        "success": "Votre trajet a été réservé avec succès!",
+        "success": "Votre trajet a été réservé avec succès.",
+        "schedule": "Votre trajet a été programmé avec succès.",
         "fail": "Pas de conducteurs disponibles pour le moment. Veuillez réessayer plus tard.",
         "cancel": "Ridez avec succès annulé.",
         "already": "La demande de conduite a déjà été acceptée par un autre conducteur."
