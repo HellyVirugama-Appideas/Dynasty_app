@@ -5,7 +5,7 @@ exports.home = (req, res) => {
     if (req.cookies.language) {
         if (req.cookies.language == 'en') language = 'en';
         else if (req.cookies.language == 'fr') language = 'fr';
-    } else if (req.headers['accept-language'].startsWith('en')) {
+    } else if (req.headers['accept-language']?.startsWith('en')) {
         res.cookie('language', 'en');
         language = 'en';
     }

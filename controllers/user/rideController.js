@@ -165,6 +165,8 @@ exports.bookRide = async (req, res, next) => {
             status: 'Ongoing',
         });
 
+        await Driver.findByIdAndUpdate(driverId, { status: 'busy' });
+
         // Populate driver with type
         await rideResponse.populate({
             path: 'driver',
@@ -200,9 +202,13 @@ exports.cancelRide = async (req, res, next) => {
             return next(createError.NotFound('Ride not found with given id.'));
 
         ride.status = 'Cancelled';
-        await ride.save();
 
-        // update driver : online
+        // Save ride and Update driver status to online
+        await Promise.all([
+            ride.save(),
+            Driver.findByIdAndUpdate(ride.driver, { status: 'online' }),
+        ]);
+
         // Notify driver
         io.to(ride.driver.toString()).emit('cancelRide', { ride });
 
