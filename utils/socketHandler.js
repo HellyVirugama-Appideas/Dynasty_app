@@ -73,9 +73,12 @@ module.exports = io => {
         // Listen for get chat messages
         socket.on('getChatMessages', async data => {
             try {
-                const bookingId = data.bookingId;
+                const query = {
+                    bookingId: data.bookingId,
+                    rideId: data.rideId,
+                };
 
-                const messages = await ChatMessage.find({ bookingId });
+                const messages = await ChatMessage.find(query);
 
                 // Emit old messages to the client
                 socket.emit('chatMessages', messages);
@@ -91,6 +94,7 @@ module.exports = io => {
 
                 const chatMessage = await ChatMessage.create({
                     bookingId: data.bookingId,
+                    rideId: data.rideId,
                     sender: decoded._id,
                     receiver: data.receiver,
                     message: data.message,
