@@ -9,6 +9,7 @@ const Charges = require('../../models/chargesModel');
 const RideReq = require('../../models/rideReqModel');
 const Ride = require('../../models/rideModel');
 const Driver = require('../../models/driverModel');
+const Rating = require('../../models/driverRatingModel');
 
 exports.getVehicleTypes = async (req, res, next) => {
     try {
@@ -335,6 +336,50 @@ exports.getRides = async (req, res, next) => {
 
         res.json({ code: '1', message: req.t('success'), rides });
     } catch (error) {
+        next(error);
+    }
+};
+
+exports.addRating = async (req, res, next) => {
+    try {
+        const { driverId, rating: newRating, comment } = req.body;
+
+        let updatedRating = await Rating.findOne({
+            driver: driverId,
+            user: req.user.id,
+        });
+
+        if (updatedRating) {
+            updatedRating.rating = newRating;
+            updatedRating.comment = comment;
+        } else {
+            updatedRating = new Rating({
+                driver: driverId,
+                user: req.user.id,
+                rating: newRating,
+                comment,
+            });
+        }
+        await updatedRating.save();
+
+        Rating.aggregate([
+            { $match: { driver: updatedRating.driver } },
+            { $group: { _id: '$driver', averageRating: { $avg: '$rating' } } },
+        ]).then(averageRatings => {
+            const averageRating = averageRatings[0].averageRating.toFixed(1);
+            Driver.findByIdAndUpdate(driverId, {
+                rating: averageRating,
+            }).exec();
+        });
+
+        res.json({
+            code: '1',
+            message: req.t('rating.added'),
+            rating: updatedRating,
+        });
+    } catch (error) {
+        if (error.name == 'CastError')
+            return next(createError.BadRequest('Invalid driverId.'));
         next(error);
     }
 };
