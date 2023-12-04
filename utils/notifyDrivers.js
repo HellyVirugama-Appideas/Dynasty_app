@@ -5,8 +5,7 @@ module.exports = async function notifyDrivers(drivers, ride) {
 
     const notifyDriver = (driverId, distance, time) => {
         return new Promise(async resolve => {
-            const driver = await Driver.findById('64425401b372d598b160c9aa');
-            console.log(driver);
+            const driver = await Driver.findById(driverId);
 
             if (driver.isHandlingRequest) {
                 resolve(false);
@@ -17,7 +16,6 @@ module.exports = async function notifyDrivers(drivers, ride) {
             const driverRoom = io.sockets.adapter.rooms.get(driver.id);
 
             if (!driverRoom) {
-                console.log('💥', '!driverRoom', driver.id);
                 resolve(false);
                 return;
             }
@@ -26,7 +24,6 @@ module.exports = async function notifyDrivers(drivers, ride) {
             const driverSocket = io.sockets.sockets.get(driverSocketId);
 
             if (!driverSocket) {
-                console.log('💥', '!driverSocket', driver.id);
                 resolve(false);
                 return;
             }
@@ -84,7 +81,6 @@ module.exports = async function notifyDrivers(drivers, ride) {
     };
 
     for (const driver of drivers) {
-        console.log('💥', 'notifyDriver', driver.id);
         const accepted = await notifyDriver(
             driver.id,
             driver.distance,
