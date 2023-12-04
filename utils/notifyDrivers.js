@@ -1,13 +1,17 @@
 const Driver = require('../models/driverModel');
 
 module.exports = async function notifyDrivers(drivers, ride) {
-    const notificationTimeout = 30000; // 30 seconds
+    const NOTIFICATION_TIMEOUT = 30000; // 30 seconds
 
-    const notifyDriver = async (driverId, distance, time) => {
+    const notifyDriver = (driverId, distance, time) => {
         return new Promise(async resolve => {
-            const driver = await Driver.findById(driverId);
+            const driver = await Driver.findById('64425401b372d598b160c9aa');
+            console.log(driver);
 
-            if (driver.isHandlingRequest) return false;
+            if (driver.isHandlingRequest) {
+                resolve(false);
+                return;
+            }
 
             const driverRoomName = `${driver.id}_${ride._id}`;
             const driverRoom = io.sockets.adapter.rooms.get(driver.id);
@@ -32,7 +36,7 @@ module.exports = async function notifyDrivers(drivers, ride) {
             const acceptHandler = () => {
                 if (acceptTimeout) {
                     clearTimeout(acceptTimeout);
-                    cleaup();
+                    cleanup();
                     resolve(true);
                 }
             };
@@ -41,7 +45,7 @@ module.exports = async function notifyDrivers(drivers, ride) {
                 if (acceptTimeout) {
                     clearTimeout(acceptTimeout);
                     driverSocket.emit('timeout', ride);
-                    cleaup();
+                    cleanup();
                     resolve(false);
                 }
             };
@@ -63,11 +67,11 @@ module.exports = async function notifyDrivers(drivers, ride) {
             acceptTimeout = setTimeout(() => {
                 acceptTimeout = null;
                 driverSocket.emit('timeout', ride);
-                cleaup();
+                cleanup();
                 resolve(false);
-            }, notificationTimeout);
+            }, NOTIFICATION_TIMEOUT);
 
-            async function cleaup() {
+            async function cleanup() {
                 await Driver.findByIdAndUpdate(driver.id, {
                     isHandlingRequest: false,
                 });
