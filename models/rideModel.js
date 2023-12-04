@@ -34,6 +34,7 @@ const rideSchema = new mongoose.Schema({
         enum: ['start', 'wayToPickup', 'wayToDone', 'complete'],
         default: 'start',
     },
+    cancellationReason: String,
 
     scheduleTime: Date,
     createdAt: { type: Date, default: Date.now },

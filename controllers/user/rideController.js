@@ -100,7 +100,6 @@ exports.bookRide = async (req, res, next) => {
             status: 'online',
         }).limit(5); // Limit to 5 closest drivers
 
-        console.log('💥', 'nearbyDrivers.length:', nearbyDrivers.length);
         if (nearbyDrivers.length === 0)
             return next(createError.BadRequest('ride.fail'));
 
@@ -202,6 +201,7 @@ exports.cancelRide = async (req, res, next) => {
             return next(createError.NotFound('Ride not found with given id.'));
 
         ride.status = 'Cancelled';
+        ride.cancellationReason = req.body.cancellationReason;
 
         // Save ride and Update driver status to online
         await Promise.all([
@@ -234,7 +234,6 @@ exports.scheduleRide = async (req, res, next) => {
             status: 'online',
         }).limit(5); // Limit to 5 closest drivers
 
-        console.log('💥', 'nearbyDrivers.length:', nearbyDrivers.length);
         if (nearbyDrivers.length === 0)
             return next(createError.BadRequest('ride.fail'));
 
