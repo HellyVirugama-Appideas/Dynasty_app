@@ -87,7 +87,9 @@ exports.getVehicleTypes = async (req, res, next) => {
 
 exports.bookRide = async (req, res, next) => {
     try {
-        const isScheduled = req.body.scheduleTime !== undefined;
+        const isScheduled =
+            req.body.scheduleTime !== undefined &&
+            !isNaN(Date.parse(req.body.scheduleTime));
 
         const nearbyDrivers = await Driver.find({
             location: {
@@ -115,7 +117,7 @@ exports.bookRide = async (req, res, next) => {
             endLat: req.body.endLat,
             endLng: req.body.endLng,
             type: req.body.type,
-            scheduleTime: req.body.scheduleTime,
+            scheduleTime: isScheduled ? req.body.scheduleTime : undefined,
         });
         await ride.populate('user', 'name phone');
 
