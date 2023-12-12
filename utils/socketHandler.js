@@ -2,6 +2,7 @@ const jwt = require('jsonwebtoken');
 
 const Driver = require('../models/driverModel');
 const ChatMessage = require('../models/chatMessageModel');
+const Ride = require('../models/rideModel');
 
 module.exports = io => {
     io.on('connection', socket => {
@@ -21,11 +22,7 @@ module.exports = io => {
                 const status = data.status;
                 const decoded = jwt.verify(data.token, process.env.JWT_SECRET);
 
-                await Driver.findByIdAndUpdate(
-                    decoded._id,
-                    { status },
-                    { new: true }
-                );
+                await Driver.findByIdAndUpdate(decoded._id, { status });
 
                 // Emit status
                 socket.emit('getStatus', { status });
@@ -54,11 +51,9 @@ module.exports = io => {
                 const { lat, lng } = data;
                 const decoded = jwt.verify(data.token, process.env.JWT_SECRET);
 
-                await Driver.findByIdAndUpdate(
-                    decoded._id,
-                    { 'location.coordinates': [lng, lat] },
-                    { new: true }
-                );
+                await Driver.findByIdAndUpdate(decoded._id, {
+                    'location.coordinates': [lng, lat],
+                });
             } catch (error) {
                 console.log('Error:', error.message);
             }
@@ -103,6 +98,23 @@ module.exports = io => {
                 io.to(data.receiver).emit('receiveMessage', chatMessage);
             } catch (error) {
                 console.log('Error saving message:', error.message);
+            }
+        });
+
+        // Set ride status
+        socket.on('setRideStatus', async data => {
+            try {
+                const { rideId, rideStatus } = data;
+
+                const update = { rideStatus };
+                if (rideStatus === 'wayToPickup') update.status = 'Ongoing';
+
+                await Ride.findByIdAndUpdate(rideId, update);
+
+                // Emit status
+                socket.emit('getRideStatus', { rideStatus });
+            } catch (error) {
+                console.log('Error:', error.message);
             }
         });
     });
