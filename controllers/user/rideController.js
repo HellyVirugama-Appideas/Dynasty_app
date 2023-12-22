@@ -115,6 +115,7 @@ exports.bookRide = async (req, res, next) => {
             endLat: req.body.endLat,
             endLng: req.body.endLng,
             type: req.body.type,
+            isSchedule,
             scheduleTime: isSchedule ? req.body.scheduleTime : undefined,
         });
         await ride.populate('user', 'name phone');

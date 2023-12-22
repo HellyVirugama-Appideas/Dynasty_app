@@ -36,6 +36,7 @@ const rideSchema = new mongoose.Schema({
     },
     cancellationReason: String,
 
+    isSchedule: { type: Boolean, default: false },
     scheduleTime: Date,
     createdAt: { type: Date, default: Date.now },
 });

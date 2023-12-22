@@ -23,6 +23,7 @@ const rideReqSchema = new mongoose.Schema({
         ref: 'Type',
         required: [true, 'type is required.'],
     },
+    isSchedule: { type: Boolean, default: false },
     scheduleTime: Date,
 
     createdAt: {
