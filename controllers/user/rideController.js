@@ -87,9 +87,7 @@ exports.getVehicleTypes = async (req, res, next) => {
 
 exports.bookRide = async (req, res, next) => {
     try {
-        const isScheduled =
-            req.body.scheduleTime !== undefined &&
-            !isNaN(Date.parse(req.body.scheduleTime));
+        const isSchedule = req.body.isSchedule === 'true';
 
         const nearbyDrivers = await Driver.find({
             location: {
@@ -117,7 +115,7 @@ exports.bookRide = async (req, res, next) => {
             endLat: req.body.endLat,
             endLng: req.body.endLng,
             type: req.body.type,
-            scheduleTime: isScheduled ? req.body.scheduleTime : undefined,
+            scheduleTime: isSchedule ? req.body.scheduleTime : undefined,
         });
         await ride.populate('user', 'name phone');
 
@@ -167,10 +165,10 @@ exports.bookRide = async (req, res, next) => {
             time,
             distance,
             otp: generateCode(6),
-            status: isScheduled ? 'Upcoming' : 'Ongoing',
+            status: isSchedule ? 'Upcoming' : 'Ongoing',
         });
 
-        if (!isScheduled)
+        if (!isSchedule)
             await Driver.findByIdAndUpdate(driverId, { status: 'busy' });
 
         // Populate driver with type
@@ -190,7 +188,7 @@ exports.bookRide = async (req, res, next) => {
 
         res.json({
             code: '1',
-            message: req.t(isScheduled ? 'ride.schedule' : 'ride.success'),
+            message: req.t(isSchedule ? 'ride.schedule' : 'ride.success'),
             ride: rideResponse,
         });
     } catch (error) {
