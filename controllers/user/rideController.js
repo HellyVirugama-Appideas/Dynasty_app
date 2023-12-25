@@ -226,13 +226,30 @@ exports.cancelRide = async (req, res, next) => {
 
 exports.getRides = async (req, res, next) => {
     try {
-        const rides = await Ride.find({ user: req.user.id })
-            .populate('driver', 'name profile phone')
-            .select('-user -__v -otp')
+        let rides = await Ride.find({ user: req.user.id })
+            .populate('user', 'name phone')
+            .populate({
+                path: 'driver',
+                populate: {
+                    path: 'type',
+                    select: '-__v -distanceRate -typeFor -capacity',
+                },
+                select: 'name profile phone',
+            })
+            .select('-__v')
             .sort('-_id');
+
+        rides = rides.map(ride => {
+            ride = ride._doc;
+            if (ride.driver.type)
+                ride.type = multilingual(ride.driver.type, req);
+            ride.driver.type = undefined;
+            return ride;
+        });
 
         res.json({ code: '1', message: req.t('success'), rides });
     } catch (error) {
+        console.log(error);
         next(error);
     }
 };
