@@ -61,8 +61,12 @@ module.exports = io => {
 
         // Live tracking
         socket.on('sendLiveTracking', data => {
-            const { user, latitude, longitude } = data;
-            io.to(user).emit('receiveLiveTracking', { latitude, longitude });
+            const { user, latitude, longitude, time } = data;
+            io.to(user).emit('receiveLiveTracking', {
+                latitude,
+                longitude,
+                time,
+            });
         });
 
         // Listen for get chat messages
