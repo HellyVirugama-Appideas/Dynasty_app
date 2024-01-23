@@ -13,6 +13,10 @@ const Rating = require('../../models/driverRatingModel');
 
 exports.getVehicleTypes = async (req, res, next) => {
     try {
+        const { type } = req.body;
+        if (!['taxi', 'bike'].includes(type))
+            return next(createError.BadRequest('Invalid type.'));
+
         const { pickupLat, pickupLng, endLat, endLng } = req.body;
         if (!pickupLat || !pickupLng || !endLat || !endLng)
             return next(createError.BadRequest('Invalid coordinates.'));
@@ -31,8 +35,10 @@ exports.getVehicleTypes = async (req, res, next) => {
             status: 'online',
         });
 
+        const typeFor = type === 'bike' ? 'Bike' : 'Taxi';
+
         let [types, charges] = await Promise.all([
-            Type.find({ typeFor: 'Taxi' }).select('-__v -typeFor'),
+            Type.find({ typeFor }).select('-__v -typeFor'),
             Charges.findOne(),
         ]);
 
