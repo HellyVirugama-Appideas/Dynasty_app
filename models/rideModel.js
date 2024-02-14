@@ -26,7 +26,7 @@ const rideSchema = new mongoose.Schema({
     otp: { type: Number, required: true },
     status: {
         type: String,
-        enum: ['Ongoing', 'Upcoming', 'Completed', 'Cancelled'],
+        enum: ['Ongoing', 'Upcoming', 'Completed', 'Cancelled', 'Expired'],
         required: true,
     },
     rideStatus: {

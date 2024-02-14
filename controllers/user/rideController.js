@@ -209,7 +209,10 @@ exports.cancelRide = async (req, res, next) => {
     try {
         const ride = await Ride.findById(req.body.rideId);
 
-        if (!ride || ['Completed', 'Cancelled'].includes(ride.status))
+        if (
+            !ride ||
+            ['Completed', 'Cancelled', 'Expired'].includes(ride.status)
+        )
             return next(createError.NotFound('Ride not found with given id.'));
 
         ride.status = 'Cancelled';

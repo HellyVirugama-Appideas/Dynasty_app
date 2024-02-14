@@ -10,6 +10,7 @@ const cron = require('node-cron');
 const landingController = require('./controllers/landingController');
 const globalErrorHandler = require('./controllers/errorController');
 const updateExpiredBookings = require('./utils/updateExpiredBookings');
+const updateRideStatus = require('./utils/updateRideStatus');
 
 // Start express app
 const app = express();
@@ -143,6 +144,7 @@ app.use(globalErrorHandler);
 // Schedule the job to run every hour
 cron.schedule('0 * * * *', () => {
     updateExpiredBookings();
+    updateRideStatus();
 });
 
 module.exports = app;
