@@ -211,7 +211,8 @@ exports.cancelRide = async (req, res, next) => {
 
         if (
             !ride ||
-            ['Completed', 'Cancelled', 'Expired'].includes(ride.status)
+            ['Completed', 'Cancelled', 'Expired'].includes(ride.status) ||
+            ride.rideStatus === 'wayToDone'
         )
             return next(createError.NotFound('Ride not found with given id.'));
 

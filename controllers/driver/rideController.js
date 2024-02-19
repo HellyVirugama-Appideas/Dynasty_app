@@ -29,6 +29,12 @@ exports.verifyRideOTP = async (req, res, next) => {
         ride.rideStatus = 'wayToDone';
         await ride.save();
 
+        // Notify user
+        io.to(ride.user.id).emit('rideStatusNotify', {
+            rideId: ride.id,
+            rideStatus: ride.rideStatus,
+        });
+
         res.json({ code: '1', message: req.t('success'), ride });
     } catch (error) {
         next(error);
