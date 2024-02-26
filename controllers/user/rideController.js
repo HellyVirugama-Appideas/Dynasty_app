@@ -244,7 +244,7 @@ exports.getRides = async (req, res, next) => {
                     path: 'type',
                     select: '-__v -distanceRate -typeFor -capacity',
                 },
-                select: 'name profile phone',
+                select: 'name profile phone rating',
             })
             .select('-__v')
             .sort('-_id')
@@ -263,7 +263,6 @@ exports.getRides = async (req, res, next) => {
 
         res.json({ code: '1', message: req.t('success'), rides });
     } catch (error) {
-        console.log(error);
         next(error);
     }
 };
