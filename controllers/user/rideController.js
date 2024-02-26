@@ -247,12 +247,16 @@ exports.getRides = async (req, res, next) => {
                 select: 'name profile phone',
             })
             .select('-__v')
-            .sort('-_id');
+            .sort('-_id')
+            .lean();
 
         rides = rides.map(ride => {
-            ride = ride._doc;
             if (ride.driver.type)
                 ride.type = multilingual(ride.driver.type, req);
+            return ride;
+        });
+
+        rides = rides.map(ride => {
             ride.driver.type = undefined;
             return ride;
         });
