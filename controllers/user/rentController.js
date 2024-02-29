@@ -169,6 +169,7 @@ exports.bookCar = async (req, res, next) => {
             car: req.body.carId,
             bookedFrom: { $lt: bookedTo },
             bookedTo: { $gt: bookedFrom },
+            status: 'accepted',
         });
         if (overlappingBooking)
             return next(createError.Conflict('rent.already'));
