@@ -34,7 +34,6 @@ exports.getVehicleTypes = async (req, res, next) => {
             },
             status: 'online',
         });
-
         const typeFor = type === 'bike' ? 'Bike' : 'Taxi';
 
         let [types, charges] = await Promise.all([
@@ -43,7 +42,7 @@ exports.getVehicleTypes = async (req, res, next) => {
         ]);
 
         types = types.filter(type =>
-            nearbyDrivers.some(driver => driver.type.toString() === type.id)
+            nearbyDrivers.some(driver => driver.type?.toString() === type.id)
         );
         types = types.map(type => multilingual(type, req));
 
@@ -67,7 +66,7 @@ exports.getVehicleTypes = async (req, res, next) => {
 
             // Calculate average time for drivers of this type to reach user
             const driversOfType = nearbyDrivers.filter(
-                driver => driver.type.toString() === type._id.toString()
+                driver => driver.type?.toString() === type._id.toString()
             );
             const averageTimeMinutes =
                 driversOfType.reduce((totalTime, driver) => {
