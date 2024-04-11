@@ -157,25 +157,41 @@ exports.bookRide = async (req, res, next) => {
             return { id: driver.id, distance, time };
         });
 
-        // Notify drivers
-        const { driverId, time, distance } = await notifyDrivers(drivers, ride);
+        // For testing, directly assign a driver
+        const selectedDriver = nearbyDrivers[0]; // Assign the first driver in the nearbyDrivers array
+        if (!selectedDriver) {
+            return next(createError.BadRequest('No available drivers nearby.'));
+        }
 
-        // If no one accepted
-        if (driverId === null)
-            return res.json({ code: '0', message: req.t('ride.fail') });
-
-        // Create ride
+        // Create ride for testing
         let rideResponse = await Ride.create({
             ...ride._doc,
-            driver: driverId,
-            time,
-            distance,
+            driver: selectedDriver._id, // Assign the selected driver's ID
+            time: drivers[0].time,
+            distance: drivers[0].distance,
             otp: generateCode(6),
             status: isSchedule ? 'Upcoming' : 'Ongoing',
         });
 
-        if (!isSchedule)
-            await Driver.findByIdAndUpdate(driverId, { status: 'busy' });
+        // Notify drivers
+        // const { driverId, time, distance } = await notifyDrivers(drivers, ride);
+
+        // If no one accepted
+        // if (driverId === null)
+        //     return res.json({ code: '0', message: req.t('ride.fail') });
+
+        // Create ride
+        // let rideResponse = await Ride.create({
+        //     ...ride._doc,
+        //     driver: driverId,
+        //     time,
+        //     distance,
+        //     otp: generateCode(6),
+        //     status: isSchedule ? 'Upcoming' : 'Ongoing',
+        // });
+
+        // if (!isSchedule)
+        //     await Driver.findByIdAndUpdate(driverId, { status: 'busy' });
 
         // Populate driver with type
         await rideResponse.populate({
