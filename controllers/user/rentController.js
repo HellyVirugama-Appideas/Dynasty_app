@@ -364,7 +364,7 @@ exports.getBookings = async (req, res, next) => {
                     : { $lt: currentDate },
         };
 
-        const bookings = await Booking.find(queryOptions)
+        const bookings = await BookingReq.find(queryOptions)
             .populate('user', 'profile name email country_code phone')
             .populate('car', 'name pics price kmsDriven model')
             .select('-__v -status')
@@ -426,7 +426,7 @@ exports.getHistory = async (req, res, next) => {
 
 exports.cancelBooking = async (req, res, next) => {
     try {
-        const booking = await Booking.findOne({
+        const booking = await BookingReq.findOne({
             _id: req.body.id,
             user: req.user.id,
             status: 'accepted',
