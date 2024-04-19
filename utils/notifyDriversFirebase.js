@@ -17,6 +17,7 @@ module.exports = async function notifyDrivers(drivers, ride, isSchedule, user) {
             const notificationData = {
                 driverId: driverId,
                 userId: user._id,
+                ride: ride,
                 rideId: ride._id,
                 distance: distance,
                 time: time,
@@ -24,6 +25,7 @@ module.exports = async function notifyDrivers(drivers, ride, isSchedule, user) {
                 title: 'New Ride Request',
                 body: `You have a new ride request ${distance} (${time}).`,
             };
+
             const response = await sendNotification(
                 registrationToken,
                 notificationData
