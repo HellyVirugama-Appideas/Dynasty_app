@@ -9,4 +9,6 @@ router.get('/rides', checkDriver, rideController.getRides);
 
 router.post('/verify_ride_otp', fileUpload(), rideController.verifyRideOTP);
 
+router.post('/response', fileUpload(), rideController.driverResponse);
+
 module.exports = router;

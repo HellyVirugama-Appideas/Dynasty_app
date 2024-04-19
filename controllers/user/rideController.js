@@ -1,8 +1,7 @@
 const geolib = require('geolib');
 const createError = require('http-errors');
 const multilingual = require('../../utils/multilingual');
-const notifyDrivers = require('../../utils/notifyDrivers');
-const generateCode = require('../../utils/generateCode');
+const notifyDriversFirebase = require('../../utils/notifyDriversFirebase');
 
 const Type = require('../../models/typeModel');
 const Charges = require('../../models/chargesModel');
@@ -92,6 +91,7 @@ exports.getVehicleTypes = async (req, res, next) => {
 
 exports.bookRide = async (req, res, next) => {
     try {
+        const user = req.user;
         const isSchedule = req.body.isSchedule === 'true';
 
         const nearbyDrivers = await Driver.find({
@@ -158,44 +158,17 @@ exports.bookRide = async (req, res, next) => {
         });
 
         // Notify drivers
-        const { driverId, time, distance } = await notifyDrivers(drivers, ride);
+        const response = await notifyDriversFirebase(
+            drivers,
+            ride,
+            isSchedule,
+            user
+        );
+        // if (!response) return next(createError.BadRequest('ride.fail'));
 
-        // If no one accepted
-        if (driverId === null)
-            return res.json({ code: '0', message: req.t('ride.fail') });
-
-        // Create ride
-        let rideResponse = await Ride.create({
-            ...ride._doc,
-            driver: driverId,
-            time,
-            distance,
-            otp: generateCode(6),
-            status: isSchedule ? 'Upcoming' : 'Ongoing',
-        });
-
-        if (!isSchedule)
-            await Driver.findByIdAndUpdate(driverId, { status: 'busy' });
-
-        // Populate driver with type
-        await rideResponse.populate({
-            path: 'driver',
-            populate: {
-                path: 'type',
-                select: '-__v -distanceRate -typeFor -capacity',
-            },
-            select: 'name profile phone',
-        });
-
-        rideResponse = rideResponse._doc;
-        rideResponse.type = multilingual(rideResponse.driver.type, req);
-        rideResponse.driver.type = undefined;
-        rideResponse.__v = undefined;
-
-        res.json({
+        return res.json({
             code: '1',
-            message: req.t(isSchedule ? 'ride.schedule' : 'ride.success'),
-            ride: rideResponse,
+            message: req.t('success'),
         });
     } catch (error) {
         if (error.name == 'CastError')

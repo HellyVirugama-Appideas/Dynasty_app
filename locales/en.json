@@ -49,11 +49,12 @@
         "invalidApple": "Invalid Apple ID."
     },
     "ride": {
-        "success": "Your ride has been successfully booked.",
-        "schedule": "Your ride has been successfully scheduled.",
-        "fail": "No available drivers at the moment. Please try again later.",
-        "cancel": "Ride successfully cancelled.",
-        "already": "Ride request has already been accepted by another driver."
+      "success": "Your ride has been successfully booked.",
+      "schedule": "Your ride has been successfully scheduled.",
+      "fail": "No available drivers at the moment. Please try again later.",
+      "cancel": "Ride successfully cancelled.",
+      "rejected": "Ride successfully rejected.",
+      "already": "Ride request has already been accepted by another driver."
     },
     "rent": {
         "already": "Car is already booked for the requested period.",

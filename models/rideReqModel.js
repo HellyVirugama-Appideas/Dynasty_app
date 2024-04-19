@@ -6,6 +6,11 @@ const rideReqSchema = new mongoose.Schema({
         ref: 'User',
         required: true,
     },
+    acceptedBy: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Driver',
+        default: null,
+    },
 
     pickupAddress: {
         type: String,
