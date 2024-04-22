@@ -1,5 +1,5 @@
 const createError = require('http-errors');
-const sendNotification = require('../../utils/sendNotification');
+const { sendNotification } = require('../../utils/sendNotification');
 
 const Booking = require('../../models/bookingModel');
 const BookingReq = require('../../models/bookingReqModel');

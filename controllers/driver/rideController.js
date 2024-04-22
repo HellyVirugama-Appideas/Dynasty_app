@@ -1,6 +1,6 @@
 const createError = require('http-errors');
 const multilingual = require('../../utils/multilingual');
-const sendNotification = require('../../utils/sendNotification');
+const { sendRideNotification } = require('../../utils/sendNotification');
 const generateCode = require('../../utils/generateCode');
 
 const Ride = require('../../models/rideModel');
@@ -111,7 +111,7 @@ exports.driverResponse = async (req, res, next) => {
                 body: 'Your ride has been successfully booked.',
                 ride: rideResponse,
             };
-            await sendNotification(user.fcmToken, notificationData);
+            await sendRideNotification(user.fcmToken, notificationData);
 
             return res.json({
                 code: '1',
@@ -124,7 +124,7 @@ exports.driverResponse = async (req, res, next) => {
                 title: 'Ride Fail',
                 body: req.t('ride.fail'),
             };
-            await sendNotification(userId.fcmToken, notificationData);
+            await sendRideNotification(userId.fcmToken, notificationData);
 
             return res.json({ code: '0', message: req.t('ride.rejected') });
         } else {

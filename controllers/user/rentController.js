@@ -1,7 +1,7 @@
 const createError = require('http-errors');
 const multilingual = require('../../utils/multilingual');
 const deleteFile = require('../../utils/deleteFile');
-const sendNotification = require('../../utils/sendNotification');
+const { sendNotification } = require('../../utils/sendNotification');
 
 const Car = require('../../models/carModel');
 const Booking = require('../../models/bookingModel');

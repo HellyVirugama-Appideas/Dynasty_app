@@ -1,4 +1,4 @@
-const sendNotification = require('./sendNotification');
+const { sendRideNotification } = require('./sendNotification');
 const Driver = require('../models/driverModel');
 
 module.exports = async function notifyDrivers(drivers, ride, isSchedule, user) {
@@ -16,9 +16,9 @@ module.exports = async function notifyDrivers(drivers, ride, isSchedule, user) {
 
             const notificationData = {
                 driverId: driverId,
-                userId: user._id,
+                userId: user.id,
                 ride: ride,
-                rideId: ride._id,
+                rideId: ride.id,
                 distance: distance,
                 time: time,
                 isSchedule: isSchedule,
@@ -26,10 +26,11 @@ module.exports = async function notifyDrivers(drivers, ride, isSchedule, user) {
                 body: `You have a new ride request ${distance} (${time}).`,
             };
 
-            const response = await sendNotification(
+            const response = await sendRideNotification(
                 registrationToken,
                 notificationData
             );
+            console.log('response', response);
             return true;
         } catch (error) {
             console.error('Error notifying driver:', error);
