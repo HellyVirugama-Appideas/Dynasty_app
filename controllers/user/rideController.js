@@ -167,7 +167,6 @@ exports.bookRide = async (req, res, next) => {
         const response = await notifyDriversFirebase(
             drivers,
             rideObject,
-            isSchedule,
             user
         );
         // console.log('response', response);
