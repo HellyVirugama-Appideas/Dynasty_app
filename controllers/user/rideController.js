@@ -164,6 +164,7 @@ exports.bookRide = async (req, res, next) => {
             isSchedule,
             user
         );
+        // console.log('response', response);
         // if (!response) return next(createError.BadRequest('ride.fail'));
 
         return res.json({

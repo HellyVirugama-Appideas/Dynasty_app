@@ -15,16 +15,17 @@ module.exports = async function notifyDrivers(drivers, ride, isSchedule, user) {
             }
 
             const notificationData = {
-                driverId: driverId,
-                userId: user.id,
-                ride: ride,
-                rideId: ride.id,
-                distance: distance,
-                time: time,
-                isSchedule: isSchedule,
+                driverId: driverId.toString(),
+                userId: user.id.toString(),
+                ride: JSON.stringify(ride),
+                rideId: ride.id.toString(),
+                distance: distance.toString(),
+                time: time.toString(),
+                isSchedule: isSchedule.toString(),
                 title: 'New Ride Request',
                 body: `You have a new ride request ${distance} (${time}).`,
             };
+            // console.log('notificationData: ', notificationData);
 
             const response = await sendRideNotification(
                 registrationToken,
