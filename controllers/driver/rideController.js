@@ -121,7 +121,8 @@ exports.driverResponse = async (req, res, next) => {
         } else if (response === 'reject') {
             const notificationData = {
                 code: '0',
-                message: req.t('ride.fail'),
+                title: 'Ride Fail',
+                body: req.t('ride.fail'),
             };
             await sendNotification(userId.fcmToken, notificationData);
 
