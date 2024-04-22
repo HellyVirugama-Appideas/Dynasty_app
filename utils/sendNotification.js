@@ -24,9 +24,9 @@ const sendNotification = async (registrationToken, data) => {
     }
 };
 
-const sendRideNotification = async (registrationToken, data) => {
+const sendRideNotification = async (registrationToken, data, title, body) => {
     const message = {
-        notification: { title: data.title, body: data.body },
+        notification: { title: title, body: body },
         data: data,
         token: registrationToken,
     };

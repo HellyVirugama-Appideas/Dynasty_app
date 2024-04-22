@@ -125,6 +125,12 @@ exports.bookRide = async (req, res, next) => {
         });
         await ride.populate('user', 'name phone');
 
+        const rideObject = ride.toObject();
+
+        delete rideObject.__v;
+        delete rideObject.type;
+        delete rideObject.acceptedBy;
+
         // Calculate distance for each driver
         const drivers = nearbyDrivers.map(driver => {
             const driverLocation = {
@@ -160,7 +166,7 @@ exports.bookRide = async (req, res, next) => {
         // Notify drivers
         const response = await notifyDriversFirebase(
             drivers,
-            ride,
+            rideObject,
             isSchedule,
             user
         );
