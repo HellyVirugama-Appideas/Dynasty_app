@@ -29,8 +29,6 @@ module.exports = async function notifyDrivers(drivers, ride, user) {
             const response = await sendRideNotification(
                 registrationToken,
                 notificationData,
-                notificationData.title,
-                notificationData.body
             );
             // console.log('--------------------------------');
             // console.log('response', response);

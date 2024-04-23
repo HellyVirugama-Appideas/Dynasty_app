@@ -24,10 +24,12 @@ const sendNotification = async (registrationToken, data) => {
     }
 };
 
-const sendRideNotification = async (registrationToken, data, title, body) => {
+const sendRideNotification = async (registrationToken, data) => {
+    const { title, body, ...restData } = data;
+
     const message = {
         notification: { title: title, body: body },
-        data: data,
+        data: restData,
         token: registrationToken,
     };
 

@@ -24,7 +24,7 @@ exports.getRides = async (req, res, next) => {
 exports.verifyRideOTP = async (req, res, next) => {
     try {
         const ride = await Ride.findById(req.body.rideId)
-            .populate('user', 'name profile phone')
+            .populate('user', 'name profile phone fcmToken')
             .select('-driver -__v')
             .sort('-_id');
 
@@ -36,10 +36,20 @@ exports.verifyRideOTP = async (req, res, next) => {
         await ride.save();
 
         // Notify user
-        io.to(ride.user.id).emit('rideStatusNotify', {
-            rideId: ride.id,
+        const notificationData = {
+            code: '1',
+            title: 'Ride Status',
+            body: ride.rideStatus,
+            rideId: ride._id.toString(),
             rideStatus: ride.rideStatus,
-        });
+        };
+
+        await sendRideNotification(ride.user?.fcmToken, notificationData);
+
+        // io.to(ride.user.id).emit('rideStatusNotify', {
+        //     rideId: ride.id,
+        //     rideStatus: ride.rideStatus,
+        // });
 
         res.json({ code: '1', message: req.t('success'), ride });
     } catch (error) {
