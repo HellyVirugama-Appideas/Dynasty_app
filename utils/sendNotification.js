@@ -29,7 +29,10 @@ const sendRideNotification = async (registrationToken, data) => {
 
     const message = {
         notification: { title: title, body: body },
-        data: restData,
+        // data: restData,
+        data: {
+            data: JSON.stringify(restData),
+        },
         token: registrationToken,
     };
 

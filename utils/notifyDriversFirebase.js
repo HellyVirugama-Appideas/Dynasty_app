@@ -15,24 +15,30 @@ module.exports = async function notifyDrivers(drivers, ride, user) {
                 return false;
             }
 
+            // const notificationData = {
+            //     driverId: driverId.toString(),
+            //     userId: user._id.toString(),
+            //     ride: JSON.stringify(ride),
+            //     rideId: ride._id.toString(),
+            //     distance: distance.toString(),
+            //     time: time.toString(),
+            //     title: 'New Ride Request',
+            //     body: `You have a new ride request ${distance} (${time}).`,
+            // };
             const notificationData = {
-                driverId: driverId.toString(),
-                userId: user._id.toString(),
-                ride: JSON.stringify(ride),
-                rideId: ride._id.toString(),
-                distance: distance.toString(),
-                time: time.toString(),
+                driverId: driverId,
+                userId: user.id,
+                ride: ride,
+                rideId: ride._id,
+                distance: distance,
+                time: time,
                 title: 'New Ride Request',
                 body: `You have a new ride request ${distance} (${time}).`,
             };
-            // console.log(notificationData);
             const response = await sendRideNotification(
                 registrationToken,
-                notificationData,
+                notificationData
             );
-            // console.log('--------------------------------');
-            // console.log('response', response);
-            // console.log('--------------------------------');
 
             return true;
         } catch (error) {
