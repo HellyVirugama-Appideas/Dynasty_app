@@ -119,7 +119,7 @@ exports.driverResponse = async (req, res, next) => {
                 title: 'Ride Accepted',
                 // body: req.t(isSchedule ? 'ride.schedule' : 'ride.success'),
                 body: 'Your ride has been successfully booked.',
-                ride: JSON.stringify(rideResponse),
+                ride: rideResponse,
             };
             await sendRideNotification(user.fcmToken, notificationData);
 
