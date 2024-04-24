@@ -116,6 +116,7 @@ exports.driverResponse = async (req, res, next) => {
 
             const notificationData = {
                 code: '1',
+                message: req.t('success'),
                 title: 'Ride Accepted',
                 // body: req.t(isSchedule ? 'ride.schedule' : 'ride.success'),
                 body: 'Your ride has been successfully booked.',
