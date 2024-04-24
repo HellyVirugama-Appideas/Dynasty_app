@@ -106,6 +106,10 @@ exports.driverResponse = async (req, res, next) => {
                 },
                 select: 'name profile phone',
             });
+            await rideResponse.populate({
+                path: 'user',
+                select: 'name phone',
+            });
 
             rideResponse = rideResponse._doc;
             rideResponse.type = multilingual(rideResponse.driver.type, req);
