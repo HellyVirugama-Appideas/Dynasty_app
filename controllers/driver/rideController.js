@@ -126,6 +126,7 @@ exports.driverResponse = async (req, res, next) => {
 
             return res.json({
                 code: '1',
+                message: req.t('success'),
                 distance: distance,
                 time: time,
             });
