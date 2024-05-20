@@ -1,95 +1,96 @@
 {
-    "validation": {
-        "name": "Veuillez fournir le nom.",
-        "country_code": "Veuillez fournir le code du pays.",
-        "phone": "Veuillez fournir un numéro de mobile.",
-        "mobileInvalid": "Le numéro de mobile n'est pas valide.",
-        "email": "Veuillez fournir un e-mail.",
-        "emailInvalid": "Veuillez fournir un e-mail valide.",
-        "deliveryOption": "Veuillez sélectionner l'option de livraison.",
-        "address": "Veuillez fournir l'adresse.",
-        "latitude": "Veuillez fournir la latitude.",
-        "longitude": "Veuillez fournir la longitude.",
-        "city": "Veuillez fournir la ville.",
-        "country": "Veuillez fournir un pays.",
-        "type": "Veuillez fournir le type de véhicule.",
-        "pickupTime": "Veuillez fournir un temps de ramassage.",
-        "returnTime": "Veuillez fournir un temps de retour."
-    },
-    "phone": {
-        "verify": "Veuillez vérifier le numéro de mobile."
-    },
-    "otp": {
-        "sent": "OTP a envoyé à votre numéro.",
-        "fail": "Ne pas vérifier OTP.",
-        "verified": "OTP vérifié."
-    },
-    "token": {
-        "invalid": "Jeton invalide.",
-        "expired": "Jeton expiré, vérifiez à nouveau le téléphone."
-    },
-    "auth": {
-        "provideToken": "Veuillez fournir un jeton d'authentification.",
-        "login": "S'il vous plait Connectez-vous d'abord.",
-        "blocked": "Désolé! Vous êtes bloqué, veuillez contacter l'administrateur."
-    },
-    "address": {
-        "added": "L'adresse ajoutée avec succès.",
-        "edited": "Adresse édité avec succès.",
-        "selected": "Adresse sélectionnée avec succès.",
-        "deleted": "Adresse supprimée avec succès."
-    },
-    "social": {
-        "google": "Veuillez vous connecter avec Google.",
-        "facebook": "Veuillez vous connecter avec Facebook.",
-        "apple": "Veuillez vous connecter avec Apple.",
-        "phone": "Veuillez vous connecter avec le numéro de téléphone.",
-        "invalidGoogle": "ID Google non valide.",
-        "invalidFacebook": "ID Facebook non valide.",
-        "invalidApple": "ID de pomme non valide."
-    },
-    "ride": {
-        "success": "Votre trajet a été réservé avec succès.",
-        "schedule": "Votre trajet a été programmé avec succès.",
-        "fail": "Pas de conducteurs disponibles pour le moment. Veuillez réessayer plus tard.",
-        "cancel": "Ridez avec succès annulé.",
-        "already": "La demande de conduite a déjà été acceptée par un autre conducteur."
-    },
-    "rent": {
-        "already": "La voiture est déjà réservée pour la période demandée.",
-        "accepted": "Demande de réservation acceptée.",
-        "rejected": "Demande de réservation rejetée."
-    },
-    "car": {
-        "added": "La voiture a ajouté avec succès.",
-        "edited": "Car a été édité avec succès.",
-        "deleted": "Voiture supprimée avec succès.",
-        "type": "Veuillez fournir le type de voiture.",
-        "name": "Veuillez fournir le nom de la voiture.",
-        "condition": "Veuillez fournir une condition.",
-        "company": "Veuillez fournir l'entreprise",
-        "model": "Veuillez fournir un modèle",
-        "purchaseDate": "Veuillez fournir la date d'achat.",
-        "kmsDriven": "Veuillez fournir le nombre de KMS conduits",
-        "carNumber": "Veuillez fournir le numéro de voiture.",
-        "price": "Veuillez fournir le prix.",
-        "description": "Veuillez fournir une description.",
-        "address": "Veuillez fournir l'adresse."
-    },
-    "carImage": {
-        "pics": "Au moins une photo est requise.",
-        "purchaseBill": "La facture d'achat est requise.",
-        "insurance": "Une assurance est requise.",
-        "rc": "RC est requis."
-    },
-    "rating": {
-        "added": "La note a ajouté avec succès.",
-        "rating": "Une notation est requise.",
-        "comment": "Un commentaire est requis."
-    },
-    "loggedIn": "Connexion réussie.",
-    "profile": "Profil créé avec succès.",
-    "deleted": "Profil supprimé.",
-    "internal": "Erreur interne du serveur.",
-    "success": "succès"
+  "validation": {
+    "name": "Veuillez fournir le nom.",
+    "country_code": "Veuillez fournir le code du pays.",
+    "phone": "Veuillez fournir un numéro de mobile.",
+    "mobileInvalid": "Le numéro de mobile n'est pas valide.",
+    "email": "Veuillez fournir un e-mail.",
+    "emailInvalid": "Veuillez fournir un e-mail valide.",
+    "deliveryOption": "Veuillez sélectionner l'option de livraison.",
+    "address": "Veuillez fournir l'adresse.",
+    "latitude": "Veuillez fournir la latitude.",
+    "longitude": "Veuillez fournir la longitude.",
+    "city": "Veuillez fournir la ville.",
+    "country": "Veuillez fournir un pays.",
+    "type": "Veuillez fournir le type de véhicule.",
+    "pickupTime": "Veuillez fournir un temps de ramassage.",
+    "returnTime": "Veuillez fournir un temps de retour."
+  },
+  "phone": {
+    "verify": "Veuillez vérifier le numéro de mobile."
+  },
+  "otp": {
+    "sent": "OTP a envoyé à votre numéro.",
+    "fail": "Ne pas vérifier OTP.",
+    "verified": "OTP vérifié."
+  },
+  "token": {
+    "invalid": "Jeton invalide.",
+    "expired": "Jeton expiré, vérifiez à nouveau le téléphone."
+  },
+  "auth": {
+    "provideToken": "Veuillez fournir un jeton d'authentification.",
+    "login": "S'il vous plait Connectez-vous d'abord.",
+    "blocked": "Désolé! Vous êtes bloqué, veuillez contacter l'administrateur.",
+    "deleted": "Your account has been deleted."
+  },
+  "address": {
+    "added": "L'adresse ajoutée avec succès.",
+    "edited": "Adresse édité avec succès.",
+    "selected": "Adresse sélectionnée avec succès.",
+    "deleted": "Adresse supprimée avec succès."
+  },
+  "social": {
+    "google": "Veuillez vous connecter avec Google.",
+    "facebook": "Veuillez vous connecter avec Facebook.",
+    "apple": "Veuillez vous connecter avec Apple.",
+    "phone": "Veuillez vous connecter avec le numéro de téléphone.",
+    "invalidGoogle": "ID Google non valide.",
+    "invalidFacebook": "ID Facebook non valide.",
+    "invalidApple": "ID de pomme non valide."
+  },
+  "ride": {
+    "success": "Votre trajet a été réservé avec succès.",
+    "schedule": "Votre trajet a été programmé avec succès.",
+    "fail": "Pas de conducteurs disponibles pour le moment. Veuillez réessayer plus tard.",
+    "cancel": "Ridez avec succès annulé.",
+    "already": "La demande de conduite a déjà été acceptée par un autre conducteur."
+  },
+  "rent": {
+    "already": "La voiture est déjà réservée pour la période demandée.",
+    "accepted": "Demande de réservation acceptée.",
+    "rejected": "Demande de réservation rejetée."
+  },
+  "car": {
+    "added": "La voiture a ajouté avec succès.",
+    "edited": "Car a été édité avec succès.",
+    "deleted": "Voiture supprimée avec succès.",
+    "type": "Veuillez fournir le type de voiture.",
+    "name": "Veuillez fournir le nom de la voiture.",
+    "condition": "Veuillez fournir une condition.",
+    "company": "Veuillez fournir l'entreprise",
+    "model": "Veuillez fournir un modèle",
+    "purchaseDate": "Veuillez fournir la date d'achat.",
+    "kmsDriven": "Veuillez fournir le nombre de KMS conduits",
+    "carNumber": "Veuillez fournir le numéro de voiture.",
+    "price": "Veuillez fournir le prix.",
+    "description": "Veuillez fournir une description.",
+    "address": "Veuillez fournir l'adresse."
+  },
+  "carImage": {
+    "pics": "Au moins une photo est requise.",
+    "purchaseBill": "La facture d'achat est requise.",
+    "insurance": "Une assurance est requise.",
+    "rc": "RC est requis."
+  },
+  "rating": {
+    "added": "La note a ajouté avec succès.",
+    "rating": "Une notation est requise.",
+    "comment": "Un commentaire est requis."
+  },
+  "loggedIn": "Connexion réussie.",
+  "profile": "Profil créé avec succès.",
+  "deleted": "Profil supprimé.",
+  "internal": "Erreur interne du serveur.",
+  "success": "succès"
 }

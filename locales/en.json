@@ -1,96 +1,97 @@
 {
-    "validation": {
-        "name": "Please provide name.",
-        "country_code": "Please provide country code.",
-        "phone": "Please provide mobile number.",
-        "mobileInvalid": "Mobile number is invalid.",
-        "email": "Please provide email.",
-        "emailInvalid": "Please provide a valid email.",
-        "deliveryOption": "Please selecte delivery option.",
-        "address": "Please provide address.",
-        "latitude": "Please provide latitude.",
-        "longitude": "Please provide longitude.",
-        "city": "Please provide city.",
-        "country": "Please provide country.",
-        "type": "Please provide vehicle type.",
-        "pickupTime": "Please provide pickup time.",
-        "returnTime": "Please provide return time."
-    },
-    "phone": {
-        "verify": "Please verify mobile number."
-    },
-    "otp": {
-        "sent": "OTP sent to your number.",
-        "fail": "Fail to verify OTP.",
-        "verified": "OTP verified."
-    },
-    "token": {
-        "invalid": "Invalid token.",
-        "expired": "Token expired, Verify phone again."
-    },
-    "auth": {
-        "provideToken": "Please provide authentication token.",
-        "login": "Please login first.",
-        "blocked": "Sorry! You are blocked, Please contact Admin."
-    },
-    "address": {
-        "added": "Address added successfully.",
-        "edited": "Address edited successfully.",
-        "selected": "Address selected successfully.",
-        "deleted": "Address deleted successfully."
-    },
-    "social": {
-        "google": "Please log in with Google.",
-        "facebook": "Please log in with Facebook.",
-        "apple": "Please log in with Apple.",
-        "phone": "Please log in with phone number.",
-        "invalidGoogle": "Invalid Google ID.",
-        "invalidFacebook": "Invalid Facebook ID.",
-        "invalidApple": "Invalid Apple ID."
-    },
-    "ride": {
-      "success": "Your ride has been successfully booked.",
-      "schedule": "Your ride has been successfully scheduled.",
-      "fail": "No available drivers at the moment. Please try again later.",
-      "cancel": "Ride successfully cancelled.",
-      "rejected": "Ride successfully rejected.",
-      "already": "Ride request has already been accepted by another driver."
-    },
-    "rent": {
-        "already": "Car is already booked for the requested period.",
-        "accepted": "Booking request accepted.",
-        "rejected": "Booking request rejected."
-    },
-    "car": {
-        "added": "Car added successfully.",
-        "edited": "Car edited successfully.",
-        "deleted": "Car deleted successfully.",
-        "type": "Please provide car type.",
-        "name": "Please provide car name.",
-        "condition": "Please provide condition.",
-        "company": "Please provide company",
-        "model": "Please provide model",
-        "purchaseDate": "Please provide purchase date.",
-        "kmsDriven": "Please provide number of kms driven",
-        "carNumber": "Please provide car number.",
-        "price": "Please provide price.",
-        "description": "Please provide description.",
-        "address": "Please provide address."
-    },
-    "carImage": {
-        "pics": "At least one pic is required.",
-        "purchaseBill": "Purchase bill is required.",
-        "insurance": "Insurance is required.",
-        "rc": "RC is required."
-    },
-    "rating": {
-        "added": "Rating added successfully.",
-        "rating": "Rating is required.",
-        "comment": "Comment is required."
-    },
-    "loggedIn": "Login Successful.",
-    "profile": "Profile created successfully.",
-    "deleted": "Profile deleted.",
-    "internal": "Internal server error.",
-    "success": "success"
+  "validation": {
+    "name": "Please provide name.",
+    "country_code": "Please provide country code.",
+    "phone": "Please provide mobile number.",
+    "mobileInvalid": "Mobile number is invalid.",
+    "email": "Please provide email.",
+    "emailInvalid": "Please provide a valid email.",
+    "deliveryOption": "Please selecte delivery option.",
+    "address": "Please provide address.",
+    "latitude": "Please provide latitude.",
+    "longitude": "Please provide longitude.",
+    "city": "Please provide city.",
+    "country": "Please provide country.",
+    "type": "Please provide vehicle type.",
+    "pickupTime": "Please provide pickup time.",
+    "returnTime": "Please provide return time."
+  },
+  "phone": {
+    "verify": "Please verify mobile number."
+  },
+  "otp": {
+    "sent": "OTP sent to your number.",
+    "fail": "Fail to verify OTP.",
+    "verified": "OTP verified."
+  },
+  "token": {
+    "invalid": "Invalid token.",
+    "expired": "Token expired, Verify phone again."
+  },
+  "auth": {
+    "provideToken": "Please provide authentication token.",
+    "login": "Please login first.",
+    "blocked": "Sorry! You are blocked, Please contact Admin.",
+    "deleted": "Your account has been deleted."
+  },
+  "address": {
+    "added": "Address added successfully.",
+    "edited": "Address edited successfully.",
+    "selected": "Address selected successfully.",
+    "deleted": "Address deleted successfully."
+  },
+  "social": {
+    "google": "Please log in with Google.",
+    "facebook": "Please log in with Facebook.",
+    "apple": "Please log in with Apple.",
+    "phone": "Please log in with phone number.",
+    "invalidGoogle": "Invalid Google ID.",
+    "invalidFacebook": "Invalid Facebook ID.",
+    "invalidApple": "Invalid Apple ID."
+  },
+  "ride": {
+    "success": "Your ride has been successfully booked.",
+    "schedule": "Your ride has been successfully scheduled.",
+    "fail": "No available drivers at the moment. Please try again later.",
+    "cancel": "Ride successfully cancelled.",
+    "rejected": "Ride successfully rejected.",
+    "already": "Ride request has already been accepted by another driver."
+  },
+  "rent": {
+    "already": "Car is already booked for the requested period.",
+    "accepted": "Booking request accepted.",
+    "rejected": "Booking request rejected."
+  },
+  "car": {
+    "added": "Car added successfully.",
+    "edited": "Car edited successfully.",
+    "deleted": "Car deleted successfully.",
+    "type": "Please provide car type.",
+    "name": "Please provide car name.",
+    "condition": "Please provide condition.",
+    "company": "Please provide company",
+    "model": "Please provide model",
+    "purchaseDate": "Please provide purchase date.",
+    "kmsDriven": "Please provide number of kms driven",
+    "carNumber": "Please provide car number.",
+    "price": "Please provide price.",
+    "description": "Please provide description.",
+    "address": "Please provide address."
+  },
+  "carImage": {
+    "pics": "At least one pic is required.",
+    "purchaseBill": "Purchase bill is required.",
+    "insurance": "Insurance is required.",
+    "rc": "RC is required."
+  },
+  "rating": {
+    "added": "Rating added successfully.",
+    "rating": "Rating is required.",
+    "comment": "Comment is required."
+  },
+  "loggedIn": "Login Successful.",
+  "profile": "Profile created successfully.",
+  "deleted": "Profile deleted.",
+  "internal": "Internal server error.",
+  "success": "success"
 }

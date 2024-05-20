@@ -26,6 +26,13 @@ const sendNotification = async (registrationToken, data) => {
 
 const sendRideNotification = async (registrationToken, data) => {
     const { title, body, ...restData } = data;
+    console.log(
+        '================================================================'
+    );
+    console.log(JSON.stringify(restData));
+    console.log(
+        '================================================================'
+    );
 
     const message = {
         notification: { title: title, body: body },

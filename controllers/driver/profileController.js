@@ -3,6 +3,7 @@ const multilingualUser = require('../../utils/multilingualUser');
 const deleteFile = require('../../utils/deleteFile');
 
 const Driver = require('../../models/driverModel');
+const Car = require('../../models/carModel');
 const Country = require('../../models/countryModel');
 const City = require('../../models/cityModel');
 
@@ -76,12 +77,26 @@ exports.editProfile = async (req, res, next) => {
 
 exports.deleteProfile = async (req, res, next) => {
     try {
-        // TODO soft delete
-        // Delete driver
-        await Driver.findByIdAndDelete(req.driver.id);
+        const driver = await Driver.findByIdAndUpdate(req.driver.id, {
+            isDeleted: true,
+        });
+        if (!driver) return next(createError.Unauthorized('Driver not found!'));
+
+        await Car.findOneAndUpdate(
+            { driver: req.driver.id, isDeleted: false },
+            { isDeleted: true }
+        );
+
+        const suffix = uniqueSuffix();
+
+        await Driver.findByIdAndUpdate(req.driver.id, {
+            email: driver.email + `${suffix}`,
+        });
 
         res.json({ code: '1', message: req.t('deleted') });
     } catch (error) {
+        if (error.name == 'CastError')
+            return next(createError.NotFound('Driver not found.'));
         next(error);
     }
 };
@@ -129,4 +144,9 @@ exports.postSelectCountryCity = async (req, res, next) => {
     } catch (error) {
         next(error);
     }
+};
+
+const uniqueSuffix = () => {
+    const random = Math.random().toString(36).substr(2, 3);
+    return `_deleted_${random}`;
 };

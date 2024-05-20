@@ -40,7 +40,7 @@ exports.checkAdmin = async (req, res, next) => {
 exports.getDashboard = async (req, res) => {
     const [user, driver] = await Promise.all([
         User.find().select('date'),
-        Driver.find().select('date'),
+        Driver.find({ isDeleted: false }).select('date'),
     ]);
 
     // user

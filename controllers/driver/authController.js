@@ -29,6 +29,8 @@ exports.checkDriver = async (req, res, next) => {
         if (!driver) return next(createError.BadRequest('auth.login'));
         if (driver.blocked)
             return next(createError.Unauthorized('auth.blocked'));
+        if (driver.isDeleted)
+            return next(createError.Unauthorized('auth.deleted'));
 
         req.driver = driver;
         next();

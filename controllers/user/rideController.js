@@ -2,6 +2,8 @@ const geolib = require('geolib');
 const createError = require('http-errors');
 const multilingual = require('../../utils/multilingual');
 const notifyDriversFirebase = require('../../utils/notifyDriversFirebase');
+const notifyDrivers = require('../../utils/notifyDrivers');
+const generateCode = require('../../utils/generateCode');
 
 const Type = require('../../models/typeModel');
 const Charges = require('../../models/chargesModel');
@@ -32,6 +34,7 @@ exports.getVehicleTypes = async (req, res, next) => {
                 },
             },
             status: 'online',
+            isDeleted: false,
         });
         const typeFor = type === 'bike' ? 'Bike' : 'Taxi';
 
@@ -106,6 +109,7 @@ exports.bookRide = async (req, res, next) => {
             },
             type: req.body.type,
             status: 'online',
+            isDeleted: false,
         }).limit(5); // Limit to 5 closest drivers
 
         if (nearbyDrivers.length === 0)
@@ -164,11 +168,7 @@ exports.bookRide = async (req, res, next) => {
         });
 
         // Notify drivers
-        const response = await notifyDriversFirebase(
-            drivers,
-            rideObject,
-            user
-        );
+        const response = await notifyDriversFirebase(drivers, rideObject, user);
         // console.log('response', response);
         // if (!response) return next(createError.BadRequest('ride.fail'));
 
@@ -182,6 +182,123 @@ exports.bookRide = async (req, res, next) => {
         next(error);
     }
 };
+
+// exports.bookRide = async (req, res, next) => {
+//     try {
+//         const isSchedule = req.body.isSchedule === 'true';
+
+//         const nearbyDrivers = await Driver.find({
+//             location: {
+//                 $near: {
+//                     $geometry: {
+//                         type: 'Point',
+//                         coordinates: [req.body.pickupLng, req.body.pickupLat],
+//                     },
+//                     $maxDistance: process.env.radiusInMeters,
+//                 },
+//             },
+//             type: req.body.type,
+//             status: 'online',
+//         }).limit(5); // Limit to 5 closest drivers
+
+//         if (nearbyDrivers.length === 0)
+//             return next(createError.BadRequest('ride.fail'));
+
+//         const ride = await RideReq.create({
+//             user: req.user.id,
+//             pickupAddress: req.body.pickupAddress,
+//             pickupLat: req.body.pickupLat,
+//             pickupLng: req.body.pickupLng,
+//             endAddress: req.body.endAddress,
+//             endLat: req.body.endLat,
+//             endLng: req.body.endLng,
+//             type: req.body.type,
+//             isSchedule,
+//             scheduleTime: isSchedule ? req.body.scheduleTime : undefined,
+//         });
+//         await ride.populate('user', 'name phone');
+
+//         // Calculate distance for each driver
+//         const drivers = nearbyDrivers.map(driver => {
+//             const driverLocation = {
+//                 latitude: driver.location.coordinates[1],
+//                 longitude: driver.location.coordinates[0],
+//             };
+//             const pickupLocation = {
+//                 latitude: ride.pickupLat,
+//                 longitude: ride.pickupLng,
+//             };
+
+//             // Calculate distance
+//             const distanceInMeters = geolib.getDistance(
+//                 driverLocation,
+//                 pickupLocation
+//             );
+//             const distanceInKm = (distanceInMeters / 1000).toFixed(1);
+
+//             const timeInMinutes = (distanceInKm / 30) * 60; // Est. speed 30 km/h
+//             const time =
+//                 timeInMinutes < 1
+//                     ? 'less than a minute away'
+//                     : `${Math.round(timeInMinutes)} minutes away`;
+
+//             const distance =
+//                 distanceInMeters < 100
+//                     ? `${distanceInMeters} meter away`
+//                     : `${distanceInKm} km away`;
+
+//             return { id: driver.id, distance, time };
+//         });
+
+//         // Notify drivers
+//         const { driverId, time, distance } = await notifyDrivers(drivers, ride);
+
+//         // If no one accepted
+//         // if (driverId === null)
+//         //     return res.json({ code: '0', message: req.t('ride.fail') });
+
+//         // Create ride
+//         let rideResponse = await Ride.create({
+//             ...ride._doc,
+//             // driver: driverId,
+//             driver: '64425401b372d598b160c9ab',
+//             time,
+//             distance,
+//             otp: generateCode(6),
+//             status: isSchedule ? 'Upcoming' : 'Ongoing',
+//         });
+
+//         // if (!isSchedule)
+//         //     await Driver.findByIdAndUpdate(driverId, { status: 'busy' });
+
+//         // Populate driver with type
+//         await rideResponse.populate({
+//             path: 'driver',
+//             populate: {
+//                 path: 'type',
+//                 select: '-__v -distanceRate -typeFor -capacity',
+//             },
+//             select: 'name profile phone',
+//         });
+
+//         rideResponse = rideResponse._doc;
+//         rideResponse.type = multilingual(rideResponse.driver.type, req);
+//         rideResponse.driver.type = undefined;
+//         rideResponse.__v = undefined;
+
+//         console.log('rideResponse: ', rideResponse);
+
+//         res.json({
+//             code: '1',
+//             message: req.t(isSchedule ? 'ride.schedule' : 'ride.success'),
+//             ride: rideResponse,
+//         });
+//     } catch (error) {
+//         if (error.name == 'CastError')
+//             return next(createError.BadRequest('Invalid type id.'));
+//         next(error);
+//     }
+// };
 
 exports.cancelRide = async (req, res, next) => {
     try {
@@ -218,6 +335,7 @@ exports.getRides = async (req, res, next) => {
             .populate('user', 'name phone')
             .populate({
                 path: 'driver',
+                match: { isDeleted: false },
                 populate: {
                     path: 'type',
                     select: '-__v -distanceRate -typeFor -capacity',
@@ -229,8 +347,8 @@ exports.getRides = async (req, res, next) => {
             .lean();
 
         rides = rides.map(ride => {
-            if (ride.driver.type)
-                ride.type = multilingual(ride.driver.type, req);
+            if (ride.driver?.type)
+                ride.type = multilingual(ride.driver?.type, req);
             return ride;
         });
 

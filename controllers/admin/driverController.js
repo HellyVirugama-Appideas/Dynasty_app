@@ -7,7 +7,7 @@ const Type = require('../../models/typeModel');
 
 exports.getAllDrivers = async (req, res) => {
     try {
-        const drivers = await Driver.find()
+        const drivers = await Driver.find({ isDeleted: false })
             .select('+approved +blocked')
             .sort('-_id');
 

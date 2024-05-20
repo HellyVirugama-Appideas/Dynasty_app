@@ -71,6 +71,7 @@ const driverSchema = new mongoose.Schema({
     },
     isHandlingRequest: { type: Boolean, default: false },
     fcmToken: { type: String, required: [true, 'fcmToken is required.'] },
+    isDeleted: { type: Boolean, default: false, select: false },
     date: {
         type: Date,
         default: Date.now,
