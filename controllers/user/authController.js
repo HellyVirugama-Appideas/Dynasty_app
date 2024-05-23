@@ -229,7 +229,7 @@ exports.socialLogin = async (req, res, next) => {
             return res.json({
                 code: '001',
                 message: req.t('success'),
-                data: { email, googleId, facebookId, appleId },
+                user: { email, googleId, facebookId, appleId },
             });
         }
 
