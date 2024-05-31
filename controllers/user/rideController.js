@@ -353,7 +353,10 @@ exports.tempPayment = async (req, res, next) => {
 
 exports.cancelRide = async (req, res, next) => {
     try {
-        const ride = await Ride.findById(req.body.rideId);
+        const ride = await Ride.findById(req.body.rideId).populate(
+            'user',
+            'name fcmToken'
+        );
 
         if (
             !ride ||
@@ -363,7 +366,8 @@ exports.cancelRide = async (req, res, next) => {
             return next(createError.NotFound('Ride not found with given id.'));
 
         ride.status = 'Cancelled';
-        ride.cancellationReason = req.body.cancellationReason;
+        ride.cancellationReason =
+            req.body.cancellationReason || 'No reason provided';
 
         // Save ride and Update driver status to online
         await Promise.all([
@@ -372,6 +376,12 @@ exports.cancelRide = async (req, res, next) => {
         ]);
 
         // Notify driver
+        const data = {
+            title: 'Ride has been cancelled.',
+            body: `Your ride has been cancelled by ${ride.user.name}. Reason - ${ride.cancellationReason}.`,
+        };
+
+        sendNotification(ride.user.fcmToken, data);
         io.to(ride.driver.toString()).emit('cancelRide', { ride });
 
         res.json({ code: '1', message: req.t('ride.cancel') });
