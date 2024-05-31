@@ -30,6 +30,7 @@ const rideReqSchema = new mongoose.Schema({
     },
     isSchedule: { type: Boolean, default: false },
     scheduleTime: Date,
+    price: { type: Number, required: [true, 'Price is required.'] },
 
     createdAt: {
         type: Date,

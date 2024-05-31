@@ -36,20 +36,20 @@ exports.verifyRideOTP = async (req, res, next) => {
         await ride.save();
 
         // Notify user
-        // const notificationData = {
-        //     code: '1',
-        //     title: 'Ride Status',
-        //     body: ride.rideStatus,
-        //     rideId: ride._id.toString(),
-        //     rideStatus: ride.rideStatus,
-        // };
+        const notificationData = {
+            code: '1',
+            title: 'Ride Status',
+            body: ride.rideStatus,
+            rideId: ride._id.toString(),
+            rideStatus: ride.rideStatus,
+        };
 
-        // await sendRideNotification(ride.user?.fcmToken, notificationData);
+        await sendRideNotification(ride.user?.fcmToken, notificationData);
 
-        // io.to(ride.user.id).emit('rideStatusNotify', {
-        //     rideId: ride.id,
-        //     rideStatus: ride.rideStatus,
-        // });
+        io.to(ride.user.id).emit('rideStatusNotify', {
+            rideId: ride.id,
+            rideStatus: ride.rideStatus,
+        });
 
         res.json({ code: '1', message: req.t('success'), ride });
     } catch (error) {
