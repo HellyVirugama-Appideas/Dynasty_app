@@ -1,6 +1,6 @@
 const geolib = require('geolib');
 const createError = require('http-errors');
-const { sendNotification } = require('../../utils/sendNotification');
+const { sendOnlyNotification } = require('../../utils/sendNotification');
 const multilingual = require('../../utils/multilingual');
 const notifyDriversFirebase = require('../../utils/notifyDriversFirebase');
 const notifyDrivers = require('../../utils/notifyDrivers');
@@ -219,13 +219,10 @@ exports.tempPayment = async (req, res, next) => {
 
         // Notify user
         const data = {
-            // user: req.user.id,
-            // car: request.car,
-            // requestId: request.id,
             title: 'Ride has been completed.',
             body: 'Your ride has been successfully completed. Thank you for using our service!',
         };
-        sendNotification(req.user.fcmToken, data);
+        sendOnlyNotification(req.user.fcmToken, data);
 
         res.json({ code: '1', message: req.t('success'), data: request });
     } catch (error) {
@@ -354,10 +351,9 @@ exports.tempPayment = async (req, res, next) => {
 exports.cancelRide = async (req, res, next) => {
     try {
         const ride = await Ride.findById(req.body.rideId).populate(
-            'user',
+            'user driver',
             'name fcmToken'
         );
-
         if (
             !ride ||
             ['Completed', 'Cancelled', 'Expired'].includes(ride.status) ||
@@ -381,7 +377,8 @@ exports.cancelRide = async (req, res, next) => {
             body: `Your ride has been cancelled by ${ride.user.name}. Reason - ${ride.cancellationReason}.`,
         };
 
-        sendNotification(ride.user.fcmToken, data);
+        sendOnlyNotification(ride.driver.fcmToken, data);
+
         io.to(ride.driver.toString()).emit('cancelRide', { ride });
 
         res.json({ code: '1', message: req.t('ride.cancel') });

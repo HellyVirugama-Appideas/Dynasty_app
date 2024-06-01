@@ -430,12 +430,22 @@ exports.cancelBooking = async (req, res, next) => {
             _id: req.body.id,
             user: req.user.id,
             status: 'accepted',
-        });
+        }).populate('driver', 'fcmToken');
         if (!booking) return next(createError.NotFound('Booking not found!'));
 
         booking.status = 'cancelled';
         booking.reason = req.body.reason;
         await booking.save();
+
+        // Notify driver
+        const data = {
+            driver: booking.driver.id,
+            car: booking.car,
+            requestId: booking.id,
+            title: 'Booking cancelled',
+            body: `Booking has been cancelled by ${req.user.name}. Reason - ${req.body.reason}.`,
+        };
+        sendNotification(booking.driver.fcmToken, data);
 
         res.json({ code: '1', message: req.t('success') });
     } catch (error) {

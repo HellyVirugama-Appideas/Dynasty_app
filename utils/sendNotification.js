@@ -24,6 +24,22 @@ const sendNotification = async (registrationToken, data) => {
     }
 };
 
+const sendOnlyNotification = async (registrationToken, data) => {
+    const message = {
+        notification: { title: data.title, body: data.body },
+        token: registrationToken,
+    };
+
+    try {
+        const response = await admin.messaging().send(message);
+        console.log('Successfully sent notification:', response);
+
+        return response;
+    } catch (error) {
+        console.log('Error sending notification:', error);
+    }
+};
+
 const sendRideNotification = async (registrationToken, data) => {
     const { title, body, ...restData } = data;
     console.log(
@@ -44,7 +60,7 @@ const sendRideNotification = async (registrationToken, data) => {
     };
 
     try {
-        await Notification.create(data);
+        // await Notification.create(data);
 
         const response = await admin.messaging().send(message);
         console.log('Successfully sent notification:', response);
@@ -55,4 +71,8 @@ const sendRideNotification = async (registrationToken, data) => {
     }
 };
 
-module.exports = { sendNotification, sendRideNotification };
+module.exports = {
+    sendNotification,
+    sendOnlyNotification,
+    sendRideNotification,
+};

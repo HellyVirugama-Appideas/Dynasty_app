@@ -120,3 +120,46 @@ exports.getBookings = async (req, res, next) => {
         next(error);
     }
 };
+
+exports.cancelBooking = async (req, res, next) => {
+    try {
+        const booking = await Booking.findOne({
+            _id: req.body.id,
+            driver: req.driver.id,
+            status: 'accepted',
+        }).populate('user', 'fcmToken');
+        if (!booking) return next(createError.NotFound('Booking not found!'));
+
+        booking.status = 'cancelled';
+        booking.reason = req.body.reason;
+        await booking.save();
+
+        const bookingRequest = await BookingReq.findOne({
+            user: booking.user._id,
+            car: booking.car,
+            driver: booking.driver,
+            bookedFrom: booking.bookedFrom,
+            bookedTo: booking.bookedTo,
+            pickupTime: booking.pickupTime,
+            returnTime: booking.returnTime,
+        });
+        if (bookingRequest) {
+            bookingRequest.status = 'cancelled';
+            await bookingRequest.save();
+        }
+
+        // Notify user
+        const data = {
+            user: booking.user.id,
+            car: booking.car,
+            bookingId: booking.id,
+            title: 'Booking cancelled',
+            body: `Your booking has been cancelled by ${req.driver.name}. Reason - ${req.body.reason}.`,
+        };
+        sendNotification(booking.user.fcmToken, data);
+
+        res.json({ code: '1', message: req.t('success') });
+    } catch (error) {
+        next(error);
+    }
+};
