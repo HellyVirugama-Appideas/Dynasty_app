@@ -116,6 +116,8 @@ exports.carDetail = async (req, res, next) => {
 
         if (!car) return next(createError.BadRequest('Invalid car id.'));
 
+        bookings.bookingReq = undefined;
+
         // Filter out ratings with comments
         const reviews = ratings.filter(rating => !!rating.comment);
         car.numReviews = reviews.length;
@@ -236,6 +238,7 @@ exports.tempPayment = async (req, res, next) => {
         if (request.deliveryOption == 'delivery')
             price += charge.carDeliveringFee;
         requestData.price = price;
+        requestData.bookingReq = req.body.requestId;
 
         const booking = await Booking.create(requestData);
 
@@ -252,6 +255,8 @@ exports.tempPayment = async (req, res, next) => {
             body: 'Your booking has been successfully completed. Thank you for using our service!',
         };
         sendNotification(req.user.fcmToken, data);
+
+        booking.bookingReq = undefined;
 
         res.json({ code: '1', message: req.t('success'), booking });
     } catch (error) {
@@ -356,7 +361,7 @@ exports.getBookings = async (req, res, next) => {
     try {
         const currentDate = new Date();
         const queryOptions = {
-            status: 'accepted',
+            status: { $in: ['accepted', 'completed'] },
             user: req.user.id,
             bookedTo:
                 req.params.type === 'current'
@@ -470,7 +475,11 @@ exports.uploadSignature = async (req, res, next) => {
                 returnSign: `/uploads/${req.file.filename}`,
             };
 
-        await Booking.findByIdAndUpdate(req.body.bookingId, update);
+        const booking = await Booking.findByIdAndUpdate(
+            req.body.bookingId,
+            update
+        );
+        await BookingReq.findByIdAndUpdate(booking.bookingReq, update);
 
         res.json({ code: '1', message: req.t('success') });
     } catch (error) {

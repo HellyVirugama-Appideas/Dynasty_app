@@ -26,6 +26,8 @@ const bookingReqSchema = new mongoose.Schema({
     bookedTo: { type: Date, required: true },
     pickupTime: { type: String, required: [true, 'validation.pickupTime'] },
     returnTime: { type: String, required: [true, 'validation.returnTime'] },
+    pickupCheck: { type: Boolean, default: false },
+    returnCheck: { type: Boolean, default: false },
 
     status: {
         type: String,

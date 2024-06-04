@@ -136,9 +136,13 @@ exports.createProfile = async (req, res, next) => {
 
         // images validation
         if (!req.files.licenseFront)
-            throw createError.BadRequest('licenseFront image is required.');
+            throw createError.BadRequest(
+                'Please add Frontside image of License.'
+            );
         if (!req.files.licenseBack)
-            throw createError.BadRequest('licenseBack image is required.');
+            throw createError.BadRequest(
+                'Please add Backside image of License.'
+            );
 
         if (!req.body.latitude || !req.body.longitude)
             throw createError.BadRequest('Please select valid address.');

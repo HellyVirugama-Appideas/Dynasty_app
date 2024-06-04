@@ -54,6 +54,11 @@ const bookingSchema = new mongoose.Schema({
             return this.status === 'cancelled';
         },
     },
+    bookingReq: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Booking Request',
+        required: true,
+    },
 });
 
 module.exports = mongoose.model('Booking', bookingSchema);
