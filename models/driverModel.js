@@ -22,7 +22,7 @@ const driverSchema = new mongoose.Schema({
         unique: true,
         required: [true, 'validation.email'],
         lowercase: true,
-        validate: [validator.isEmail, 'validation.emailInvalid'],
+        // validate: [validator.isEmail, 'validation.emailInvalid'],
     },
     googleId: String,
     facebookId: String,
