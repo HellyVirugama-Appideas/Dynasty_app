@@ -52,7 +52,7 @@ exports.sendOTP = async (req, res, next) => {
         const otp = generateCode(4);
         await OTP.updateOne(
             { mobile },
-            { otp, expireAt: Date.now() + 5 * 60 * 1000 },
+            { otp, expireAt: Date.now() + 2 * 60 * 1000 },
             { upsert: true }
         );
 
