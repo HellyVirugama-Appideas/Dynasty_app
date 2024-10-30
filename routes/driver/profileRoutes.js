@@ -1,7 +1,7 @@
 const router = require('express').Router();
 const fileUpload = require('express-fileupload');
 
-const { upload } = require('../../controllers/uploadController');
+const { uploadImageS3Bucket } = require('../../controllers/uploadController');
 const { checkDriver } = require('../../controllers/driver/authController');
 const profileController = require('../../controllers/driver/profileController');
 
@@ -9,7 +9,7 @@ const profileController = require('../../controllers/driver/profileController');
 router.get('/get_profile_data', checkDriver, profileController.getProfile);
 router.post(
     '/edit_profile',
-    upload.single('profile'),
+    uploadImageS3Bucket.single('profile'),
     checkDriver,
     profileController.editProfile
 );

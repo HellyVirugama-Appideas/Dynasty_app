@@ -45,19 +45,14 @@ exports.editProfile = async (req, res, next) => {
             delete req.body[property];
         });
 
-        let oldProfile;
         if (req.file) {
-            oldProfile = req.driver.profile;
-            req.body.profile = `/uploads/${req.file.filename}`;
+            const result = await S3.uploadFile(req.file);
+            req.body.profile = result.Location;
         }
 
         let driver = await Driver.findByIdAndUpdate(req.driver.id, req.body, {
             new: true,
         }).populate('city country');
-
-        // remove old images
-        if (oldProfile && oldProfile !== '/uploads/default_user.jpg')
-            deleteFile(oldProfile);
 
         driver = multilingualUser(driver, req);
 

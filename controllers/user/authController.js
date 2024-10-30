@@ -148,11 +148,13 @@ exports.createProfile = async (req, res, next) => {
             throw createError.BadRequest('Please select valid address.');
 
         // images
-        const profile = req.files.profile
-            ? `/uploads/${req.files.profile[0].filename}`
-            : undefined;
-        const licenseFront = `/uploads/${req.files.licenseFront[0].filename}`;
-        const licenseBack = `/uploads/${req.files.licenseBack[0].filename}`;
+        const [profile, licenseFront, licenseBack] = await Promise.all([
+            req.files.profile
+                ? S3.uploadFile(req.files.profile[0]).then(res => res.Location)
+                : undefined,
+            S3.uploadFile(req.files.licenseFront[0]).then(res => res.Location),
+            S3.uploadFile(req.files.licenseBack[0]).then(res => res.Location),
+        ]);
 
         // create user
         let user = new User({
@@ -203,14 +205,6 @@ exports.createProfile = async (req, res, next) => {
             user,
         });
     } catch (error) {
-        // remove files
-        if (req.files.profile)
-            deleteFile(`/uploads/${req.files.profile[0].filename}`);
-        if (req.files.licenseFront)
-            deleteFile(`/uploads/${req.files.licenseFront[0].filename}`);
-        if (req.files.licenseBack)
-            deleteFile(`/uploads/${req.files.licenseBack[0].filename}`);
-
         if (error.name == 'JsonWebTokenError')
             return next(createError.BadRequest('token.invalid'));
         if (error.name == 'TokenExpiredError')
@@ -319,11 +313,13 @@ exports.createSocialProfile = async (req, res, next) => {
             throw createError.BadRequest('Please select valid address.');
 
         // images
-        const profile = req.files.profile
-            ? `/uploads/${req.files.profile[0].filename}`
-            : undefined;
-        const licenseFront = `/uploads/${req.files.licenseFront[0].filename}`;
-        const licenseBack = `/uploads/${req.files.licenseBack[0].filename}`;
+        const [profile, licenseFront, licenseBack] = await Promise.all([
+            req.files.profile
+                ? S3.uploadFile(req.files.profile[0]).then(res => res.Location)
+                : undefined,
+            S3.uploadFile(req.files.licenseFront[0]).then(res => res.Location),
+            S3.uploadFile(req.files.licenseBack[0]).then(res => res.Location),
+        ]);
 
         // create user
         let user = new User({

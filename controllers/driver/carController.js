@@ -50,10 +50,23 @@ exports.createCar = async (req, res, next) => {
             throw createError.BadRequest('carImage.insurance');
         if (!req.files?.rc) throw createError.BadRequest('carImage.rc');
 
-        req.body.pics = req.files.pics.map(file => `/uploads/${file.filename}`);
-        req.body.purchaseBill = `/uploads/${req.files.purchaseBill[0].filename}`;
-        req.body.insurance = `/uploads/${req.files.insurance[0].filename}`;
-        req.body.rc = `/uploads/${req.files.rc[0].filename}`;
+        const pics = await Promise.all(
+            req.files.pics.map(async file => {
+                const result = await S3.uploadFile(file);
+                return result.Location;
+            })
+        );
+        const [purchaseBillResult, insuranceResult, rcResult] =
+            await Promise.all([
+                S3.uploadFile(req.files.purchaseBill[0]),
+                S3.uploadFile(req.files.insurance[0]),
+                S3.uploadFile(req.files.rc[0]),
+            ]);
+
+        req.body.pics = pics;
+        req.body.purchaseBill = purchaseBillResult.Location;
+        req.body.insurance = insuranceResult.Location;
+        req.body.rc = rcResult.Location;
 
         const { latitude, longitude } = req.body;
         if (!latitude || !longitude)
@@ -72,17 +85,6 @@ exports.createCar = async (req, res, next) => {
 
         res.json({ code: '1', message: req.t('car.added'), car });
     } catch (error) {
-        // Remove files
-        if (req.files.pics)
-            req.files.pics.forEach(file =>
-                deleteFile(`/uploads/${file.filename}`)
-            );
-        if (req.files.purchaseBill)
-            deleteFile(`/uploads/${req.files.purchaseBill[0].filename}`);
-        if (req.files.insurance)
-            deleteFile(`/uploads/${req.files.insurance[0].filename}`);
-        if (req.files.rc) deleteFile(`/uploads/${req.files.rc[0].filename}`);
-
         next(error);
     }
 };
@@ -91,7 +93,12 @@ exports.editCar = async (req, res, next) => {
     try {
         let pics = [];
         if (req.files?.length)
-            req.files.map(file => pics.push(`/uploads/${file.filename}`));
+            pics = await Promise.all(
+                req.files.map(async file => {
+                    const result = await S3.uploadFile(file);
+                    return result.Location;
+                })
+            );
 
         const updatedData = {
             name: req.body.name,
@@ -137,7 +144,12 @@ exports.addImage = async (req, res, next) => {
     try {
         let pics = [];
         if (req.files?.length)
-            req.files.map(file => pics.push(`/uploads/${file.filename}`));
+            pics = await Promise.all(
+                req.files.map(async file => {
+                    const result = await S3.uploadFile(file);
+                    return result.Location;
+                })
+            );
 
         const car = await Car.findOneAndUpdate(
             { _id: req.body.carId, driver: req.driver.id, isDeleted: false },

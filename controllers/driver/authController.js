@@ -7,6 +7,7 @@ const generateCode = require('../../utils/generateCode');
 const jwt = require('jsonwebtoken');
 const deleteFile = require('../../utils/deleteFile');
 // const { sendOTP } = require('../../utils/sendSMS');
+const S3 = require('../../helpers/s3');
 
 const Driver = require('../../models/driverModel');
 const OTP = require('../../models/otpModel');
@@ -92,6 +93,9 @@ exports.verifyOTP = async (req, res, next) => {
             .populate('city country');
 
         if (driver) {
+            // if (!req.body.fcmToken)
+            //     return next(createError.BadRequest('fcmToken is required.'));
+
             driver.isHandlingRequest = false;
             driver.fcmToken = req.body.fcmToken;
             await driver.save();
@@ -142,6 +146,8 @@ exports.createProfile = async (req, res, next) => {
             process.env.JWT_SECRET
         );
         if (!decoded.phone) return next(createError.BadRequest('phone.verify'));
+        if (!req.body.fcmToken)
+            return next(createError.BadRequest('fcmToken is required.'));
 
         const { city_id, country_id } = req.body;
         const [city, country] = await Promise.all([
@@ -152,7 +158,11 @@ exports.createProfile = async (req, res, next) => {
         // if (!country) return next(createError.BadRequest('Invalid country_id'));
 
         // profile
-        const profile = req.file ? `/uploads/${req.file.filename}` : undefined;
+        let profile;
+        if (typeof req.file !== 'undefined') {
+            const result = await S3.uploadFile(req.file);
+            profile = result.Location;
+        }
 
         // create driver
         let driver = await Driver.create({
@@ -209,6 +219,8 @@ exports.socialLogin = async (req, res, next) => {
                 driver: { email, googleId, facebookId, appleId },
             });
         }
+        // if (!req.body.fcmToken)
+        //     return next(createError.BadRequest('fcmToken is required.'));
 
         if (googleId) {
             if (!driver.googleId) {
@@ -286,11 +298,17 @@ exports.createSocialProfile = async (req, res, next) => {
             City.findOne({ city_id }),
             Country.findOne({ country_id }),
         ]);
+        if (!req.body.fcmToken)
+            return next(createError.BadRequest('fcmToken is required.'));
+
         // if (!city) return next(createError.BadRequest('Invalid city_id'));
         // if (!country) return next(createError.BadRequest('Invalid country_id'));
 
-        // profile
-        const profile = req.file ? `/uploads/${req.file.filename}` : undefined;
+        let profile;
+        if (typeof req.file !== 'undefined') {
+            const result = await S3.uploadFile(req.file);
+            profile = result.Location;
+        }
 
         // create driver
         let driver = await Driver.create({
@@ -415,14 +433,15 @@ exports.uploadProfile = async (req, res, next) => {
         if (!req.file)
             return next(createError.BadRequest('Please upload file.'));
 
+        let profile;
+        const result = await S3.uploadFile(req.file);
+        profile = result.Location;
+
         let driver = await Driver.findByIdAndUpdate(
             req.driver.id,
-            { profile: `/uploads/${req.file.filename}` },
+            { profile: profile },
             { new: true }
         ).populate('city country');
-
-        // delete old image
-        if (req.driver.profile) deleteFile(req.driver.profile);
 
         driver = multilingualUser(driver, req);
 
@@ -446,14 +465,15 @@ exports.uploadLicence = async (req, res, next) => {
         if (!req.file)
             return next(createError.BadRequest('Please upload file.'));
 
+        let licence;
+        const result = await S3.uploadFile(req.file);
+        licence = result.Location;
+
         let driver = await Driver.findByIdAndUpdate(
             req.driver.id,
-            { licence: `/uploads/${req.file.filename}` },
+            { licence: licence },
             { new: true }
         ).populate('city country');
-
-        // delete old image
-        if (req.driver.licence) deleteFile(req.driver.licence);
 
         driver = multilingualUser(driver, req);
 
@@ -476,14 +496,15 @@ exports.uploadPAN = async (req, res, next) => {
         if (!req.file)
             return next(createError.BadRequest('Please upload file.'));
 
+        let pan;
+        const result = await S3.uploadFile(req.file);
+        pan = result.Location;
+
         let driver = await Driver.findByIdAndUpdate(
             req.driver.id,
-            { pan: `/uploads/${req.file.filename}` },
+            { pan: pan },
             { new: true }
         ).populate('city country');
-
-        // delete old image
-        if (req.driver.pan) deleteFile(req.driver.pan);
 
         driver = multilingualUser(driver, req);
 
@@ -507,14 +528,15 @@ exports.uploadRC = async (req, res, next) => {
         if (!req.file)
             return next(createError.BadRequest('Please upload file.'));
 
+        let rc;
+        const result = await S3.uploadFile(req.file);
+        rc = result.Location;
+
         let driver = await Driver.findByIdAndUpdate(
             req.driver.id,
-            { rc: `/uploads/${req.file.filename}` },
+            { rc: rc },
             { new: true }
         ).populate('city country');
-
-        // delete old image
-        if (req.driver.rc) deleteFile(req.driver.rc);
 
         driver = multilingualUser(driver, req);
 

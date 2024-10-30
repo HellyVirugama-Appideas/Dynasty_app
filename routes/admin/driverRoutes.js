@@ -1,7 +1,7 @@
 const router = require('express').Router();
 
 const driverController = require('../../controllers/admin/driverController');
-const { upload } = require('../../controllers/uploadController');
+const { uploadImageS3Bucket } = require('../../controllers/uploadController');
 
 router.get('/', driverController.getAllDrivers);
 
@@ -9,7 +9,7 @@ router
     .route('/add')
     .get(driverController.getAddDriver)
     .post(
-        upload.fields([
+        uploadImageS3Bucket.fields([
             { name: 'profile', maxCount: 1 },
             { name: 'licence', maxCount: 1 },
             { name: 'pan', maxCount: 1 },
@@ -22,7 +22,7 @@ router
     .route('/edit/:id')
     .get(driverController.getEditDriver)
     .post(
-        upload.fields([
+        uploadImageS3Bucket.fields([
             { name: 'profile', maxCount: 1 },
             { name: 'licence', maxCount: 1 },
             { name: 'pan', maxCount: 1 },

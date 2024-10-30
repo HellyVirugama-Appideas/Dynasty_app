@@ -2,7 +2,7 @@ const router = require('express').Router();
 const fileUpload = require('express-fileupload');
 
 const authController = require('../../controllers/driver/authController');
-const { upload } = require('../../controllers/uploadController');
+const { uploadImageS3Bucket } = require('../../controllers/uploadController');
 
 router.post('/send_otp', fileUpload(), authController.sendOTP);
 
@@ -10,7 +10,7 @@ router.post('/verify_otp', fileUpload(), authController.verifyOTP);
 
 router.post(
     '/create_profile',
-    upload.single('profile'),
+    uploadImageS3Bucket.single('profile'),
     authController.createProfile
 );
 
@@ -18,7 +18,7 @@ router.post('/social_login', fileUpload(), authController.socialLogin);
 
 router.post(
     '/create_social_profile',
-    upload.single('profile'),
+    uploadImageS3Bucket.single('profile'),
     authController.createSocialProfile
 );
 
@@ -34,25 +34,25 @@ router.get('/get_docs', authController.checkDriver, authController.getDocs);
 router.post(
     '/upload/profile',
     authController.checkDriver,
-    upload.single('profile'),
+    uploadImageS3Bucket.single('profile'),
     authController.uploadProfile
 );
 router.post(
     '/upload/licence',
     authController.checkDriver,
-    upload.single('licence'),
+    uploadImageS3Bucket.single('licence'),
     authController.uploadLicence
 );
 router.post(
     '/upload/pan',
     authController.checkDriver,
-    upload.single('pan'),
+    uploadImageS3Bucket.single('pan'),
     authController.uploadPAN
 );
 router.post(
     '/upload/rc',
     authController.checkDriver,
-    upload.single('rc'),
+    uploadImageS3Bucket.single('rc'),
     authController.uploadRC
 );
 

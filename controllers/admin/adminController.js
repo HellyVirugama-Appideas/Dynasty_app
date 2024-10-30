@@ -1,4 +1,5 @@
 const deleteFile = require('../../utils/deleteFile');
+const S3 = require('../../helpers/s3');
 
 const Country = require('../../models/countryModel');
 const City = require('../../models/cityModel');
@@ -20,7 +21,11 @@ exports.getAddCountry = (req, res) => res.render('country_add');
 
 exports.postAddCountry = async (req, res) => {
     try {
-        const image = req.file ? `/uploads/${req.file.filename}` : undefined;
+        let image;
+        if (typeof req.file !== 'undefined') {
+            const result = await S3.uploadFile(req.file);
+            image = result.Location;
+        }
 
         await Country.create({
             en: { name: req.body.nameEn },
@@ -67,7 +72,11 @@ exports.postEditCountry = async (req, res) => {
         country.fr.name = req.body.nameFr;
         country.ar.name = req.body.nameAr;
 
-        if (req.file) country.image = `/uploads/${req.file.filename}`;
+        if (typeof req.file !== 'undefined') {
+            const result = await S3.uploadFile(req.file);
+            country.image = result.Location;
+        }
+        // if (req.file) country.image = `/uploads/${req.file.filename}`;
 
         await country.save();
 
@@ -211,7 +220,12 @@ exports.getAddBanner = (req, res) => res.render('banner_add');
 
 exports.postAddBanner = async (req, res) => {
     try {
-        const image = req.file ? `/uploads/${req.file.filename}` : undefined;
+        let image;
+        if (typeof req.file !== 'undefined') {
+            const result = await S3.uploadFile(req.file);
+            image = result.Location;
+        }
+        // const image = req.file ? `/uploads/${req.file.filename}` : undefined;
 
         await Banner.create({ image });
 
@@ -247,14 +261,18 @@ exports.postEditBanner = async (req, res) => {
             return res.redirect('/admin/banner');
         }
 
-        const oldImage = banner.image;
+        // const oldImage = banner.image;
 
-        if (req.file) banner.image = `/uploads/${req.file.filename}`;
+        if (typeof req.file !== 'undefined') {
+            const result = await S3.uploadFile(req.file);
+            banner.image = result.Location;
+        }
+        // if (req.file) banner.image = `/uploads/${req.file.filename}`;
 
         await banner.save();
 
         // delete old image
-        req.file && oldImage && deleteFile(oldImage);
+        // req.file && oldImage && deleteFile(oldImage);
 
         req.flash('green', 'Banner edited successfully.');
         res.redirect('/admin/banner');
@@ -295,7 +313,12 @@ exports.getAddType = (req, res) => res.render('type_add');
 
 exports.postAddType = async (req, res) => {
     try {
-        const image = req.file ? `/uploads/${req.file.filename}` : undefined;
+        let image;
+        if (typeof req.file !== 'undefined') {
+            const result = await S3.uploadFile(req.file);
+            image = result.Location;
+        }
+        // const image = req.file ? `/uploads/${req.file.filename}` : undefined;
 
         await Type.create({
             en: { name: req.body.nameEn },
@@ -339,8 +362,6 @@ exports.postEditType = async (req, res) => {
             return res.redirect('/admin/type');
         }
 
-        const oldImage = type.image;
-
         type.en.name = req.body.nameEn;
         type.fr.name = req.body.nameFr;
         type.ar.name = req.body.nameAr;
@@ -348,12 +369,12 @@ exports.postEditType = async (req, res) => {
         type.typeFor = req.body.typeFor;
         type.distanceRate = req.body.distanceRate;
 
-        if (req.file) type.image = `/uploads/${req.file.filename}`;
+        if (typeof req.file !== 'undefined') {
+            const result = await S3.uploadFile(req.file);
+            type.image = result.Location;
+        }
 
         await type.save();
-
-        // delete old image
-        req.file && oldImage && deleteFile(oldImage);
 
         req.flash('green', 'Type edited successfully.');
         res.redirect('/admin/type');
