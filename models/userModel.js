@@ -5,8 +5,7 @@ const jwt = require('jsonwebtoken');
 
 const userSchema = new mongoose.Schema({
     name: {
-        type: String,
-        required: [true, 'validation.name'],
+        type: String
     },
     country_code: {
         type: String,
@@ -51,7 +50,7 @@ const userSchema = new mongoose.Schema({
         immutable: true,
     },
     favorites: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Car' }],
-    fcmToken: { type: String, required: [true, 'fcmToken is required.'] },
+    fcmToken: { type: String },
     date: {
         type: Date,
         default: Date.now,
