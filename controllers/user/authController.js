@@ -322,8 +322,12 @@ exports.createSocialProfile = async (req, res, next) => {
         const profile = req.files.profile
             ? `/uploads/${req.files.profile[0].filename}`
             : undefined;
-        const licenseFront = `/uploads/${req.files.licenseFront[0].filename}`;
-        const licenseBack = `/uploads/${req.files.licenseBack[0].filename}`;
+        const licenseFront = req.files.licenseFront
+            ? `/uploads/${req.files.licenseFront[0].filename}`
+            : undefined;
+        const licenseBack = req.files.licenseBack
+            ? `/uploads/${req.files.licenseBack[0].filename}`
+            : undefined;
 
         // create user
         let user = new User({
