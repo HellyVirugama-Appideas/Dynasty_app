@@ -40,29 +40,22 @@ exports.editProfile = async (req, res, next) => {
             delete req.body[property];
         });
 
-        let oldProfile, oldLicenceFront, oldLicenceBack;
-        if (req.files.profile) {
-            oldProfile = req.user.profile;
-            req.body.profile = `/uploads/${req.files.profile[0].filename}`;
+        if (req.files.profile && req.files.profile[0]) {
+            const result = await S3.uploadFile(req.files.profile[0]);
+            req.body.profile = result.Location;
         }
-        if (req.files.licenseFront) {
-            oldLicenceFront = req.user.licenseFront;
-            req.body.licenseFront = `/uploads/${req.files.licenseFront[0].filename}`;
+        if (req.files.licenseFront && req.files.licenseFront[0]) {
+            const result = await S3.uploadFile(req.files.licenseFront[0]);
+            req.body.licenseFront = result.Location;
         }
-        if (req.files.licenseBack) {
-            oldLicenceBack = req.user.licenseBack;
-            req.body.licenseBack = `/uploads/${req.files.licenseBack[0].filename}`;
+        if (req.files.licenseBack && req.files.licenseBack[0]) {
+            const result = await S3.uploadFile(req.files.licenseBack[0]);
+            req.body.licenseBack = result.Location;
         }
 
         let user = await User.findByIdAndUpdate(req.user.id, req.body, {
             new: true,
         }).populate('city country address');
-
-        // remove old images
-        if (oldProfile && oldProfile !== '/uploads/default_user.jpg')
-            deleteFile(oldProfile);
-        if (oldLicenceFront) deleteFile(oldLicenceFront);
-        if (oldLicenceBack) deleteFile(oldLicenceBack);
 
         user = multilingualUser(user, req);
         user.latitude = user.address.latitude;

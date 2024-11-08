@@ -1,7 +1,7 @@
 const router = require('express').Router();
 const fileUpload = require('express-fileupload');
 
-const { upload } = require('../../controllers/uploadController');
+const { uploadImageS3Bucket } = require('../../controllers/uploadController');
 const { checkUser } = require('../../controllers/user/authController');
 const profileController = require('../../controllers/user/profileController');
 
@@ -10,7 +10,7 @@ router.get('/get_profile_data', checkUser, profileController.getProfile);
 
 router.post(
     '/edit_profile',
-    upload.fields([
+    uploadImageS3Bucket.fields([
         { name: 'profile', maxCount: 1 },
         { name: 'licenseFront', maxCount: 1 },
         { name: 'licenseBack', maxCount: 1 },

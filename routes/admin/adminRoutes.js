@@ -1,18 +1,18 @@
 const router = require('express').Router();
 
 const adminController = require('../../controllers/admin/adminController');
-const { upload } = require('../../controllers/uploadController');
+const { uploadImageS3Bucket } = require('../../controllers/uploadController');
 
 // country
 router.get('/country', adminController.getCountries);
 router
     .route('/country/add')
     .get(adminController.getAddCountry)
-    .post(upload.single('image'), adminController.postAddCountry);
+    .post(uploadImageS3Bucket.single('image'), adminController.postAddCountry);
 router
     .route('/country/edit/:id')
     .get(adminController.getEditCountry)
-    .post(upload.single('image'), adminController.postEditCountry);
+    .post(uploadImageS3Bucket.single('image'), adminController.postEditCountry);
 router.get('/country/delete/:id', adminController.getDeleteCountry);
 
 // city
@@ -32,11 +32,11 @@ router.get('/banner', adminController.getBanners);
 router
     .route('/banner/add')
     .get(adminController.getAddBanner)
-    .post(upload.single('image'), adminController.postAddBanner);
+    .post(uploadImageS3Bucket.single('image'), adminController.postAddBanner);
 router
     .route('/banner/edit/:id')
     .get(adminController.getEditBanner)
-    .post(upload.single('image'), adminController.postEditBanner);
+    .post(uploadImageS3Bucket.single('image'), adminController.postEditBanner);
 router.get('/banner/delete/:id', adminController.getDeleteBanner);
 
 // type
@@ -44,11 +44,11 @@ router.get('/type', adminController.getTypes);
 router
     .route('/type/add')
     .get(adminController.getAddType)
-    .post(upload.single('image'), adminController.postAddType);
+    .post(uploadImageS3Bucket.single('image'), adminController.postAddType);
 router
     .route('/type/edit/:id')
     .get(adminController.getEditType)
-    .post(upload.single('image'), adminController.postEditType);
+    .post(uploadImageS3Bucket.single('image'), adminController.postEditType);
 
 // charge
 router

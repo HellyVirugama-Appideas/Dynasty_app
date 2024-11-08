@@ -1,4 +1,5 @@
 const deleteFile = require('../../utils/deleteFile');
+const S3 = require('../../helpers/s3');
 
 const Driver = require('../../models/driverModel');
 const City = require('../../models/cityModel');
@@ -39,18 +40,12 @@ exports.getAddDriver = async (req, res) => {
 
 exports.postAddDriver = async (req, res) => {
     try {
-        const profile = req.files.profile[0]
-            ? `/uploads/${req.files.profile[0].filename}`
-            : undefined;
-        const licence = req.files.licence[0]
-            ? `/uploads/${req.files.licence[0].filename}`
-            : undefined;
-        const pan = req.files.pan[0]
-            ? `/uploads/${req.files.pan[0].filename}`
-            : undefined;
-        const rc = req.files.rc[0]
-            ? `/uploads/${req.files.rc[0].filename}`
-            : undefined;
+        const [profile, licence, pan, rc] = await Promise.all([
+            req.files.profile ? S3.uploadFile(req.files.profile[0]) : undefined,
+            req.files.licence ? S3.uploadFile(req.files.licence[0]) : undefined,
+            req.files.pan ? S3.uploadFile(req.files.pan[0]) : undefined,
+            req.files.rc ? S3.uploadFile(req.files.rc[0]) : undefined,
+        ]);
 
         await Driver.create({
             name: req.body.name,
@@ -61,24 +56,16 @@ exports.postAddDriver = async (req, res) => {
             country: req.body.country,
             address: req.body.address,
             type: req.body.type,
-            profile,
-            licence,
-            pan,
-            rc,
+            profile: profile.Location ? profile.Location : undefined,
+            licence: licence.Location ? licence.Location : undefined,
+            pan: pan.Location ? pan.Location : undefined,
+            rc: rc.Location ? rc.Location : undefined,
             approved: true,
         });
 
         req.flash('green', 'Driver added successfully.');
         res.redirect('/admin/driver');
     } catch (error) {
-        // delete images
-        if (req.files.profile)
-            deleteFile(`/uploads/${req.files.profile[0].filename}`);
-        if (req.files.licence)
-            deleteFile(`/uploads/${req.files.licence[0].filename}`);
-        if (req.files.pan) deleteFile(`/uploads/${req.files.pan[0].filename}`);
-        if (req.files.rc) deleteFile(`/uploads/${req.files.rc[0].filename}`);
-
         if (error.code == 11000)
             req.flash(
                 'red',
@@ -142,31 +129,24 @@ exports.postEditDriver = async (req, res) => {
         driver.address = req.body.address;
         driver.type = req.body.type || undefined;
 
-        let oldProfile, oldLicence, oldPAN, oldRC;
-        if (req.files.profile) {
-            oldProfile = driver.profile;
-            driver.profile = `/uploads/${req.files.profile[0].filename}`;
+        if (req.files.profile && req.files.profile[0]) {
+            const result = await S3.uploadFile(req.files.profile[0]);
+            driver.profile = result.Location;
         }
-        if (req.files.licence) {
-            oldLicence = driver.licence;
-            driver.licence = `/uploads/${req.files.licence[0].filename}`;
+        if (req.files.licence && req.files.licence[0]) {
+            const result = await S3.uploadFile(req.files.licence[0]);
+            driver.licence = result.Location;
         }
-        if (req.files.pan) {
-            oldPAN = driver.pan;
-            driver.pan = `/uploads/${req.files.pan[0].filename}`;
+        if (req.files.pan && req.files.pan[0]) {
+            const result = await S3.uploadFile(req.files.pan[0]);
+            driver.pan = result.Location;
         }
-        if (req.files.rc) {
-            oldRC = driver.rc;
-            driver.rc = `/uploads/${req.files.rc[0].filename}`;
+        if (req.files.rc && req.files.rc[0]) {
+            const result = await S3.uploadFile(req.files.rc[0]);
+            driver.rc = result.Location;
         }
 
         await driver.save();
-
-        // remove old images
-        if (oldProfile) deleteFile(oldProfile);
-        if (oldLicence) deleteFile(oldLicence);
-        if (oldPAN) deleteFile(oldPAN);
-        if (oldRC) deleteFile(oldRC);
 
         req.flash('green', 'Driver edited successfully.');
         res.redirect('/admin/driver');

@@ -115,8 +115,6 @@ exports.getBookings = async (req, res, next) => {
             delete booking.car.pics;
         });
 
-        bookings.bookingReq = undefined;
-
         res.json({ code: '1', message: req.t('success'), bookings });
     } catch (error) {
         next(error);

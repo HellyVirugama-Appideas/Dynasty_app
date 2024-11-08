@@ -1,7 +1,7 @@
 const router = require('express').Router();
 const fileUpload = require('express-fileupload');
 
-const { upload } = require('../../controllers/uploadController');
+const { uploadImageS3Bucket } = require('../../controllers/uploadController');
 const { checkUser } = require('../../controllers/user/authController');
 const rentController = require('../../controllers/user/rentController');
 
@@ -45,7 +45,7 @@ router.post(
 
 router.post(
     '/signature/:type',
-    upload.single('sign'),
+    uploadImageS3Bucket.single('sign'),
     checkUser,
     rentController.uploadSignature
 );

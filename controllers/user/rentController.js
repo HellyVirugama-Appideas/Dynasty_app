@@ -463,27 +463,25 @@ exports.uploadSignature = async (req, res, next) => {
         if (!req.file)
             return next(createError.BadRequest('Please upload signature.'));
 
-        let update = {};
-        if (req.params.type === 'pickup')
-            update = {
-                pickupCheck: true,
-                pickupSign: `/uploads/${req.file.filename}`,
-            };
-        else
-            update = {
-                returnCheck: true,
-                returnSign: `/uploads/${req.file.filename}`,
-            };
+        const signatureUrl = await S3.uploadFile(req.file).then(
+            res => res.Location
+        );
+
+        const update =
+            req.params.type === 'pickup'
+                ? { pickupCheck: true, pickupSign: signatureUrl }
+                : { returnCheck: true, returnSign: signatureUrl };
 
         const booking = await Booking.findByIdAndUpdate(
             req.body.bookingId,
             update
         );
+        if (!booking) return next(createError.NotFound('Booking not found.'));
+
         await BookingReq.findByIdAndUpdate(booking.bookingReq, update);
 
         res.json({ code: '1', message: req.t('success') });
     } catch (error) {
-        if (req.file) deleteFile(`/uploads/${req.file.filename}`);
         next(error);
     }
 };
