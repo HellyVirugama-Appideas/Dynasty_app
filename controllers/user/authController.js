@@ -313,13 +313,16 @@ exports.createSocialProfile = async (req, res, next) => {
         //     throw createError.BadRequest('Please select valid address.');
 
         // images
-        const [profile, licenseFront, licenseBack] = await Promise.all([
-            req.files.profile
-                ? S3.uploadFile(req.files.profile[0]).then(res => res.Location)
-                : undefined,
-            S3.uploadFile(req.files.licenseFront[0]).then(res => res.Location),
-            S3.uploadFile(req.files.licenseBack[0]).then(res => res.Location),
-        ]);
+
+        const profile = req.files.profile
+            ? `/uploads/${req.files.profile[0].filename}`
+            : undefined;
+        const licenseFront = req.files.licenseFront
+            ? `/uploads/${req.files.licenseFront[0].filename}`
+            : undefined;
+        const licenseBack = req.files.licenseBack
+            ? `/uploads/${req.files.licenseBack[0].filename}`
+            : undefined;
 
         // create user
         let user = new User({
