@@ -18,7 +18,8 @@ const adminSchema = new mongoose.Schema({
     },
     photo: {
         type: String,
-        default: '/uploads/default_user.jpg',
+        default:
+            'https://dynasty-bucket.s3.ca-central-1.amazonaws.com/default_user.jpg',
     },
     password: {
         type: String,

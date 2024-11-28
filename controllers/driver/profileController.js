@@ -6,6 +6,7 @@ const Driver = require('../../models/driverModel');
 const Car = require('../../models/carModel');
 const Country = require('../../models/countryModel');
 const City = require('../../models/cityModel');
+const S3 = require('../../helpers/s3');
 
 exports.getProfile = async (req, res, next) => {
     try {

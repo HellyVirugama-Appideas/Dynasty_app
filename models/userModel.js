@@ -6,7 +6,6 @@ const jwt = require('jsonwebtoken');
 const userSchema = new mongoose.Schema({
     name: {
         type: String,
-        required: [true, 'validation.name'],
     },
     country_code: {
         type: String,
@@ -41,7 +40,12 @@ const userSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Address',
     },
-    profile: { type: String, default: '/uploads/default_user.jpg' },
+    // ! change default image to s3
+    profile: {
+        type: String,
+        default:
+            'https://dynasty-bucket.s3.ca-central-1.amazonaws.com/default_user.jpg',
+    },
     licenseFront: String,
     licenseBack: String,
     blocked: {
@@ -51,7 +55,7 @@ const userSchema = new mongoose.Schema({
         immutable: true,
     },
     favorites: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Car' }],
-    fcmToken: { type: String, required: [true, 'fcmToken is required.'] },
+    fcmToken: { type: String },
     date: {
         type: Date,
         default: Date.now,

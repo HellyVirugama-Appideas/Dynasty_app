@@ -4,6 +4,7 @@ const deleteFile = require('../../utils/deleteFile');
 
 const User = require('../../models/userModel');
 const Address = require('../../models/addressModel');
+const S3 = require('../../helpers/s3');
 
 exports.getProfile = async (req, res, next) => {
     try {

@@ -8,6 +8,7 @@ const Booking = require('../../models/bookingModel');
 const BookingReq = require('../../models/bookingReqModel');
 const Rating = require('../../models/ratingModel');
 const Charges = require('../../models/chargesModel');
+const S3 = require('../../helpers/s3');
 
 exports.listCars = async (req, res, next) => {
     try {

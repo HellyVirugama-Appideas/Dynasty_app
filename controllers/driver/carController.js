@@ -4,6 +4,7 @@ const deleteFile = require('../../utils/deleteFile');
 
 const Type = require('../../models/typeModel');
 const Car = require('../../models/carModel');
+const S3 = require('../../helpers/s3');
 
 exports.getVehicleTypes = async (req, res, next) => {
     try {

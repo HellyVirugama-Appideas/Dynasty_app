@@ -42,7 +42,11 @@ const driverSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Type',
     },
-    profile: { type: String, default: '/uploads/default_user.jpg' },
+    profile: {
+        type: String,
+        default:
+            'https://dynasty-bucket.s3.ca-central-1.amazonaws.com/default_user.jpg',
+    },
     licence: String,
     pan: String,
     rc: String,
