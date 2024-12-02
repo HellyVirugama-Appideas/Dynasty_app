@@ -21,7 +21,7 @@ const DB = process.env.DATABASE.replace(
 mongoose.set('strictQuery', false);
 mongoose
     .connect(DB, { useNewUrlParser: true })
-    .then(() => console.log('DB connection successful!'));
+    .then(() => console.log('⚙️ DB connection successful!'));
 
 // Socket.IO integration
 const server = require('http').createServer(app);
