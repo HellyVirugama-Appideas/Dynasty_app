@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Request Account Deletion</title>
+
+  <!-- Materialize CSS -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css" rel="stylesheet">
+  <link rel="icon" href="/assets/images/favicon/favicon.ico">
+</head>
+
+<body class="grey lighten-4">
+
+  <!-- Navbar -->
+  <nav class="white z-depth-1">
+    <div class="nav-wrapper container">
+      <!-- Logo on the left -->
+      <a href="/" class="brand-logo left">
+        <img src="/app-assets/images/logo/Logo.png" alt="Logo" style="height: 50px; padding-top: 5px;">
+      </a>
+
+      <!-- Title centered -->
+      <span class="center brand-logo blue-text text-darken-3" style="font-size: 24px;">Dynasty</span>
+    </div>
+  </nav>
+
+  <!-- Main Section -->
+  <div class="container" style="margin-top: 100px; max-width: 600px;">
+    <h4 class="center-align">Request Account Deletion User</h4>
+    <p class="center-align grey-text text-darken-1">Fill out the form below to request permanent deletion of your account. This process is irreversible.</p>
+
+    <!-- Flash Messages -->
+    <% if (typeof successMessage !== 'undefined') { %>
+    <div class="card-panel green lighten-4 green-text text-darken-4">
+      <%= successMessage %>
+    </div>
+    <% } %>
+
+    <% if (typeof errorMessage !== 'undefined') { %>
+    <div class="card-panel red lighten-4 red-text text-darken-4">
+      <%= errorMessage %>
+    </div>
+    <% } %>
+
+    <!-- Form -->
+    <form action="/request-delete-user" method="POST">
+      <!-- Email -->
+      <div class="input-field">
+        <input id="email" type="email" name="email" required autocomplete="email">
+        <label for="email">Registered Email Address</label>
+      </div>
+
+      <!-- Password -->
+      <!-- <div class="input-field">
+        <input id="password" type="password" name="password" required autocomplete="current-password">
+        <label for="password">Password</label>
+      </div> -->
+
+      <!-- Reason (optional) -->
+      <div class="input-field">
+        <textarea id="reason" name="reason" class="materialize-textarea" rows="4"></textarea>
+        <label for="reason">Reason for Deletion (optional)</label>
+      </div>
+
+      <div class="center-align" style="margin-top: 30px;">
+        <button type="submit" class="btn waves-effect waves-light blue">Submit Request</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Materialize JS (for label animation) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+  <script>
+    M.AutoInit();
+  </script>
+</body>
+
+</html>

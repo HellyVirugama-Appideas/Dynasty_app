@@ -28,6 +28,7 @@
         "i18next": "^22.4.10",
         "i18next-fs-backend": "^2.1.1",
         "i18next-http-middleware": "^3.2.2",
+        "is-extglob": "^2.1.1",
         "jsonwebtoken": "^9.0.0",
         "moment": "^2.29.4",
         "mongoose": "^6.10.3",

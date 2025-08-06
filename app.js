@@ -11,6 +11,10 @@ const landingController = require('./controllers/landingController');
 const globalErrorHandler = require('./controllers/errorController');
 const updateExpiredBookings = require('./utils/updateExpiredBookings');
 const updateRideStatus = require('./utils/updateRideStatus');
+const Driver = require('./models/driverModel');
+const Address = require('./models/addressModel');
+const User = require('./models/userModel');
+const Car = require('./models/carModel');
 
 // Start express app
 const app = express();
@@ -135,6 +139,101 @@ app.get('/en', landingController.en);
 app.get('/privacy', landingController.privacy);
 app.get('/terms', landingController.terms);
 app.post('/contact', landingController.contact);
+
+app.get('/request-delete-user', (req, res) => {
+    res.render('request-delete-user'); // views/request-delete.ejs
+});
+
+app.post('/request-delete-user', async (req, res) => {
+    const { email, reason } = req.body;
+
+    if (!email) {
+        return res.render('request-delete-user', {
+            errorMessage: 'Email and password are required.',
+        });
+    }
+
+    try {
+        const user = await User.findOne({ email });
+
+        if (!user) {
+            return res.render('request-delete-user', {
+                errorMessage: 'No user found with this email.',
+            });
+        }
+
+        // const isMatch = await bcrypt.compare(password, user.password);
+        // if (!isMatch) {
+        //     return res.render('request-delete-user', {
+        //         errorMessage: 'Incorrect password.',
+        //     });
+        // }
+
+        // Delete user and their addresses
+        await Promise.all([
+            User.findByIdAndDelete(user._id),
+            Address.deleteMany({ userId: user._id }),
+        ]);
+
+        res.render('request-delete-user', {
+            successMessage: 'Your account has been deleted successfully.',
+        });
+    } catch (err) {
+        console.error(err);
+        res.render('request-delete-user', {
+            errorMessage: 'An error occurred while processing your request.',
+        });
+    }
+});
+
+app.get('/request-delete-driver', (req, res) => {
+    res.render('request-delete-driver'); // views/request-delete.ejs
+});
+
+app.post('/request-delete-driver', async (req, res, next) => {
+    const { email, reason } = req.body;
+
+    if (!email) {
+        return res.render('request-delete-user', {
+            errorMessage: 'Email and password are required.',
+        });
+    }
+
+    try {
+        const driver = await Driver.findOne({ email });
+
+        if (!driver) {
+            return res.render('request-delete-driver', {
+                errorMessage: 'Driver not found with this email.',
+            });
+        }
+
+        // Mark driver as deleted
+        await Driver.findByIdAndUpdate(driver._id, { isDeleted: true });
+
+        // Mark driver's car as deleted
+        await Car.findOneAndUpdate(
+            { driver: driver._id, isDeleted: false },
+            { isDeleted: true }
+        );
+
+        // Obfuscate email
+        const suffix = uniqueSuffix();
+        await Driver.findByIdAndUpdate(driver._id, {
+            email: driver.email + suffix,
+        });
+
+        res.render('request-delete-driver', {
+            successMessage: 'Your account has been deleted successfully.',
+        });
+    } catch (err) {
+        next(err);
+    }
+});
+const uniqueSuffix = () => {
+    const random = Math.random().toString(36).substr(2, 3);
+    return `_deleted_${random}`;
+};
 app.get('/*', (req, res) => res.redirect('/'));
 
 // 5) ERROR HANDLING
