@@ -1,5 +1,5 @@
 module.exports = (error, req, res, next) => {
-    // console.log(error);
+    console.log(error);
 
     if (error.code == 11000) {
         return res.status(403).json({

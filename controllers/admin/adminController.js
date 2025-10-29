@@ -7,6 +7,43 @@ const Banner = require('../../models/bannerModel');
 const Type = require('../../models/typeModel');
 const Charge = require('../../models/chargesModel');
 
+const bcrypt = require('bcryptjs');
+const Admin = require('../../models/adminModel'); // <-- adjust path if needed
+
+
+// (async () => {
+//     try {
+//         const existingAdmin = await Admin.findOne({
+//             email: 'admin@gmail.com',
+//         });
+
+//         if (existingAdmin) {
+//             console.log('⚠️ Admin already exists:', existingAdmin.email);
+//         } else {
+//             const password = '12345678';
+//             const hashedPassword = await bcrypt.hash(password, 12);
+
+//             const newAdmin = await Admin.create({
+//                 name: 'Super Admin',
+//                 email: 'admin@gmail.com',
+//                 // password: hashedPassword,
+//                 // passwordConfirm: hashedPassword, // schema will remove this before saving
+//                 password: password,
+//                 passwordConfirm: password, // schema will remove this before saving
+//             });
+
+//             console.log('✅ Admin user created successfully:');
+//             console.log('   Email:', newAdmin.email);
+//             console.log('   Password:', password);
+//         }
+
+//         console.log('🔌 Connection closed, done.');
+//     } catch (err) {
+//         console.error('❌ Error creating admin:', err.message);
+//         process.exit(1);
+//     }
+// })();
+
 exports.getCountries = async (req, res) => {
     try {
         const countries = await Country.find().sort('-_id');
