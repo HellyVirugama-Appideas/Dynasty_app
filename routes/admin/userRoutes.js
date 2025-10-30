@@ -10,4 +10,11 @@ router.get('/block/:id', userController.blockUser);
 
 router.get('/unblock/:id', userController.unblockUser);
 
+router.get('/edit/:id', userController.editUser);
+
+router.put('/update/:id', userController.updateUser);
+
+// Delete
+router.delete('/delete/:id', userController.deleteUser);
+
 module.exports = router;

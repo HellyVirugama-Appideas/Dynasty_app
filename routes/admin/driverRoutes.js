@@ -1,15 +1,18 @@
 const router = require('express').Router();
 
 const driverController = require('../../controllers/admin/driverController');
-const { uploadImageS3Bucket } = require('../../controllers/uploadController');
+const { upload } = require('../../middleware/upload');
 
 router.get('/', driverController.getAllDrivers);
+
+// View driver (MUST be before /driver/add, /driver/edit/:id)
+router.get('/:id', driverController.viewDriver);
 
 router
     .route('/add')
     .get(driverController.getAddDriver)
     .post(
-        uploadImageS3Bucket.fields([
+        upload.fields([
             { name: 'profile', maxCount: 1 },
             { name: 'licence', maxCount: 1 },
             { name: 'pan', maxCount: 1 },
@@ -22,7 +25,7 @@ router
     .route('/edit/:id')
     .get(driverController.getEditDriver)
     .post(
-        uploadImageS3Bucket.fields([
+        upload.fields([
             { name: 'profile', maxCount: 1 },
             { name: 'licence', maxCount: 1 },
             { name: 'pan', maxCount: 1 },
@@ -36,5 +39,6 @@ router.get('/block/:id', driverController.blockDriver);
 router.get('/unblock/:id', driverController.unblockDriver);
 
 router.get('/approve/:id', driverController.approveDriver);
+router.delete('/delete/:id', driverController.deleteDriver);
 
 module.exports = router;

@@ -1,5 +1,4 @@
 const deleteFile = require('../../utils/deleteFile');
-const S3 = require('../../helpers/s3');
 
 const Driver = require('../../models/driverModel');
 const City = require('../../models/cityModel');
@@ -40,13 +39,13 @@ exports.getAddDriver = async (req, res) => {
 
 exports.postAddDriver = async (req, res) => {
     try {
-        const [profile, licence, pan, rc] = await Promise.all([
-            req.files.profile ? S3.uploadFile(req.files.profile[0]) : undefined,
-            req.files.licence ? S3.uploadFile(req.files.licence[0]) : undefined,
-            req.files.pan ? S3.uploadFile(req.files.pan[0]) : undefined,
-            req.files.rc ? S3.uploadFile(req.files.rc[0]) : undefined,
-        ]);
+        // 1. Extract file paths
+        const profile = req.files?.profile?.[0] ? `/uploads/${req.files.profile[0].filename}` : undefined;
+        const licence = req.files?.licence?.[0] ? `/uploads/${req.files.licence[0].filename}` : undefined;
+        const pan = req.files?.pan?.[0] ? `/uploads/${req.files.pan[0].filename}` : undefined;
+        const rc = req.files?.rc?.[0] ? `/uploads/${req.files.rc[0].filename}` : undefined;
 
+        // 2. Create driver
         await Driver.create({
             name: req.body.name,
             email: req.body.email,
@@ -56,22 +55,31 @@ exports.postAddDriver = async (req, res) => {
             country: req.body.country,
             address: req.body.address,
             type: req.body.type,
-            profile: profile.Location ? profile.Location : undefined,
-            licence: licence.Location ? licence.Location : undefined,
-            pan: pan.Location ? pan.Location : undefined,
-            rc: rc.Location ? rc.Location : undefined,
+            profile,
+            licence,
+            pan,
+            rc,
             approved: true,
         });
 
         req.flash('green', 'Driver added successfully.');
         res.redirect('/admin/driver');
     } catch (error) {
-        if (error.code == 11000)
-            req.flash(
-                'red',
-                `${Object.values(error.keyValue)[0]} is already registered.`
-            );
-        else req.flash('red', error.message);
+        // 3. Delete uploaded files on error
+        const files = [
+            req.files?.profile?.[0],
+            req.files?.licence?.[0],
+            req.files?.pan?.[0],
+            req.files?.rc?.[0]
+        ].filter(Boolean);
+
+        files.forEach(file => deleteFile(file.path));
+
+        if (error.code === 11000) {
+            req.flash('red', `${Object.values(error.keyValue)[0]} is already registered.`);
+        } else {
+            req.flash('red', error.message);
+        }
         res.redirect('/admin/driver');
     }
 };
@@ -116,10 +124,20 @@ exports.postEditDriver = async (req, res) => {
     try {
         const driver = await Driver.findById(req.params.id);
         if (!driver) {
+            // Delete new files if driver not found
+            const files = [
+                req.files?.profile?.[0],
+                req.files?.licence?.[0],
+                req.files?.pan?.[0],
+                req.files?.rc?.[0]
+            ].filter(Boolean);
+            files.forEach(file => deleteFile(file.path));
+
             req.flash('red', 'Driver not found!');
             return res.redirect('/admin/driver');
         }
 
+        // 1. Update text fields
         driver.name = req.body.name;
         driver.email = req.body.email;
         driver.country_code = req.body.country_code;
@@ -129,21 +147,22 @@ exports.postEditDriver = async (req, res) => {
         driver.address = req.body.address;
         driver.type = req.body.type || undefined;
 
-        if (req.files.profile && req.files.profile[0]) {
-            const result = await S3.uploadFile(req.files.profile[0]);
-            driver.profile = result.Location;
+        // 2. Handle file updates
+        if (req.files?.profile?.[0]) {
+            if (driver.profile) deleteFile(`public${driver.profile}`);
+            driver.profile = `/uploads/${req.files.profile[0].filename}`;
         }
-        if (req.files.licence && req.files.licence[0]) {
-            const result = await S3.uploadFile(req.files.licence[0]);
-            driver.licence = result.Location;
+        if (req.files?.licence?.[0]) {
+            if (driver.licence) deleteFile(`public${driver.licence}`);
+            driver.licence = `/uploads/${req.files.licence[0].filename}`;
         }
-        if (req.files.pan && req.files.pan[0]) {
-            const result = await S3.uploadFile(req.files.pan[0]);
-            driver.pan = result.Location;
+        if (req.files?.pan?.[0]) {
+            if (driver.pan) deleteFile(`public${driver.pan}`);
+            driver.pan = `/uploads/${req.files.pan[0].filename}`;
         }
-        if (req.files.rc && req.files.rc[0]) {
-            const result = await S3.uploadFile(req.files.rc[0]);
-            driver.rc = result.Location;
+        if (req.files?.rc?.[0]) {
+            if (driver.rc) deleteFile(`public${driver.rc}`);
+            driver.rc = `/uploads/${req.files.rc[0].filename}`;
         }
 
         await driver.save();
@@ -151,6 +170,15 @@ exports.postEditDriver = async (req, res) => {
         req.flash('green', 'Driver edited successfully.');
         res.redirect('/admin/driver');
     } catch (error) {
+        // Delete new files on error
+        const files = [
+            req.files?.profile?.[0],
+            req.files?.licence?.[0],
+            req.files?.pan?.[0],
+            req.files?.rc?.[0]
+        ].filter(Boolean);
+        files.forEach(file => deleteFile(file.path));
+
         req.flash('red', error.message);
         res.redirect('/admin/driver');
     }
@@ -204,6 +232,53 @@ exports.approveDriver = async (req, res) => {
         if (error.name === 'CastError' || error.name === 'TypeError')
             req.flash('red', 'Driver not found!');
         else req.flash('red', error.message);
+        res.redirect('/admin/driver');
+    }
+};
+exports.deleteDriver = async (req, res) => {
+    try {
+        const driver = await Driver.findById(req.params.id);
+        if (!driver) {
+            req.flash('red', 'Driver not found!');
+            return res.redirect('/admin/driver');
+        }
+
+        // Delete uploaded files
+        const files = [driver.profile, driver.licence, driver.pan, driver.rc]
+            .filter(Boolean)
+            .map(path => `public${path}`);
+        files.forEach(file => deleteFile(file));
+
+        await Driver.findByIdAndDelete(req.params.id);
+
+        req.flash('green', `'${driver.name}' deleted successfully.`);
+        res.redirect('/admin/driver');
+    } catch (error) {
+        req.flash('red', error.message);
+        res.redirect('/admin/driver');
+    }
+};
+
+exports.viewDriver = async (req, res) => {
+    try {
+        const driver = await Driver.findById(req.params.id)
+            .select('+blocked +approved')
+            .populate('city', 'en.name')
+            .populate('country', 'en.name')
+            .populate('type', 'en.name');
+
+        if (!driver) {
+            req.flash('red', 'Driver not found!');
+            return res.redirect('/admin/driver');
+        }
+
+        res.render('driver_view', { driver });
+    } catch (error) {
+        if (error.name === 'CastError') {
+            req.flash('red', 'Driver not found!');
+        } else {
+            req.flash('red', error.message);
+        }
         res.redirect('/admin/driver');
     }
 };

@@ -2,7 +2,7 @@ const router = require('express').Router();
 const fileUpload = require('express-fileupload');
 
 const authController = require('../../controllers/user/authController');
-const { uploadImageS3Bucket } = require('../../controllers/uploadController');
+const { upload } = require('../../middleware/upload');
 
 router.post('/send_otp', fileUpload(), authController.sendOTP);
 
@@ -10,7 +10,7 @@ router.post('/verify_otp', fileUpload(), authController.verifyOTP);
 
 router.post(
     '/create_profile',
-    uploadImageS3Bucket.fields([
+    upload.fields([
         { name: 'profile', maxCount: 1 },
         { name: 'licenseFront', maxCount: 1 },
         { name: 'licenseBack', maxCount: 1 },
@@ -22,7 +22,7 @@ router.post('/social_login', fileUpload(), authController.socialLogin);
 
 router.post(
     '/create_social_profile',
-    uploadImageS3Bucket.fields([
+    upload.fields([
         { name: 'profile', maxCount: 1 },
         { name: 'licenseFront', maxCount: 1 },
         { name: 'licenseBack', maxCount: 1 },

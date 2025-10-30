@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html class="loading" lang="en" data-textdirection="ltr">
+<head>
+    <%- include('_layouts/head') %>
+    <title>Edit User | <%= title %></title>
+    <link rel="stylesheet" type="text/css" href="/app-assets/css/pages/page-users.css">
+</head>
+<body class="vertical-layout page-header-light vertical-menu-collapsible vertical-dark-menu preload-transitions 2-columns"
+      data-open="click" data-menu="vertical-dark-menu" data-col="2-columns">
+
+    <%- include('_layouts/sidenavbar') %>
+
+    <div id="main">
+        <div class="row">
+            <div id="breadcrumbs-wrapper" data-image="/app-assets/images/gallery/breadcrumb-bg.jpg">
+                <div class="container">
+                    <div class="row">
+                        <div class="col s12 m6 l6">
+                            <h5 class="breadcrumbs-title mt-0 mb-0"><span>Edit User</span></h5>
+                        </div>
+                        <div class="col s12 m6 l6 right-align-md">
+                            <ol class="breadcrumbs mb-0">
+                                <li class="breadcrumb-item"><a href="/admin">Home</a></li>
+                                <li class="breadcrumb-item"><a href="/admin/user">Users</a></li>
+                                <li class="breadcrumb-item active">Edit User</li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col s12">
+                <div class="container">
+                    <div class="section">
+                        <div class="card">
+                            <div class="card-content">
+                                <h4 class="card-title">Edit User: <%= user.name %></h4>
+
+                                <!-- Flash Messages -->
+                                <% if (messages.red) { %>
+                                    <div class="card-alert card gradient-45deg-red-pink">
+                                        <div class="card-content white-text">
+                                            <p><%= messages.red %></p>
+                                        </div>
+                                        <button type="button" class="close white-text" data-dismiss="alert">&times;</button>
+                                    </div>
+                                <% } %>
+                                <% if (messages.green) { %>
+                                    <div class="card-alert card gradient-45deg-green-teal">
+                                        <div class="card-content white-text">
+                                            <p><%= messages.green %></p>
+                                        </div>
+                                        <button type="button" class="close white-text" data-dismiss="alert">&times;</button>
+                                    </div>
+                                <% } %>
+
+                                <form action="/admin/user/update/<%= user._id %>?_method=PUT" method="POST">
+                                    <div class="row">
+                                        <div class="input-field col s12 m6">
+                                            <input id="name" name="name" type="text" value="<%= user.name %>" required>
+                                            <label for="name">Name</label>
+                                        </div>
+                                        <div class="input-field col s12 m6">
+                                            <input id="email" name="email" type="email" value="<%= user.email %>" required>
+                                            <label for="email">Email</label>
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="input-field col s12 m6">
+                                            <input id="country_code" name="country_code" type="text" value="<%= user.country_code %>" required>
+                                            <label for="country_code">Country Code</label>
+                                        </div>
+                                        <div class="input-field col s12 m6">
+                                            <input id="phone" name="phone" type="text" value="<%= user.phone %>" required>
+                                            <label for="phone">Phone</label>
+                                        </div>
+                                    </div>
+
+                                    <!-- <div class="row">
+                                        <div class="input-field col s12 m6">
+                                            <input id="city" name="city" type="text" value="<%= user.city ? user.city._id : '' %>" placeholder="City ID">
+                                            <label for="city">City ID (optional)</label>
+                                        </div>
+                                        <div class="input-field col s12 m6">
+                                            <input id="country" name="country" type="text" value="<%= user.country ? user.country._id : '' %>" placeholder="Country ID">
+                                            <label for="country">Country ID (optional)</label>
+                                        </div>
+                                    </div> -->
+
+                                    <div class="row">
+                                        <div class="col s12">
+                                            <p>
+                                                <label>
+                                                    <input type="checkbox" name="blocked" <%= user.blocked ? 'checked' : '' %> />
+                                                    <span>Block User</span>
+                                                </label>
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col s12">
+                                            <button type="submit" class="btn btn-success waves-effect waves-light">
+                                                <i class="material-icons left">save</i> Update User
+                                            </button>
+                                            <a href="/admin/user/<%= user._id %>" class="btn btn-light waves-effect waves-light">
+                                                Cancel
+                                            </a>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <%- include('_layouts/commonJs') %>
+</body>
+</html>

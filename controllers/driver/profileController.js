@@ -6,7 +6,6 @@ const Driver = require('../../models/driverModel');
 const Car = require('../../models/carModel');
 const Country = require('../../models/countryModel');
 const City = require('../../models/cityModel');
-const S3 = require('../../helpers/s3');
 
 exports.getProfile = async (req, res, next) => {
     try {
@@ -30,7 +29,7 @@ exports.getProfile = async (req, res, next) => {
 
 exports.editProfile = async (req, res, next) => {
     try {
-        // Properties not allowed to change
+        // 1. Remove disallowed properties
         const disallowedProperties = [
             'country_code',
             'phone',
@@ -42,31 +41,46 @@ exports.editProfile = async (req, res, next) => {
             'pan',
             'rc',
         ];
-        disallowedProperties.forEach(property => {
-            delete req.body[property];
-        });
+        disallowedProperties.forEach(prop => delete req.body[prop]);
 
+        // 2. Handle profile image upload
         if (req.file) {
-            const result = await S3.uploadFile(req.file);
-            req.body.profile = result.Location;
+            // Delete old profile image
+            if (req.driver.profile) {
+                deleteFile(`public${req.driver.profile}`);
+            }
+            req.body.profile = `/uploads/${req.file.filename}`;
         }
 
-        let driver = await Driver.findByIdAndUpdate(req.driver.id, req.body, {
-            new: true,
-        }).populate('city country');
+        // 3. Update driver
+        let driver = await Driver.findByIdAndUpdate(
+            req.driver.id,
+            req.body,
+            { new: true, runValidators: true }
+        ).populate('city country');
 
+        if (!driver) {
+            if (req.file) deleteFile(req.file.path);
+            return next(createError.NotFound('Driver not found'));
+        }
+
+        // 4. Format response
         driver = multilingualUser(driver, req);
 
-        if (driver.location.coordinates) {
+        if (driver.location?.coordinates) {
             driver.latitude = driver.location.coordinates[1];
             driver.longitude = driver.location.coordinates[0];
         }
 
-        // Hide fields
+        // Hide sensitive fields
         driver.location = undefined;
+        driver.password = undefined;
+        driver.__v = undefined;
 
         res.json({ code: '1', message: req.t('success'), driver });
+
     } catch (error) {
+        if (req.file) deleteFile(req.file.path);
         next(error);
     }
 };

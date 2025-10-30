@@ -1,7 +1,5 @@
 <!DOCTYPE html>
 <html class="loading" lang="en" data-textdirection="ltr">
-<!-- BEGIN: Head-->
-
 <head>
     <%- include('_layouts/head') %>
     <title>Driver List | <%= title %></title>
@@ -10,9 +8,8 @@
     <link rel="stylesheet" type="text/css" href="/app-assets/vendors/data-tables/css/select.dataTables.min.css">
     <link rel="stylesheet" type="text/css" href="/app-assets/css/pages/data-tables.css">
 </head>
-<!-- END: Head-->
-
-<body class="vertical-layout page-header-light vertical-menu-collapsible vertical-dark-menu preload-transitions 2-columns" data-open="click" data-menu="vertical-dark-menu" data-col="2-columns">
+<body class="vertical-layout page-header-light vertical-menu-collapsible vertical-dark-menu preload-transitions 2-columns"
+      data-open="click" data-menu="vertical-dark-menu" data-col="2-columns">
 
     <%- include('_layouts/sidenavbar') %>
 
@@ -20,27 +17,30 @@
     <div id="main">
         <div class="row">
             <div id="breadcrumbs-wrapper" data-image="/app-assets/images/gallery/breadcrumb-bg.jpg">
-                <!-- Search for small screen-->
                 <div class="container">
                     <div class="row">
                         <div class="col s12 m6 l6">
                             <h5 class="breadcrumbs-title mt-0 mb-0"><span>Driver List</span></h5>
                         </div>
                         <div class="col s12 m6 l6 right-align-md">
-                            <a class="btn gradient-45deg-purple-deep-orange pull-right btn-breadcrumbs" href="/admin/driver/add">Add Driver</a>
+                            <ol class="breadcrumbs mb-0">
+                                <li class="breadcrumb-item"><a href="/admin">Home</a></li>
+                                <li class="breadcrumb-item active">Driver</li>
+                            </ol>
                         </div>
                     </div>
                 </div>
             </div>
+
             <div class="col s12">
                 <div class="container">
                     <div class="section section-data-tables">
-                        <!-- Page Length Options -->
                         <div class="row">
                             <div class="col s12">
                                 <div class="card">
                                     <div class="card-content">
                                         <%- messages('messages', locals) %>
+
                                         <div class="row">
                                             <div class="col s12 overflow">
                                                 <table id="page-length-option" class="display">
@@ -48,23 +48,79 @@
                                                         <tr>
                                                             <th>Sr</th>
                                                             <th>Profile</th>
-                                                            <th>User Name</th>
+                                                            <th>Name</th>
                                                             <th>Mobile</th>
                                                             <th>Email</th>
                                                             <th>Date</th>
-                                                            <th>Edit</th>
+                                                            <th>Action</th>
                                                         </tr>
                                                     </thead>
                                                     <tbody>
-                                                        <% for( let i=0; i < drivers.length; i++ ) { %>
+                                                        <% for(let i = 0; i < drivers.length; i++) { 
+                                                            const driver = drivers[i]; 
+                                                        %>
                                                         <tr>
-                                                            <td><%= i+1 %></td>
-                                                            <td><img src="<%= drivers[i].profile %>" alt="alt" width="50" onerror="this.onerror=null; this.src='/uploads/default_user.jpg';"></td>
-                                                            <td><%= drivers[i].name %></td>
-                                                            <td><%= drivers[i].country_code + " " + drivers[i].phone %></td>
-                                                            <td><%= drivers[i].email %></td>
-                                                            <td><%= drivers[i].date.toLocaleDateString('en-GB') %></td>
-                                                            <td style="max-width: 50px;"><a href="/admin/driver/edit/<%= drivers[i].id %>"><i class="material-icons">edit</i></a></td>
+                                                            <td><%= i + 1 %></td>
+                                                            <td>
+                                                                <!-- SQUARE IMAGE -->
+                                                                <img src="<%= driver.profile %>" 
+                                                                     alt="profile" width="40" height="40"
+                                                                     class="responsive-img"
+                                                                     style="object-fit: cover;"
+                                                                     onerror="this.src='/uploads/default_user.jpg';">
+                                                            </td>
+                                                            <td><%= driver.name %></td>
+                                                            <td><%= driver.country_code %> <%= driver.phone %></td>
+                                                            <td><%= driver.email %></td>
+                                                            <td><%= driver.date.toLocaleDateString('en-GB') %></td>
+
+                                                            <!-- ACTION -->
+                                                            <td style="white-space: nowrap;">
+                                                                <div style="display: flex; align-items: center; gap: 8px;">
+
+                                                                    <!-- View -->
+                                                                    <a href="/admin/driver/<%= driver._id %>" 
+                                                                       class="waves-effect waves-light" 
+                                                                       title="View">
+                                                                        <i class="material-icons" style="font-size: 18px; color: #2196F3;">remove_red_eye</i>
+                                                                    </a>
+
+                                                                    <!-- Edit -->
+                                                                    <a href="/admin/driver/edit/<%= driver._id %>" 
+                                                                       class="waves-effect waves-light" 
+                                                                       title="Edit">
+                                                                        <i class="material-icons" style="font-size: 18px; color: #2196F3;">edit</i>
+                                                                    </a>
+
+                                                                    <!-- Delete -->
+                                                                    <form action="/admin/driver/delete/<%= driver._id %>?_method=DELETE" 
+                                                                          method="POST" style="display: inline; margin: 0;">
+                                                                        <button type="submit"
+                                                                                class="waves-effect waves-light" 
+                                                                                style="background: none; border: none; padding: 0; margin: 0; cursor: pointer;"
+                                                                                title="Delete"
+                                                                                onclick="return confirm('Delete <%= driver.name %>?');">
+                                                                            <i class="material-icons" style="font-size: 18px; color: #2196F3;">delete</i>
+                                                                        </button>
+                                                                    </form>
+
+                                                                    <!-- Block / Unblock -->
+                                                                    <% if (driver.blocked) { %>
+                                                                        <a href="/admin/driver/unblock/<%= driver._id %>"
+                                                                           class="btn btn-small waves-effect waves-light"
+                                                                           style="background: linear-gradient(45deg, #4CAF50, #66BB6A); color: white; font-size: 11px; padding: 0 14px; height: 28px; line-height: 28px; border-radius: 14px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); min-width: 64px; text-align: center;">
+                                                                            Unblock
+                                                                        </a>
+                                                                    <% } else { %>
+                                                                        <a href="/admin/driver/block/<%= driver._id %>"
+                                                                           class="btn btn-small waves-effect waves-light"
+                                                                           style="background: linear-gradient(45deg, #F44336, #EF5350); color: white; font-size: 11px; padding: 0 14px; height: 28px; line-height: 28px; border-radius: 14px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); min-width: 64px; text-align: center;">
+                                                                            Block
+                                                                        </a>
+                                                                    <% } %>
+
+                                                                </div>
+                                                            </td>
                                                         </tr>
                                                         <% } %>
                                                     </tbody>
@@ -86,6 +142,29 @@
     <%- include('_layouts/commonJs') %>
     <script src="/app-assets/vendors/data-tables/js/jquery.dataTables.min.js"></script>
     <script src="/app-assets/js/scripts/data-tables.js"></script>
-</body>
 
+    <!-- NO REINITIALIZATION ERROR -->
+    <script>
+        $(document).ready(function() {
+            if ($.fn.DataTable.isDataTable('#page-length-option')) {
+                $('#page-length-option').DataTable().destroy();
+            }
+
+            $('#page-length-option').DataTable({
+                "pageLength": 10,
+                "responsive": true,
+                "columnDefs": [
+                    { "orderable": false, "targets": [1, 6] },
+                    { "width": "5%", "targets": 0 },
+                    { "width": "10%", "targets": 1 },
+                    { "width": "20%", "targets": 2 },
+                    { "width": "15%", "targets": 3 },
+                    { "width": "20%", "targets": 4 },
+                    { "width": "10%", "targets": 5 },
+                    { "width": "20%", "targets": 6 }
+                ]
+            });
+        });
+    </script>
+</body>
 </html>

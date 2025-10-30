@@ -16,9 +16,12 @@ const Address = require('./models/addressModel');
 const User = require('./models/userModel');
 const Car = require('./models/carModel');
 
+const methodOverride = require('method-override');
+
 // Start express app
 const app = express();
 
+app.use(methodOverride('_method'));
 // View engine
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));

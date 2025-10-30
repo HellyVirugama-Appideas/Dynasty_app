@@ -8,7 +8,6 @@ const Booking = require('../../models/bookingModel');
 const BookingReq = require('../../models/bookingReqModel');
 const Rating = require('../../models/ratingModel');
 const Charges = require('../../models/chargesModel');
-const S3 = require('../../helpers/s3');
 
 exports.listCars = async (req, res, next) => {
     try {
@@ -461,28 +460,43 @@ exports.cancelBooking = async (req, res, next) => {
 
 exports.uploadSignature = async (req, res, next) => {
     try {
-        if (!req.file)
+        // 1. Validate file
+        if (!req.file) {
             return next(createError.BadRequest('Please upload signature.'));
+        }
 
-        const signatureUrl = await S3.uploadFile(req.file).then(
-            res => res.Location
-        );
+        // 2. Generate public URL from Multer filename
+        const signatureUrl = `/uploads/${req.file.filename}`;
 
-        const update =
-            req.params.type === 'pickup'
-                ? { pickupCheck: true, pickupSign: signatureUrl }
-                : { returnCheck: true, returnSign: signatureUrl };
+        // 3. Build update object
+        const update = req.params.type === 'pickup'
+            ? { pickupCheck: true, pickupSign: signatureUrl }
+            : { returnCheck: true, returnSign: signatureUrl };
 
+        // 4. Update Booking
         const booking = await Booking.findByIdAndUpdate(
             req.body.bookingId,
-            update
+            update,
+            { new: true }
         );
-        if (!booking) return next(createError.NotFound('Booking not found.'));
 
+        if (!booking) {
+            // Delete file if booking not found
+            deleteFile(req.file.path);
+            return next(createError.NotFound('Booking not found.'));
+        }
+
+        // 5. Update Booking Request
         await BookingReq.findByIdAndUpdate(booking.bookingReq, update);
 
+        // 6. Success
         res.json({ code: '1', message: req.t('success') });
+
     } catch (error) {
+        // 7. Cleanup on error
+        if (req.file) {
+            deleteFile(req.file.path);
+        }
         next(error);
     }
 };

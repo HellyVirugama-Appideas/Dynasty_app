@@ -2,7 +2,7 @@ const router = require('express').Router();
 const fileUpload = require('express-fileupload');
 
 const { checkDriver } = require('../../controllers/driver/authController');
-const { uploadImageS3Bucket } = require('../../controllers/uploadController');
+const { upload } = require('../../middleware/upload');
 const carController = require('../../controllers/driver/carController');
 
 router.get('/get_vehicle_types', carController.getVehicleTypes);
@@ -12,7 +12,7 @@ router
     .get(checkDriver, carController.getCars)
     .post(
         checkDriver,
-        uploadImageS3Bucket.fields([
+        upload.fields([
             { name: 'pics', maxCount: 8 },
             { name: 'purchaseBill', maxCount: 1 },
             { name: 'insurance', maxCount: 1 },
@@ -23,7 +23,7 @@ router
 
 router.post(
     '/add_image',
-    uploadImageS3Bucket.array('pics'),
+    upload.array('pics'),
     checkDriver,
     carController.addImage
 );
@@ -36,7 +36,7 @@ router.post(
 
 router.post(
     '/:id',
-    uploadImageS3Bucket.array('pics'),
+    upload.array('pics'),
     checkDriver,
     carController.editCar
 );

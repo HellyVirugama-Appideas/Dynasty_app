@@ -4,7 +4,6 @@ const deleteFile = require('../../utils/deleteFile');
 
 const Type = require('../../models/typeModel');
 const Car = require('../../models/carModel');
-const S3 = require('../../helpers/s3');
 
 exports.getVehicleTypes = async (req, res, next) => {
     try {
@@ -43,49 +42,59 @@ exports.getCars = async (req, res, next) => {
 
 exports.createCar = async (req, res, next) => {
     try {
+        // 1. Validate required files
         if (!req.files?.pics || req.files.pics.length === 0)
             throw createError.BadRequest('carImage.pics');
-        if (!req.files?.purchaseBill)
+        if (!req.files?.purchaseBill || !req.files.purchaseBill[0])
             throw createError.BadRequest('carImage.purchaseBill');
-        if (!req.files?.insurance)
+        if (!req.files?.insurance || !req.files.insurance[0])
             throw createError.BadRequest('carImage.insurance');
-        if (!req.files?.rc) throw createError.BadRequest('carImage.rc');
+        if (!req.files?.rc || !req.files.rc[0])
+            throw createError.BadRequest('carImage.rc');
 
-        const pics = await Promise.all(
-            req.files.pics.map(async file => {
-                const result = await S3.uploadFile(file);
-                return result.Location;
-            })
-        );
-        const [purchaseBillResult, insuranceResult, rcResult] =
-            await Promise.all([
-                S3.uploadFile(req.files.purchaseBill[0]),
-                S3.uploadFile(req.files.insurance[0]),
-                S3.uploadFile(req.files.rc[0]),
-            ]);
+        // 2. Generate URLs from Multer filenames
+        const pics = req.files.pics.map(file => `/uploads/${file.filename}`);
+        const purchaseBill = `/uploads/${req.files.purchaseBill[0].filename}`;
+        const insurance = `/uploads/${req.files.insurance[0].filename}`;
+        const rc = `/uploads/${req.files.rc[0].filename}`;
 
+        // 3. Set to req.body
         req.body.pics = pics;
-        req.body.purchaseBill = purchaseBillResult.Location;
-        req.body.insurance = insuranceResult.Location;
-        req.body.rc = rcResult.Location;
+        req.body.purchaseBill = purchaseBill;
+        req.body.insurance = insurance;
+        req.body.rc = rc;
 
+        // 4. Validate location
         const { latitude, longitude } = req.body;
         if (!latitude || !longitude)
             throw createError.BadRequest('Invalid latitude longitude.');
+
         req.body.location = {
             type: 'Point',
-            coordinates: [longitude, latitude],
+            coordinates: [parseFloat(longitude), parseFloat(latitude)],
         };
 
+        // 5. Set driver
         req.body.driver = req.driver.id;
-        let car = await Car.create(req.body);
 
+        // 6. Create car
+        let car = await Car.create(req.body);
         await car.populate('type');
         car = car._doc;
         car.type = multilingual(car.type, req).name;
 
         res.json({ code: '1', message: req.t('car.added'), car });
+
     } catch (error) {
+        // 7. Delete uploaded files on error
+        const files = [
+            ...(req.files?.pics || []),
+            ...(req.files?.purchaseBill || []),
+            ...(req.files?.insurance || []),
+            ...(req.files?.rc || [])
+        ];
+        files.forEach(file => deleteFile(file.path));
+
         next(error);
     }
 };
@@ -93,13 +102,9 @@ exports.createCar = async (req, res, next) => {
 exports.editCar = async (req, res, next) => {
     try {
         let pics = [];
-        if (req.files?.length)
-            pics = await Promise.all(
-                req.files.map(async file => {
-                    const result = await S3.uploadFile(file);
-                    return result.Location;
-                })
-            );
+        if (req.files?.pics?.length) {
+            pics = req.files.pics.map(file => `/uploads/${file.filename}`);
+        }
 
         const updatedData = {
             name: req.body.name,
@@ -107,18 +112,32 @@ exports.editCar = async (req, res, next) => {
             kmsDriven: req.body.kmsDriven,
             price: req.body.price,
         };
-        if (pics.length) updatedData.$push = { pics: { $each: pics } };
+
+        if (pics.length) {
+            updatedData.$push = { pics: { $each: pics } };
+        }
 
         const car = await Car.findOneAndUpdate(
             { _id: req.params.id, driver: req.driver.id, isDeleted: false },
             updatedData,
             { new: true }
         ).select('-__v -driver -type');
-        if (!car) return next(createError.NotFound('Car not found.'));
+
+        if (!car) {
+            // Delete new pics on error
+            if (req.files?.pics) {
+                req.files.pics.forEach(file => deleteFile(file.path));
+            }
+            return next(createError.NotFound('Car not found.'));
+        }
 
         res.json({ code: '1', message: req.t('car.edited'), car });
+
     } catch (error) {
-        if (error.name == 'CastError')
+        if (req.files?.pics) {
+            req.files.pics.forEach(file => deleteFile(file.path));
+        }
+        if (error.name === 'CastError')
             return next(createError.NotFound('Car not found.'));
         next(error);
     }
@@ -143,14 +162,11 @@ exports.deleteCar = async (req, res, next) => {
 
 exports.addImage = async (req, res, next) => {
     try {
-        let pics = [];
-        if (req.files?.length)
-            pics = await Promise.all(
-                req.files.map(async file => {
-                    const result = await S3.uploadFile(file);
-                    return result.Location;
-                })
-            );
+        if (!req.files || req.files.length === 0) {
+            return next(createError.BadRequest('Please upload at least one image.'));
+        }
+
+        const pics = req.files.map(file => `/uploads/${file.filename}`);
 
         const car = await Car.findOneAndUpdate(
             { _id: req.body.carId, driver: req.driver.id, isDeleted: false },
@@ -158,11 +174,18 @@ exports.addImage = async (req, res, next) => {
             { new: true }
         );
 
-        if (!car) return next(createError.NotFound('Car not found!'));
+        if (!car) {
+            req.files.forEach(file => deleteFile(file.path));
+            return next(createError.NotFound('Car not found!'));
+        }
 
         res.json({ code: '1', message: req.t('success') });
+
     } catch (error) {
-        if (error.name == 'CastError')
+        if (req.files) {
+            req.files.forEach(file => deleteFile(file.path));
+        }
+        if (error.name === 'CastError')
             return next(createError.NotFound('Car not found.'));
         next(error);
     }

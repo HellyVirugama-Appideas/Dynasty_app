@@ -4,7 +4,6 @@ const deleteFile = require('../../utils/deleteFile');
 
 const User = require('../../models/userModel');
 const Address = require('../../models/addressModel');
-const S3 = require('../../helpers/s3');
 
 exports.getProfile = async (req, res, next) => {
     try {
@@ -26,7 +25,7 @@ exports.getProfile = async (req, res, next) => {
 
 exports.editProfile = async (req, res, next) => {
     try {
-        // Properties not allowed to change
+        // 1. Remove disallowed properties
         const disallowedProperties = [
             'country_code',
             'phone',
@@ -37,37 +36,65 @@ exports.editProfile = async (req, res, next) => {
             'licenseFront',
             'licenseBack',
         ];
-        disallowedProperties.forEach(property => {
-            delete req.body[property];
-        });
+        disallowedProperties.forEach(prop => delete req.body[prop]);
 
-        if (req.files.profile && req.files.profile[0]) {
-            const result = await S3.uploadFile(req.files.profile[0]);
-            req.body.profile = result.Location;
+        // 2. Handle file uploads
+        if (req.files?.profile?.[0]) {
+            if (req.user.profile) deleteFile(`public${req.user.profile}`);
+            req.body.profile = `/uploads/${req.files.profile[0].filename}`;
         }
-        if (req.files.licenseFront && req.files.licenseFront[0]) {
-            const result = await S3.uploadFile(req.files.licenseFront[0]);
-            req.body.licenseFront = result.Location;
+        if (req.files?.licenseFront?.[0]) {
+            if (req.user.licenseFront) deleteFile(`public${req.user.licenseFront}`);
+            req.body.licenseFront = `/uploads/${req.files.licenseFront[0].filename}`;
         }
-        if (req.files.licenseBack && req.files.licenseBack[0]) {
-            const result = await S3.uploadFile(req.files.licenseBack[0]);
-            req.body.licenseBack = result.Location;
+        if (req.files?.licenseBack?.[0]) {
+            if (req.user.licenseBack) deleteFile(`public${req.user.licenseBack}`);
+            req.body.licenseBack = `/uploads/${req.files.licenseBack[0].filename}`;
         }
 
-        let user = await User.findByIdAndUpdate(req.user.id, req.body, {
-            new: true,
-        }).populate('city country address');
+        // 3. Update user
+        let user = await User.findByIdAndUpdate(
+            req.user.id,
+            req.body,
+            { new: true, runValidators: true }
+        ).populate('city country address');
 
+        if (!user) {
+            // Delete new files if user not found
+            const files = [
+                req.files?.profile?.[0],
+                req.files?.licenseFront?.[0],
+                req.files?.licenseBack?.[0]
+            ].filter(Boolean);
+            files.forEach(file => deleteFile(file.path));
+            return next(createError.NotFound('User not found'));
+        }
+
+        // 4. Format response
         user = multilingualUser(user, req);
         user.latitude = user.address.latitude;
         user.longitude = user.address.longitude;
         user.address = user.address.address;
 
+        // Hide sensitive fields
+        user.password = undefined;
+        user.__v = undefined;
+
         res.json({ code: '1', message: req.t('success'), user });
+
     } catch (error) {
+        // 5. Delete uploaded files on error
+        const files = [
+            req.files?.profile?.[0],
+            req.files?.licenseFront?.[0],
+            req.files?.licenseBack?.[0]
+        ].filter(Boolean);
+        files.forEach(file => deleteFile(file.path));
+
         next(error);
     }
 };
+
 
 exports.deleteProfile = async (req, res, next) => {
     try {

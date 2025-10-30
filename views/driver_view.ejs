@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html class="loading" lang="en" data-textdirection="ltr">
+<head>
+    <%- include('_layouts/head') %>
+    <title>Driver View | <%= title %></title>
+    <link rel="stylesheet" type="text/css" href="/app-assets/css/pages/page-users.css">
+    <link rel="stylesheet" type="text/css" href="/app-assets/vendors/magnific-popup/magnific-popup.css">
+</head>
+<body class="vertical-layout page-header-light vertical-menu-collapsible vertical-dark-menu preload-transitions 2-columns"
+      data-open="click" data-menu="vertical-dark-menu" data-col="2-columns">
+
+    <%- include('_layouts/sidenavbar') %>
+
+    <div id="main">
+        <div class="row">
+            <div id="breadcrumbs-wrapper" data-image="/app-assets/images/gallery/breadcrumb-bg.jpg">
+                <div class="container">
+                    <div class="row">
+                        <div class="col s12 m6 l6">
+                            <h5 class="breadcrumbs-title mt-0 mb-0"><span>Driver View</span></h5>
+                        </div>
+                        <div class="col s12 m6 l6 right-align-md">
+                            <ol class="breadcrumbs mb-0">
+                                <li class="breadcrumb-item"><a href="/admin">Home</a></li>
+                                <li class="breadcrumb-item"><a href="/admin/driver">Driver</a></li>
+                                <li class="breadcrumb-item active">Driver Details</li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col s12">
+                <div class="container">
+                    <div class="section users-view">
+                        <!-- Media -->
+                        <div class="card-panel">
+                            <div class="row">
+                                <div class="col s12 m7">
+                                    <div class="display-flex media">
+                                        <img src="<%= driver.profile %>" alt="driver avatar"
+                                             class="z-depth-2 circle mr-3" height="64" width="64"
+                                             onerror="this.onerror=null; this.src='/uploads/default_user.jpg';">
+                                        <div class="media-body">
+                                            <h6 class="media-heading">
+                                                <span class="users-view-name"><%= driver.name %></span>
+                                            </h6>
+                                            <span>Mobile:</span>
+                                            <span class="users-view-id"><%= driver.country_code %> <%= driver.phone %></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Details Table -->
+                        <div class="card">
+                            <div class="card-content">
+                                <div class="row">
+                                    <div class="col s12">
+                                        <table class="striped">
+                                            <tbody>
+                                                <tr>
+                                                    <th style="width: 200px;">Name</th>
+                                                    <td><%= driver.name %></td>
+                                                </tr>
+                                                <tr>
+                                                    <th>Mobile</th>
+                                                    <td><%= driver.country_code %> <%= driver.phone %></td>
+                                                </tr>
+                                                <tr>
+                                                    <th>Email</th>
+                                                    <td><%= driver.email %></td>
+                                                </tr>
+                                                <% if (driver.city) { %>
+                                                <tr>
+                                                    <th>City</th>
+                                                    <td><%= driver.city.en.name %></td>
+                                                </tr>
+                                                <% } %>
+                                                <% if (driver.country) { %>
+                                                <tr>
+                                                    <th>Country</th>
+                                                    <td><%= driver.country.en.name %></td>
+                                                </tr>
+                                                <% } %>
+                                                <% if (driver.type) { %>
+                                                <tr>
+                                                    <th>Vehicle Type</th>
+                                                    <td><%= driver.type.en.name %></td>
+                                                </tr>
+                                                <% } %>
+                                                <tr>
+                                                    <th>Address</th>
+                                                    <td><%= driver.address || '—' %></td>
+                                                </tr>
+                                                <tr>
+                                                    <th>Status</th>
+                                                    <td>
+                                                        <span class="chip <%= driver.approved ? 'green' : 'red' %> white-text">
+                                                            <%= driver.approved ? 'Approved' : 'Pending' %>
+                                                        </span>
+                                                        <span class="chip <%= driver.blocked ? 'red' : 'green' %> white-text ml-1">
+                                                            <%= driver.blocked ? 'Blocked' : 'Active' %>
+                                                        </span>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <th>Date</th>
+                                                    <td><%= driver.date.toLocaleDateString('en-GB') %></td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col s12" style="margin-left: 15px;">
+                                        <a onclick="history.back()" class="btn btn-danger waves-effect waves-light">Back</a>
+                                        <!-- <a href="/admin/driver/edit/<%= driver._id %>" class="btn btn-primary waves-effect waves-light">
+                                            <i class="material-icons left">edit</i> Edit
+                                        </a>
+                                        <form action="/admin/driver/delete/<%= driver._id %>?_method=DELETE" method="POST" style="display:inline;">
+                                            <button type="submit" class="btn btn-danger waves-effect waves-light"
+                                                    onclick="return confirm('Delete <%= driver.name %>?');">
+                                                <i class="material-icons left">delete</i> Delete
+                                            </button>
+                                        </form> -->
+                                        <% if (driver.blocked) { %>
+                                            <a href="/admin/driver/unblock/<%= driver._id %>" class="btn btn-success waves-effect waves-light">
+                                                <i class="material-icons left">lock_open</i> Unblock
+                                            </a>
+                                        <% } else { %>
+                                            <a href="/admin/driver/block/<%= driver._id %>" class="btn btn-warning waves-effect waves-light">
+                                                <i class="material-icons left">lock</i> Block
+                                            </a>
+                                        <% } %>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- License & Documents -->
+                        <div class="card">
+                            <div class="card-content">
+                                <% if (!driver.licence || !driver.pan || !driver.rc) { %>
+                                    <h6 class="mb-1 mt-2">Some documents missing.</h6>
+                                <% } else { %>
+                                    <h6 class="mb-1 mt-2">Driver Documents:</h6>
+                                    <div class="masonry-gallery-wrapper">
+                                        <div class="popup-gallery">
+                                            <div class="gallery-sizer"></div>
+                                            <div class="row">
+                                                <div class="col s12 m6 l4 xl2">
+                                                    <a href="<%= driver.licence %>" title="License">
+                                                        <img src="<%= driver.licence %>" class="responsive-img mb-10" alt="License">
+                                                    </a>
+                                                </div>
+                                                <div class="col s12 m6 l4 xl2">
+                                                    <a href="<%= driver.pan %>" title="PAN Card">
+                                                        <img src="<%= driver.pan %>" class="responsive-img mb-10" alt="PAN">
+                                                    </a>
+                                                </div>
+                                                <div class="col s12 m6 l4 xl2">
+                                                    <a href="<%= driver.rc %>" title="RC">
+                                                        <img src="<%= driver.rc %>" class="responsive-img mb-10" alt="RC">
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                <% } %>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="content-overlay"></div>
+            </div>
+        </div>
+    </div>
+
+    <%- include('_layouts/commonJs') %>
+    <script src="/app-assets/vendors/magnific-popup/jquery.magnific-popup.min.js"></script>
+    <script src="/app-assets/vendors/imagesloaded.pkgd.min.js"></script>
+    <script src="/app-assets/js/scripts/media-gallery-page.js"></script>
+</body>
+</html>

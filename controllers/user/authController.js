@@ -6,7 +6,6 @@ const multilingualUser = require('../../utils/multilingualUser');
 const generateCode = require('../../utils/generateCode');
 // const { sendOTP } = require('../../utils/sendSMS');
 const deleteFile = require('../../utils/deleteFile');
-const S3 = require('../../helpers/s3');
 
 const User = require('../../models/userModel');
 const OTP = require('../../models/otpModel');
@@ -120,7 +119,6 @@ exports.verifyOTP = async (req, res, next) => {
 
 exports.createProfile = async (req, res, next) => {
     try {
-        // verify verifyToken
         const decoded = await promisify(jwt.verify)(
             req.body.verifyToken,
             process.env.JWT_SECRET
@@ -132,40 +130,13 @@ exports.createProfile = async (req, res, next) => {
             City.findOne({ city_id }),
             Country.findOne({ country_id }),
         ]);
-        // if (!city) return next(createError.BadRequest('Invalid city_id'));
-        // if (!country) return next(createError.BadRequest('Invalid country_id'));
 
-        // images validation
-        // if (!req.files.licenseFront)
-        //     throw createError.BadRequest(
-        //         'Please add Frontside image of License.'
-        //     );
-        // if (!req.files.licenseBack)
-        //     throw createError.BadRequest(
-        //         'Please add Backside image of License.'
-        //     );
+        // 1. Handle file uploads
+        const profile = req.files?.profile?.[0] ? `/uploads/${req.files.profile[0].filename}` : undefined;
+        const licenseFront = req.files?.licenseFront?.[0] ? `/uploads/${req.files.licenseFront[0].filename}` : undefined;
+        const licenseBack = req.files?.licenseBack?.[0] ? `/uploads/${req.files.licenseBack[0].filename}` : undefined;
 
-        // if (!req.body.latitude || !req.body.longitude)
-        //     throw createError.BadRequest('Please select valid address.');
-
-        // images
-        const [profile, licenseFront, licenseBack] = await Promise.all([
-            req.files.profile
-                ? S3.uploadFile(req.files.profile[0]).then(res => res.Location)
-                : undefined,
-            req.files.licenseFront
-                ? S3.uploadFile(req.files.licenseFront[0]).then(
-                      res => res.Location
-                  )
-                : undefined,
-            req.files.licenseBack
-                ? S3.uploadFile(req.files.licenseBack[0]).then(
-                      res => res.Location
-                  )
-                : undefined,
-        ]);
-
-        // create user
+        // 2. Create user
         let user = new User({
             name: req.body.name,
             email: req.body.email,
@@ -179,7 +150,7 @@ exports.createProfile = async (req, res, next) => {
             fcmToken: req.body.fcmToken,
         });
 
-        // create address
+        // 3. Create address
         const address = new Address({
             userId: user.id,
             address: req.body.address,
@@ -188,7 +159,7 @@ exports.createProfile = async (req, res, next) => {
             selected: true,
         });
 
-        // validate
+        // 4. Validate
         await user.validate();
         await address.validate();
 
@@ -196,14 +167,14 @@ exports.createProfile = async (req, res, next) => {
         await Promise.all([user.save(), address.save()]);
 
         const token = await user.generateAuthToken();
-
         await user.populate('city country address');
         user = multilingualUser(user, req);
+
         user.latitude = user.address.latitude;
         user.longitude = user.address.longitude;
         user.address = user.address.address;
 
-        // hide fields
+        // Hide fields
         user.password = undefined;
         user.__v = undefined;
 
@@ -213,10 +184,19 @@ exports.createProfile = async (req, res, next) => {
             token,
             user,
         });
+
     } catch (error) {
-        if (error.name == 'JsonWebTokenError')
+        // 5. Delete uploaded files on error
+        const files = [
+            req.files?.profile?.[0],
+            req.files?.licenseFront?.[0],
+            req.files?.licenseBack?.[0]
+        ].filter(Boolean);
+        files.forEach(file => deleteFile(file.path));
+
+        if (error.name === 'JsonWebTokenError')
             return next(createError.BadRequest('token.invalid'));
-        if (error.name == 'TokenExpiredError')
+        if (error.name === 'TokenExpiredError')
             return next(createError.BadRequest('token.expired'));
 
         next(error);
@@ -309,28 +289,13 @@ exports.createSocialProfile = async (req, res, next) => {
             City.findOne({ city_id }),
             Country.findOne({ country_id }),
         ]);
-        // if (!city) return next(createError.BadRequest('Invalid city_id'));
-        // if (!country) return next(createError.BadRequest('Invalid country_id'));
 
-        // images validation
-        // if (!req.files.licenseFront)
-        //     throw createError.BadRequest('licenseFront is required.');
-        // if (!req.files.licenseBack)
-        //     throw createError.BadRequest('licenseBack is required.');
+        // 1. Handle file uploads
+        const profile = req.files?.profile?.[0] ? `/uploads/${req.files.profile[0].filename}` : undefined;
+        const licenseFront = req.files?.licenseFront?.[0] ? `/uploads/${req.files.licenseFront[0].filename}` : undefined;
+        const licenseBack = req.files?.licenseBack?.[0] ? `/uploads/${req.files.licenseBack[0].filename}` : undefined;
 
-        // if (!req.body.latitude || !req.body.longitude)
-        //     throw createError.BadRequest('Please select valid address.');
-
-        // images
-        const [profile, licenseFront, licenseBack] = await Promise.all([
-            req.files.profile
-                ? S3.uploadFile(req.files.profile[0]).then(res => res.Location)
-                : undefined,
-            S3.uploadFile(req.files.licenseFront[0]).then(res => res.Location),
-            S3.uploadFile(req.files.licenseBack[0]).then(res => res.Location),
-        ]);
-
-        // create user
+        // 2. Create user
         let user = new User({
             name: req.body.name,
             email: req.body.email,
@@ -347,7 +312,7 @@ exports.createSocialProfile = async (req, res, next) => {
             fcmToken: req.body.fcmToken,
         });
 
-        // create address
+        // 3. Create address
         const address = new Address({
             userId: user.id,
             address: req.body.address,
@@ -356,7 +321,7 @@ exports.createSocialProfile = async (req, res, next) => {
             selected: true,
         });
 
-        // validate
+        // 4. Validate
         await user.validate();
         await address.validate();
 
@@ -364,14 +329,14 @@ exports.createSocialProfile = async (req, res, next) => {
         await Promise.all([user.save(), address.save()]);
 
         const token = await user.generateAuthToken();
-
         await user.populate('city country address');
         user = multilingualUser(user, req);
+
         user.latitude = user.address.latitude;
         user.longitude = user.address.longitude;
         user.address = user.address.address;
 
-        // hide fields
+        // Hide fields
         user.password = undefined;
         user.__v = undefined;
 
@@ -381,18 +346,19 @@ exports.createSocialProfile = async (req, res, next) => {
             token,
             user,
         });
-    } catch (error) {
-        // remove files
-        if (req.files.profile)
-            deleteFile(`/uploads/${req.files.profile[0].filename}`);
-        if (req.files.licenseFront)
-            deleteFile(`/uploads/${req.files.licenseFront[0].filename}`);
-        if (req.files.licenseBack)
-            deleteFile(`/uploads/${req.files.licenseBack[0].filename}`);
 
-        if (error.name == 'JsonWebTokenError')
+    } catch (error) {
+        // 5. Delete uploaded files on error
+        const files = [
+            req.files?.profile?.[0],
+            req.files?.licenseFront?.[0],
+            req.files?.licenseBack?.[0]
+        ].filter(Boolean);
+        files.forEach(file => deleteFile(file.path));
+
+        if (error.name === 'JsonWebTokenError')
             return next(createError.BadRequest('token.invalid'));
-        if (error.name == 'TokenExpiredError')
+        if (error.name === 'TokenExpiredError')
             return next(createError.BadRequest('token.expired'));
 
         next(error);

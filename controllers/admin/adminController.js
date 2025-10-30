@@ -1,5 +1,4 @@
 const deleteFile = require('../../utils/deleteFile');
-const S3 = require('../../helpers/s3');
 
 const Country = require('../../models/countryModel');
 const City = require('../../models/cityModel');
@@ -59,9 +58,8 @@ exports.getAddCountry = (req, res) => res.render('country_add');
 exports.postAddCountry = async (req, res) => {
     try {
         let image;
-        if (typeof req.file !== 'undefined') {
-            const result = await S3.uploadFile(req.file);
-            image = result.Location;
+        if (req.file) {
+            image = `/uploads/${req.file.filename}`;
         }
 
         await Country.create({
@@ -74,6 +72,7 @@ exports.postAddCountry = async (req, res) => {
         req.flash('green', 'Country added successfully.');
         res.redirect('/admin/country');
     } catch (error) {
+        if (req.file) deleteFile(req.file.path);
         req.flash('red', error.message);
         res.redirect('/admin/country');
     }
@@ -99,6 +98,7 @@ exports.postEditCountry = async (req, res) => {
     try {
         const country = await Country.findById(req.params.id);
         if (!country) {
+            if (req.file) deleteFile(req.file.path);
             req.flash('red', 'Country not found!');
             return res.redirect('/admin/country');
         }
@@ -109,20 +109,21 @@ exports.postEditCountry = async (req, res) => {
         country.fr.name = req.body.nameFr;
         country.ar.name = req.body.nameAr;
 
-        if (typeof req.file !== 'undefined') {
-            const result = await S3.uploadFile(req.file);
-            country.image = result.Location;
+        if (req.file) {
+            country.image = `/uploads/${req.file.filename}`;
         }
-        // if (req.file) country.image = `/uploads/${req.file.filename}`;
 
         await country.save();
 
-        // delete old image
-        req.file && oldImage && deleteFile(oldImage);
+        // Delete old image
+        if (req.file && oldImage) {
+            deleteFile(`public${oldImage}`); // full path
+        }
 
         req.flash('green', 'Country edited successfully.');
         res.redirect('/admin/country');
     } catch (error) {
+        if (req.file) deleteFile(req.file.path);
         req.flash('red', error.message);
         res.redirect('/admin/country');
     }
@@ -258,17 +259,16 @@ exports.getAddBanner = (req, res) => res.render('banner_add');
 exports.postAddBanner = async (req, res) => {
     try {
         let image;
-        if (typeof req.file !== 'undefined') {
-            const result = await S3.uploadFile(req.file);
-            image = result.Location;
+        if (req.file) {
+            image = `/uploads/${req.file.filename}`;
         }
-        // const image = req.file ? `/uploads/${req.file.filename}` : undefined;
 
         await Banner.create({ image });
 
         req.flash('green', 'Banner added successfully.');
         res.redirect('/admin/banner');
     } catch (error) {
+        if (req.file) deleteFile(req.file.path);
         req.flash('red', error.message);
         res.redirect('/admin/banner');
     }
@@ -294,30 +294,32 @@ exports.postEditBanner = async (req, res) => {
     try {
         const banner = await Banner.findById(req.params.id);
         if (!banner) {
+            if (req.file) deleteFile(req.file.path);
             req.flash('red', 'Banner not found!');
             return res.redirect('/admin/banner');
         }
 
-        // const oldImage = banner.image;
+        const oldImage = banner.image;
 
-        if (typeof req.file !== 'undefined') {
-            const result = await S3.uploadFile(req.file);
-            banner.image = result.Location;
+        if (req.file) {
+            banner.image = `/uploads/${req.file.filename}`;
         }
-        // if (req.file) banner.image = `/uploads/${req.file.filename}`;
 
         await banner.save();
 
-        // delete old image
-        // req.file && oldImage && deleteFile(oldImage);
+        if (req.file && oldImage) {
+            deleteFile(`public${oldImage}`);
+        }
 
         req.flash('green', 'Banner edited successfully.');
         res.redirect('/admin/banner');
     } catch (error) {
+        if (req.file) deleteFile(req.file.path);
         req.flash('red', error.message);
         res.redirect('/admin/banner');
     }
 };
+
 
 exports.getDeleteBanner = async (req, res) => {
     try {
@@ -351,11 +353,9 @@ exports.getAddType = (req, res) => res.render('type_add');
 exports.postAddType = async (req, res) => {
     try {
         let image;
-        if (typeof req.file !== 'undefined') {
-            const result = await S3.uploadFile(req.file);
-            image = result.Location;
+        if (req.file) {
+            image = `/uploads/${req.file.filename}`;
         }
-        // const image = req.file ? `/uploads/${req.file.filename}` : undefined;
 
         await Type.create({
             en: { name: req.body.nameEn },
@@ -370,6 +370,7 @@ exports.postAddType = async (req, res) => {
         req.flash('green', 'Type added successfully.');
         res.redirect('/admin/type');
     } catch (error) {
+        if (req.file) deleteFile(req.file.path);
         req.flash('red', error.message);
         res.redirect('/admin/type');
     }
@@ -395,9 +396,12 @@ exports.postEditType = async (req, res) => {
     try {
         const type = await Type.findById(req.params.id);
         if (!type) {
+            if (req.file) deleteFile(req.file.path);
             req.flash('red', 'Type not found!');
             return res.redirect('/admin/type');
         }
+
+        const oldImage = type.image;
 
         type.en.name = req.body.nameEn;
         type.fr.name = req.body.nameFr;
@@ -406,16 +410,20 @@ exports.postEditType = async (req, res) => {
         type.typeFor = req.body.typeFor;
         type.distanceRate = req.body.distanceRate;
 
-        if (typeof req.file !== 'undefined') {
-            const result = await S3.uploadFile(req.file);
-            type.image = result.Location;
+        if (req.file) {
+            type.image = `/uploads/${req.file.filename}`;
         }
 
         await type.save();
 
+        if (req.file && oldImage) {
+            deleteFile(`public${oldImage}`);
+        }
+
         req.flash('green', 'Type edited successfully.');
         res.redirect('/admin/type');
     } catch (error) {
+        if (req.file) deleteFile(req.file.path);
         req.flash('red', error.message);
         res.redirect('/admin/type');
     }
