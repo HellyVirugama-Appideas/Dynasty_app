@@ -31,7 +31,7 @@ exports.getCars = async (req, res, next) => {
                     return { pic, status: null };
                 else return { pic, status: 0 };
             });
-            return { ...car, pics: updatedPics };
+                              return { ...car, pics: updatedPics };
         });
 
         res.json({ code: '1', message: req.t('success'), cars });

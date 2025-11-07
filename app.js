@@ -15,6 +15,7 @@ const Driver = require('./models/driverModel');
 const Address = require('./models/addressModel');
 const User = require('./models/userModel');
 const Car = require('./models/carModel');
+const userPaymentRoutes = require('./routes/user/paymentRoutes');
 
 const methodOverride = require('method-override');
 
@@ -99,6 +100,7 @@ app.use('/api/user', require('./routes/user/profileRoutes'));
 app.use('/api/user', require('./routes/user/homeRoutes'));
 app.use('/api/user', require('./routes/user/rideRoutes'));
 app.use('/api/user', require('./routes/user/rentRoutes'));
+app.use('/api/user', userPaymentRoutes);
 
 // DRIVER ROUTES
 app.use('/api/driver', require('./routes/driver/authRoutes'));

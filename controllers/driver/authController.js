@@ -17,16 +17,19 @@ const Type = require('../../models/typeModel');
 exports.checkDriver = async (req, res, next) => {
     try {
         const token = req.headers.token;
+        console.log('token: ', token);
 
         if (!token) return next(createError.BadRequest('auth.provideToken'));
 
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        console.log('decoded: ', decoded);
 
         let driver = await Driver.findById(decoded._id).select(
             '+blocked +password'
         );
 
-        if (!driver) return next(createError.BadRequest('auth.login'));
+        // if (!driver) return next(createError.BadRequest('auth.login'));
+        console.log('driver: ', driver);
         if (driver.blocked)
             return next(createError.Unauthorized('auth.blocked'));
         if (driver.isDeleted)

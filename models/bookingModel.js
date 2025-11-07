@@ -54,6 +54,8 @@ const bookingSchema = new mongoose.Schema({
             return this.status === 'cancelled';
         },
     },
+    paymentStatus: String,
+    paymentMethod: String,
     bookingReq: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Booking Request',

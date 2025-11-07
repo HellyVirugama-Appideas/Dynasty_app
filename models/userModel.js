@@ -5,7 +5,7 @@ const jwt = require('jsonwebtoken');
 
 const userSchema = new mongoose.Schema({
     name: {
-        type: String
+        type: String,
     },
     country_code: {
         type: String,
@@ -43,8 +43,7 @@ const userSchema = new mongoose.Schema({
     // ! change default image to s3
     profile: {
         type: String,
-        default:
-            'https://dynasty-bucket.s3.ca-central-1.amazonaws.com/default_user.jpg',
+        default: '/uploads/default_user.jpg',
     },
     licenseFront: String,
     licenseBack: String,
@@ -56,6 +55,8 @@ const userSchema = new mongoose.Schema({
     },
     favorites: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Car' }],
     fcmToken: { type: String },
+    stripeCustomerId: { type: String }, // Stripe customer ID
+    defaultPaymentMethod: { type: String }, // Default Stripe payment method ID
     date: {
         type: Date,
         default: Date.now,

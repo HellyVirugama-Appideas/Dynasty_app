@@ -3,7 +3,7 @@ const admin = require('firebase-admin');
 const Notification = require('../models/notificationModel');
 
 // Initialize the Firebase Admin SDK
-const serviceAccount = require('./dynasty-ud-firebase-adminsdk-fx1y8-35d54a0036.json');
+const serviceAccount = require('./dynasty-ud-firebase-adminsdk-fx1y8-13482b8643.json');
 admin.initializeApp({ credential: admin.credential.cert(serviceAccount) });
 
 const sendNotification = async (registrationToken, data) => {

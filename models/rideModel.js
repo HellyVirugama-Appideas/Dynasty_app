@@ -34,6 +34,8 @@ const rideSchema = new mongoose.Schema({
         enum: ['start', 'wayToPickup', 'wayToDone', 'complete'],
         default: 'start',
     },
+    paymentStatus: String,
+    paymentMethod: String,
     cancellationReason: String,
     price: { type: Number },
 

@@ -130,6 +130,9 @@ exports.bookRide = async (req, res, next) => {
             scheduleTime: isSchedule ? req.body.scheduleTime : undefined,
         });
         await ride.populate('user', 'name phone');
+        console.log('==============================');
+        console.log('ride: ', ride);
+        console.log("==============================");
 
         const rideObject = ride.toObject();
 
@@ -171,7 +174,8 @@ exports.bookRide = async (req, res, next) => {
 
         // Notify drivers
         const response = await notifyDriversFirebase(drivers, rideObject, user);
-        // console.log('response', response);
+        console.log('drivers: ', drivers);
+        console.log('response', response);
         // if (!response) return next(createError.BadRequest('ride.fail'));
 
         return res.json({
@@ -403,6 +407,7 @@ exports.getRides = async (req, res, next) => {
             .select('-__v')
             .sort('-_id')
             .lean();
+            console.log('rides: ', rides);
 
         rides = rides.map(ride => {
             if (ride.driver?.type)
@@ -410,10 +415,10 @@ exports.getRides = async (req, res, next) => {
             return ride;
         });
 
-        rides = rides.map(ride => {
-            ride.driver.type = undefined;
-            return ride;
-        });
+        // rides = rides.map(ride => {
+        //     ride.driver.type = undefined;
+        //     return ride;
+        // });
 
         res.json({ code: '1', message: req.t('success'), rides });
     } catch (error) {
