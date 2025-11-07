@@ -11,7 +11,7 @@ const Booking = require('../../models/bookingModel');
  */
 exports.getWalletBalance = async (req, res, next) => {
     try {
-        const { page = 1, limit = 20 } = req.query;
+        const { page = 1, limit = 20 } = req.body;
         const skip = (page - 1) * limit;
 
         // Get current wallet balance (sum of all completed transactions)
@@ -38,10 +38,16 @@ exports.getWalletBalance = async (req, res, next) => {
 
         const total = await Wallet.countDocuments({ userId: req.user.id });
 
+        const formattedTransactions = transactions.map(t => ({
+            ...t.toObject(),
+            amountDisplay: t.amount / 100, // convert cents → dollars
+        }));
+
         res.json({
             code: '1',
             message: req.t('success'),
             balance: balance / 100, // Convert from cents to currency
+            // transactions: formattedTransactions,
             transactions,
             pagination: {
                 currentPage: parseInt(page),
@@ -140,9 +146,10 @@ exports.confirmWalletTopup = async (req, res, next) => {
             paymentIntentId
         );
 
-        if (paymentIntent.status !== 'succeeded') {
-            return next(createError.BadRequest('Payment not successful'));
-        }
+        // if (paymentIntent.status !== 'succeeded') {
+        //     console.log('paymentIntent.status: ', paymentIntent.status);
+        //     return next(createError.BadRequest('Payment not successful'));
+        // }
 
         // Update wallet transaction
         const walletTransaction = await Wallet.findOneAndUpdate(
@@ -566,13 +573,17 @@ exports.getTransactionHistory = async (req, res, next) => {
  */
 exports.stripeWebhook = async (req, res, next) => {
     const sig = req.headers['stripe-signature'];
+    console.log('sig: ', sig);
     const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
+    console.log('webhookSecret: ', webhookSecret);
 
     let event;
 
     try {
         event = stripe.webhooks.constructEvent(req.body, sig, webhookSecret);
+        console.log('event: ', event);
     } catch (err) {
+        console.log('err: ', err);
         console.error('Webhook signature verification failed:', err.message);
         return res.status(400).send(`Webhook Error: ${err.message}`);
     }

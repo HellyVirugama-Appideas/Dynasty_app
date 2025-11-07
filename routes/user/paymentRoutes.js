@@ -4,7 +4,12 @@ const { checkUser } = require('../../controllers/user/authController');
 const paymentController = require('../../controllers/user/Paymentcontroller');
 
 // Wallet routes
-router.get('/wallet/balance', checkUser, paymentController.getWalletBalance);
+router.post(
+    '/wallet/balance',
+    fileUpload(),
+    checkUser,
+    paymentController.getWalletBalance
+);
 router.post(
     '/wallet/topup/create',
     fileUpload(),
@@ -67,6 +72,6 @@ router.post(
 );
 
 // Stripe webhook (no authentication needed - Stripe signs it)
-router.post('/stripe/webhook', paymentController.stripeWebhook);
+// router.post('/stripe/webhook', paymentController.stripeWebhook);
 
 module.exports = router;

@@ -6,6 +6,7 @@ const i18n = require('i18next');
 const i18nFsBackend = require('i18next-fs-backend');
 const i18nMiddleware = require('i18next-http-middleware');
 const cron = require('node-cron');
+const stripeWebhook = require('./controllers/user/Paymentcontroller.js');
 
 const landingController = require('./controllers/landingController');
 const globalErrorHandler = require('./controllers/errorController');
@@ -22,6 +23,11 @@ const methodOverride = require('method-override');
 // Start express app
 const app = express();
 
+app.post(
+    '/api/user/stripe/webhook',
+    express.raw({ type: 'application/json' }),
+    stripeWebhook.stripeWebhook
+);
 app.use(methodOverride('_method'));
 // View engine
 app.set('view engine', 'ejs');
