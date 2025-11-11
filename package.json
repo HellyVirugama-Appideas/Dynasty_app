@@ -23,6 +23,7 @@
         "express": "^4.18.2",
         "express-fileupload": "^1.4.0",
         "express-messages": "^1.0.1",
+        "express-validator": "^7.3.0",
         "firebase-admin": "^11.10.1",
         "ftp": "^0.3.10",
         "geolib": "^3.3.3",

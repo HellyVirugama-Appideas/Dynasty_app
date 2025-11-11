@@ -50,7 +50,7 @@ router.post(
 );
 
 // Transaction history
-router.get('/transactions', checkUser, paymentController.getTransactionHistory);
+router.get('/transactions-user', checkUser, paymentController.getTransactionHistory);
 
 // Payment methods management
 router.get(

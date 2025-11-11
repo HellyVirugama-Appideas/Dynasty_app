@@ -17,7 +17,7 @@ const Address = require('./models/addressModel');
 const User = require('./models/userModel');
 const Car = require('./models/carModel');
 const userPaymentRoutes = require('./routes/user/paymentRoutes');
-
+// const webhookRoutes = require('./routes/webhookRoutes');
 const methodOverride = require('method-override');
 
 // Start express app
@@ -28,6 +28,8 @@ app.post(
     express.raw({ type: 'application/json' }),
     stripeWebhook.stripeWebhook
 );
+// app.use('/api/webhooks', webhookRoutes);
+
 app.use(methodOverride('_method'));
 // View engine
 app.set('view engine', 'ejs');
@@ -115,6 +117,7 @@ app.use('/api/driver', require('./routes/driver/rideRoutes'));
 app.use('/api/driver/car', require('./routes/driver/carRoutes'));
 app.use('/api/driver', require('./routes/driver/rentRoutes'));
 app.use('/api/driver', require('./routes/driver/profileRoutes'));
+app.use('/api/driver', require('./routes/driver/paymentRoutes'));
 
 app.use('/api', require('./routes/user/cityCountryRoutes'));
 app.use('/api', require('./routes/user/cmsRoutes'));

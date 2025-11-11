@@ -146,10 +146,10 @@ exports.confirmWalletTopup = async (req, res, next) => {
             paymentIntentId
         );
 
-        // if (paymentIntent.status !== 'succeeded') {
-        //     console.log('paymentIntent.status: ', paymentIntent.status);
-        //     return next(createError.BadRequest('Payment not successful'));
-        // }
+        if (paymentIntent.status !== 'succeeded') {
+            console.log('paymentIntent.status: ', paymentIntent.status);
+            return next(createError.BadRequest('Payment not successful'));
+        }
 
         // Update wallet transaction
         const walletTransaction = await Wallet.findOneAndUpdate(
@@ -241,13 +241,27 @@ exports.payRideWithWallet = async (req, res, next) => {
             });
         }
 
-        // Create wallet deduction transaction
+        // Create wallet deduction transaction for user
         const walletTransaction = await Wallet.create({
             userId: req.user.id,
             type: 'use',
             amount: amountInCents,
             status: 'completed',
+            rideId: rideId,
+            description: 'Ride payment',
         });
+
+        // Credit driver wallet with the same amount
+        if (ride.driver) {
+            await Wallet.create({
+                driverId: ride.driver,
+                type: 'add',
+                amount: amountInCents,
+                status: 'completed',
+                rideId: rideId,
+                description: 'Earnings from ride',
+            });
+        }
 
         // Create transaction record
         const transaction = await Transaction.create({
@@ -332,13 +346,27 @@ exports.payBookingWithWallet = async (req, res, next) => {
             });
         }
 
-        // Create wallet deduction transaction
+        // Create wallet deduction transaction for user
         const walletTransaction = await Wallet.create({
             userId: req.user.id,
             type: 'use',
             amount: amountInCents,
             status: 'completed',
+            bookingId: bookingId,
+            description: 'Booking payment',
         });
+
+        // Credit driver wallet with the same amount
+        if (booking.driver) {
+            await Wallet.create({
+                driverId: booking.driver,
+                type: 'add',
+                amount: amountInCents,
+                status: 'completed',
+                bookingId: bookingId,
+                description: 'Earnings from booking',
+            });
+        }
 
         // Create transaction record
         const transaction = await Transaction.create({
@@ -424,7 +452,7 @@ exports.createDirectPayment = async (req, res, next) => {
                 stripeCustomerId: customer.id,
             });
         }
-            console.log('stripeCustomerId: ', stripeCustomerId);
+        console.log('stripeCustomerId: ', stripeCustomerId);
 
         // Create payment intent
         const paymentIntent = await stripe.paymentIntents.create({
@@ -446,7 +474,7 @@ exports.createDirectPayment = async (req, res, next) => {
                 allow_redirects: 'never', //! remove in production
             },
         });
-            console.log('paymentIntent: ', paymentIntent);
+        console.log('paymentIntent: ', paymentIntent);
 
         // Create pending transaction
         // const transaction = await Transaction.create({
@@ -488,7 +516,7 @@ exports.confirmDirectPayment = async (req, res, next) => {
         const paymentIntent = await stripe.paymentIntents.retrieve(
             paymentIntentId
         );
-            console.log('paymentIntent: ', paymentIntent);
+        console.log('paymentIntent: ', paymentIntent);
 
         if (paymentIntent.status !== 'succeeded') {
             return next(createError.BadRequest('Payment not successful'));
@@ -508,6 +536,51 @@ exports.confirmDirectPayment = async (req, res, next) => {
         // if (!transaction) {
         //     return next(createError.NotFound('Transaction not found'));
         // }
+
+        // Credit driver wallet for ride_payment or rent car payments
+        if (paymentIntent.metadata.type === 'ride_payment' && paymentIntent.metadata.referenceId) {
+            const ride = await Ride.findById(paymentIntent.metadata.referenceId);
+            if (ride && ride.driver) {
+                // Check if driver wallet already credited (to avoid double crediting if webhook also fires)
+                const existingWallet = await Wallet.findOne({
+                    driverId: ride.driver,
+                    rideId: ride._id,
+                    type: 'add',
+                    status: 'completed',
+                });
+                if (!existingWallet) {
+                    await Wallet.create({
+                        driverId: ride.driver,
+                        type: 'add',
+                        amount: paymentIntent.amount,
+                        status: 'completed',
+                        rideId: ride._id,
+                        description: 'Earnings from ride payment',
+                    });
+                }
+            }
+        } else if (paymentIntent.metadata.type === 'rent car' && paymentIntent.metadata.referenceId) {
+            const booking = await Booking.findById(paymentIntent.metadata.referenceId);
+            if (booking && booking.driver) {
+                // Check if driver wallet already credited (to avoid double crediting if webhook also fires)
+                const existingWallet = await Wallet.findOne({
+                    driverId: booking.driver,
+                    bookingId: booking._id,
+                    type: 'add',
+                    status: 'completed',
+                });
+                if (!existingWallet) {
+                    await Wallet.create({
+                        driverId: booking.driver,
+                        type: 'add',
+                        amount: paymentIntent.amount,
+                        status: 'completed',
+                        bookingId: booking._id,
+                        description: 'Earnings from booking payment',
+                    });
+                }
+            }
+        }
 
         // // Update ride/booking payment status
         // if (transaction.type === 'ride_payment') {
@@ -547,7 +620,7 @@ exports.getTransactionHistory = async (req, res, next) => {
             .sort({ createdAt: -1 })
             .skip(skip)
             .limit(parseInt(limit))
-            .populate('rideId', 'pickupLocation dropLocation fare')
+            .populate('rideId', '-__v -otp -user -paymentMethod -isSchedule') // populate ride/booking details
             .select('-__v');
 
         const total = await Transaction.countDocuments(query);
@@ -601,10 +674,57 @@ exports.stripeWebhook = async (req, res, next) => {
                     { status: 'completed' }
                 );
             } else {
-                await Transaction.findOneAndUpdate(
+                // Update transaction status
+                const transaction = await Transaction.findOneAndUpdate(
                     { stripePaymentId: paymentIntent.id },
-                    { status: 'completed' }
+                    { status: 'completed' },
+                    { new: true }
                 );
+
+                // Credit driver wallet for ride_payment or rent car payments
+                if (paymentIntent.metadata.type === 'ride_payment' && paymentIntent.metadata.referenceId) {
+                    const ride = await Ride.findById(paymentIntent.metadata.referenceId);
+                    if (ride && ride.driver) {
+                        // Check if driver wallet already credited (to avoid double crediting)
+                        const existingWallet = await Wallet.findOne({
+                            driverId: ride.driver,
+                            rideId: ride._id,
+                            type: 'add',
+                            status: 'completed',
+                        });
+                        if (!existingWallet) {
+                            await Wallet.create({
+                                driverId: ride.driver,
+                                type: 'add',
+                                amount: paymentIntent.amount,
+                                status: 'completed',
+                                rideId: ride._id,
+                                description: 'Earnings from ride payment',
+                            });
+                        }
+                    }
+                } else if (paymentIntent.metadata.type === 'rent car' && paymentIntent.metadata.referenceId) {
+                    const booking = await Booking.findById(paymentIntent.metadata.referenceId);
+                    if (booking && booking.driver) {
+                        // Check if driver wallet already credited (to avoid double crediting)
+                        const existingWallet = await Wallet.findOne({
+                            driverId: booking.driver,
+                            bookingId: booking._id,
+                            type: 'add',
+                            status: 'completed',
+                        });
+                        if (!existingWallet) {
+                            await Wallet.create({
+                                driverId: booking.driver,
+                                type: 'add',
+                                amount: paymentIntent.amount,
+                                status: 'completed',
+                                bookingId: booking._id,
+                                description: 'Earnings from booking payment',
+                            });
+                        }
+                    }
+                }
             }
             break;
 

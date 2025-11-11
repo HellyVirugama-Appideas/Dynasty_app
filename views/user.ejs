@@ -56,14 +56,14 @@
                                                         </tr>
                                                     </thead>
                                                     <tbody>
-                                                        <% for(let i = 0; i < users.length; i++) { 
-                                                            const user = users[i]; 
+                                                        <% for(let i = 0; i < users.length; i++) {
+                                                            const user = users[i];
                                                         %>
                                                         <tr>
                                                             <td><%= i + 1 %></td>
                                                             <td>
                                                                 <!-- SQUARE IMAGE (removed .circle) -->
-                                                                <img src="<%= user.profile %>" 
+                                                                <img src="<%= user.profile %>"
                                                                      alt="profile" width="40" height="40"
                                                                      class="responsive-img"
                                                                      style="object-fit: cover;"
@@ -72,31 +72,35 @@
                                                             <td><%= user.name %></td>
                                                             <td><%= user.country_code %> <%= user.phone %></td>
                                                             <td><%= user.email %></td>
-                                                            <td><%= user.date.toLocaleDateString('en-GB') %></td>
+                                                          <td>
+<!-- Display formatted date but store raw date as a data attribute -->
+    <span class="formatted-date"><%= user.date.toLocaleDateString('en-GB') %></span>
+    <span class="raw-date" style="display:none;"><%= user.date.toISOString() %></span>
+</td>
 
                                                             <!-- ACTION: View, Edit, Delete, Block -->
                                                             <td style="white-space: nowrap;">
                                                                 <div style="display: flex; align-items: center; gap: 8px;">
 
                                                                     <!-- View -->
-                                                                    <a href="/admin/user/<%= user._id %>" 
-                                                                       class="waves-effect waves-light" 
+                                                                    <a href="/admin/user/<%= user._id %>"
+                                                                       class="waves-effect waves-light"
                                                                        title="View">
                                                                         <i class="material-icons" style="font-size: 18px; color: #2196F3;">remove_red_eye</i>
                                                                     </a>
 
                                                                     <!-- Edit -->
-                                                                    <a href="/admin/user/edit/<%= user._id %>" 
-                                                                       class="waves-effect waves-light" 
+                                                                    <a href="/admin/user/edit/<%= user._id %>"
+                                                                       class="waves-effect waves-light"
                                                                        title="Edit">
                                                                         <i class="material-icons" style="font-size: 18px; color: #2196F3;">edit</i>
                                                                     </a>
 
                                                                     <!-- Delete -->
-                                                                    <form action="/admin/user/delete/<%= user._id %>?_method=DELETE" 
+                                                                    <form action="/admin/user/delete/<%= user._id %>?_method=DELETE"
                                                                           method="POST" style="display: inline; margin: 0;">
                                                                         <button type="submit"
-                                                                                class="waves-effect waves-light" 
+                                                                                class="waves-effect waves-light"
                                                                                 style="background: none; border: none; padding: 0; margin: 0; cursor: pointer;"
                                                                                 title="Delete"
                                                                                 onclick="return confirm('Delete <%= user.name %>?');">
