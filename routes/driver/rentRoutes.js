@@ -9,7 +9,7 @@ router.get('/requests', checkDriver, rentController.getRequests);
 
 router.get('/requests/accept/:id', checkDriver, rentController.acceptRequest);
 
-router.get('/requests/reject/:id', checkDriver, rentController.rejectRequest);
+router.post('/requests/reject/:id', checkDriver, rentController.rejectRequest);
 
 // booked
 router.get('/booked/:type', checkDriver, rentController.getBookings);

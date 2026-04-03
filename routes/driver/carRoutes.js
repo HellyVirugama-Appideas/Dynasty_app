@@ -41,6 +41,6 @@ router.post(
     carController.editCar
 );
 
-router.get('/delete/:id', fileUpload(), checkDriver, carController.deleteCar);
+router.patch('/delete/:id', fileUpload(), checkDriver, carController.deleteCar);
 
 module.exports = router;

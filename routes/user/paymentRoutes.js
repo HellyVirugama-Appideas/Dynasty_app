@@ -5,13 +5,13 @@ const paymentController = require('../../controllers/user/Paymentcontroller');
 
 // Wallet routes
 router.post(
-    '/wallet/balance',
+    '/wallet/balance',  
     fileUpload(),
     checkUser,
     paymentController.getWalletBalance
 );
 router.post(
-    '/wallet/topup/create',
+    '/wallet/topup/create', 
     fileUpload(),
     checkUser,
     paymentController.createWalletTopup

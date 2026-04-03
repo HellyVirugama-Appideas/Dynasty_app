@@ -200,6 +200,7 @@ exports.createWithdrawalRequest = async (req, res, next) => {
     }
 };
 
+
 /**
  * Process withdrawal (admin or automated)
  */
@@ -305,7 +306,7 @@ exports.cancelWithdrawal = async (req, res, next) => {
         console.error('Cancel withdrawal error:', error);
         next(error);
     }
-};
+}; 
 
 /**
  * Update withdrawal settings

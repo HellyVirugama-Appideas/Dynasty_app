@@ -25,10 +25,36 @@ mongoose
     .then(() => console.log('⚙️ DB connection successful!'));
 
 // Socket.IO integration
-const server = require('http').createServer(app);
-global.io = socketIO(server);
+// const server = require('http').createServer(app);
+// global.io = socketIO(server);
 
-socketHandler(io);
+// socketHandler(io);
+
+const http = require('http');
+const socketIo = require('socket.io');
+
+// Create HTTP server from Express app
+const server = http.createServer(app);
+
+// Initialize Socket.IO
+const io = socketIo(server, {
+    cors: {
+        origin: '*', // Allow all origins (adjust for production)
+        methods: ['GET', 'POST'],
+        credentials: true,
+    },
+    transports: ['websocket', 'polling'],
+    pingTimeout: 60000,
+    pingInterval: 25000,
+});
+
+// ✅ CRITICAL: Make io globally accessible
+global.io = io;
+
+// Initialize socket handlers
+require('./utils/socketHandler')(io);
+
+console.log('✅ Socket.IO initialized');
 
 const port = process.env.PORT || 3000;
 server.listen(port, () => {

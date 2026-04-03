@@ -6,7 +6,7 @@ const multilingualUser = require('../../utils/multilingualUser');
 const generateCode = require('../../utils/generateCode');
 const jwt = require('jsonwebtoken');
 const deleteFile = require('../../utils/deleteFile');
-// const { sendOTP } = require('../../utils/sendSMS');
+const { sendOTP } = require('../../utils/sendSMS');
 
 const Driver = require('../../models/driverModel');
 const OTP = require('../../models/otpModel');
@@ -42,20 +42,57 @@ exports.checkDriver = async (req, res, next) => {
     }
 };
 
+// exports.sendOTP = async (req, res, next) => {
+//     try {
+//         const { country_code, phone } = req.body;
+
+//         // validate mobile
+//         if (!country_code)
+//             return next(createError.BadRequest('validation.country_code'));
+//         if (!phone) return next(createError.BadRequest('validation.phone'));
+
+//         const mobile = country_code + phone;
+//         // if (!validator.isMobilePhone(mobile, 'any', { strictMode: true }))
+//         //     return next(createError.BadRequest('validation.mobileInvalid'));
+
+//         // generate and save OTP
+//         const otp = generateCode(4);
+//         await OTP.updateOne(
+//             { mobile },
+//             { otp, expireAt: Date.now() + 2 * 60 * 1000 },
+//             { upsert: true }
+//         );
+
+//         // send OTP
+//         // await sendOTP(mobile, otp);
+
+//         res.json({
+//             code: '1',
+//             message: req.t('otp.sent'),
+//             result: {
+//                 otp,
+//                 country_code,
+//                 phone,
+//             },
+//         });
+//     } catch (error) {
+//         next(error);
+//     }
+// };
+
 exports.sendOTP = async (req, res, next) => {
     try {
         const { country_code, phone } = req.body;
 
-        // validate mobile
+        // Validate mobile
         if (!country_code)
             return next(createError.BadRequest('validation.country_code'));
-        if (!phone) return next(createError.BadRequest('validation.phone'));
+        if (!phone) 
+            return next(createError.BadRequest('validation.phone'));
 
         const mobile = country_code + phone;
-        // if (!validator.isMobilePhone(mobile, 'any', { strictMode: true }))
-        //     return next(createError.BadRequest('validation.mobileInvalid'));
 
-        // generate and save OTP
+        // Generate and save OTP
         const otp = generateCode(4);
         await OTP.updateOne(
             { mobile },
@@ -63,16 +100,22 @@ exports.sendOTP = async (req, res, next) => {
             { upsert: true }
         );
 
-        // send OTP
-        // await sendOTP(mobile, otp);
+        // Send OTP via Twilio
+        try {
+            await sendOTP(mobile, otp);
+        } catch (smsError) {
+            console.error('Twilio SMS Error:', smsError.message);
+            return next(createError.InternalServerError('otp.sendFailed'));
+        }
 
         res.json({
             code: '1',
             message: req.t('otp.sent'),
             result: {
-                otp,
                 country_code,
                 phone,
+                // Only include OTP in development/testing
+                ...(process.env.NODE_ENV !== 'production' && { otp })
             },
         });
     } catch (error) {

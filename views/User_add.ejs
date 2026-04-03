@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html class="loading" lang="en" data-textdirection="ltr">
+<!-- BEGIN: Head-->
+
+<head>
+    <%- include('_layouts/head') %>
+        <title>Create User | <%= title %>
+        </title>
+        <link rel="stylesheet" type="text/css"
+            href="https://cdnjs.cloudflare.com/ajax/libs/Dropify/0.2.2/css/dropify.min.css">
+
+        <style>
+            /* Prevent label from overlapping Dropify */
+            .input-field .dropify-wrapper {
+                margin-top: 8px;
+            }
+
+            /* Ensure label stays visible */
+            .input-field label.active {
+                transform: translateY(-14px) scale(0.8);
+                color: #9e9e9e;
+            }
+        </style>
+</head>
+
+
+<body
+    class="vertical-layout page-header-light vertical-menu-collapsible vertical-dark-menu preload-transitions 2-columns"
+    data-open="click" data-menu="vertical-dark-menu" data-col="2-columns">
+    <%- include('_layouts/sidenavbar') %>
+
+        <!-- BEGIN: Page Main-->
+        <div id="main">
+            <div class="row">
+                <div id="breadcrumbs-wrapper" data-image="/app-assets/images/gallery/breadcrumb-bg.jpg">
+                    <div class="container">
+                        <div class="row">
+                            <div class="col s12 m6 l6">
+                                <h5 class="breadcrumbs-title mt-0 mb-0"><span>Create User</span></h5>
+                            </div>
+                            <div class="col s12 m6 l6 right-align-md">
+                                <ol class="breadcrumbs mb-0">
+                                    <li class="breadcrumb-item"><a href="/admin">Home</a></li>
+                                    <li class="breadcrumb-item"><a href="/admin/user">Users</a></li>
+                                    <li class="breadcrumb-item active">Create User</li>
+                                </ol>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="">
+                    <div class="container">
+                        <div class="section">
+                            <div class="row">
+                                <div class="col s12">
+                                    <%- messages('messages', locals) %>
+                                </div>
+                            </div>
+                            <form method="POST" onsubmit="validate()" action="/admin/user/create-user" id="form"
+                                enctype="multipart/form-data">
+                                <div class="col s12">
+                                    <div class="card">
+                                        <div class="card-content">
+                                            <h4 class="card-title">Create New User</h4>
+                                            <p class="grey-text">User will be created instantly and can login directly
+                                                without OTP verification.</p>
+
+                                            <div class="row">
+                                                <!-- Name -->
+                                                <div class="input-field col m6 s12">
+                                                    <input placeholder="Full Name" id="name" name="name" type="text">
+                                                    <label for="name">Full Name</label>
+                                                    <small>
+                                                        <div id="error1" class="error"></div>
+                                                    </small>
+                                                </div>
+
+                                                <!-- Email -->
+                                                <div class="input-field col m6 s12">
+                                                    <input placeholder="Email Address" id="email" name="email"
+                                                        type="text">
+                                                    <label for="email">Email Address (Optional)</label>
+                                                    <small>
+                                                        <div id="error2" class="error"></div>
+                                                    </small>
+                                                </div>
+
+                                                <!-- Country Code -->
+                                                <div class="input-field col m6 s12">
+                                                    <input placeholder="Country code" id="country_code"
+                                                        name="country_code" type="text" value="+91">
+                                                    <label for="country_code">Country Code</label>
+                                                    <small>
+                                                        <div id="error3" class="error"></div>
+                                                    </small>
+                                                </div>
+
+                                                <!-- Phone -->
+                                                <div class="input-field col m6 s12">
+                                                    <input placeholder="Mobile number" id="phone" name="phone"
+                                                        type="text"
+                                                        oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+                                                    <label for="phone">Mobile Number</label>
+                                                    <small>
+                                                        <div id="error4" class="error"></div>
+                                                    </small>
+                                                </div>
+
+                                                <!-- Country -->
+                                                <div class="input-field col m6 s12">
+                                                    <select id="country" name="country">
+                                                        <option value="">Select country</option>
+                                                        <% for( let i=0; i < countries.length; i++ ) { %>
+                                                            <option value="<%= countries[i]._id %>">
+                                                                <%= countries[i].en.name %>
+                                                            </option>
+                                                            <% } %>
+                                                    </select>
+                                                    <label>Select Country</label>
+                                                    <small>
+                                                        <div id="error5" class="error"></div>
+                                                    </small>
+                                                </div>
+
+                                                <!-- City -->
+                                                <div class="input-field col m6 s12">
+                                                    <select id="city" name="city">
+                                                        <option value="">Select city</option>
+                                                    </select>
+                                                    <label>Select City</label>
+                                                    <small>
+                                                        <div id="error6" class="error"></div>
+                                                    </small>
+                                                </div>
+
+                                                <!-- Address -->
+                                                <div class="input-field col m12 s12">
+                                                    <textarea placeholder="Full Address" id="address" name="address"
+                                                        class="materialize-textarea"></textarea>
+                                                    <label for="address">Full Address</label>
+                                                    <small>
+                                                        <div id="error7" class="error"></div>
+                                                    </small>
+                                                </div>
+
+                                                <!-- Latitude -->
+                                                <div class="input-field col m6 s12">
+                                                    <input placeholder="Latitude" id="latitude" name="latitude"
+                                                        type="text" value="23.0225">
+                                                    <label for="latitude">Latitude</label>
+                                                    <small>
+                                                        <div id="error8" class="error"></div>
+                                                    </small>
+                                                </div>
+
+                                                <!-- Longitude -->
+                                                <div class="input-field col m6 s12">
+                                                    <input placeholder="Longitude" id="longitude" name="longitude"
+                                                        type="text" value="72.5714">
+                                                    <label for="longitude">Longitude</label>
+                                                    <small>
+                                                        <div id="error9" class="error"></div>
+                                                    </small>
+                                                </div>
+
+                                                <!-- Profile Photo -->
+                                                <!-- Profile Photo -->
+                                                <div class="input-field col m4 s12">
+                                                    <!-- Label inside input-field + for attribute -->
+                                                    <label for="profile" class="active">Profile Photo (Optional)</label>
+
+                                                    <input type="file" accept="image/png, image/jpeg" name="profile"
+                                                        id="profile" class="dropify" data-disable-remove="true" />
+
+                                                    <!-- Image Info Display -->
+                                                    <div id="imageInfo" class="grey-text text-darken-1 mt-1"
+                                                        style="font-size:0.85rem;"></div>
+
+                                                    <!-- 5 MB Alert (Hidden by default) -->
+                                                    <div id="fileSizeAlert"
+                                                        class="card-alert card red lighten-5 red-text text-darken-3 mt-2"
+                                                        style="display:none; border-radius:8px; padding:8px 12px; font-size:0.85rem;">
+                                                        <i class="material-icons left tiny">warning</i>
+                                                        <strong>File too large!</strong> Max 5 MB allowed. Your file is
+                                                        <span id="fileSizeText"></span>.
+                                                    </div>
+
+                                                    <!-- Help Text -->
+                                                    <small class="grey-text">
+                                                        Max 5 MB • PNG or JPEG only • Recommended: 400×400 px (1:1)
+                                                    </small>
+                                                    <small>
+                                                        <div id="error10" class="error red-text"></div>
+                                                    </small>
+                                                </div>
+
+                                                <!-- Submit Buttons -->
+                                                <div class="col s12 mt-3">
+                                                    <button type="submit" class="btn purple" id="submitBtn">Create
+                                                        User</button>
+                                                    <a onclick="history.back()" class="btn btn-danger ml-1">Cancel</a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    <div class="content-overlay"></div>
+                </div>
+            </div>
+        </div>
+        <!-- END: Page Main-->
+
+        <input id="hidden" cols="30" rows="10" value="<%= JSON.stringify(cities) %>" hidden></input>
+        <%- include('_layouts/commonJs') %>
+            <script>
+                const data = JSON.parse(document.getElementById('hidden').value);
+                const citySelect = document.getElementById('city');
+                let instance = M.FormSelect.init(citySelect);
+
+                // Populate cities when country changes
+                function setCityOptions() {
+                    if (this.value == '') {
+                        citySelect.innerHTML = '<option value="">Select city</option>';
+                    } else {
+                        citySelect.innerHTML = '<option value="">Select city</option>';
+                        const cities = data.find(item => item._id == this.value)?.cities;
+                        if (cities) {
+                            for (let i = 0; i < cities.length; i++) {
+                                let option = document.createElement('option');
+                                option.value = `${cities[i]._id}`;
+                                option.text = `${cities[i].name}`;
+                                citySelect.appendChild(option);
+                            }
+                        }
+                    }
+                    instance = M.FormSelect.init(citySelect);
+                }
+                document.getElementById('country').addEventListener('change', setCityOptions);
+
+                const formC = document.getElementById('form');
+
+                formC.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                })
+
+                function validate() {
+                    let returnVal = true;
+
+                    const nameValue = document.getElementById('name').value.trim();
+                    const emailValue = document.getElementById('email').value.trim();
+                    const countryCodeValue = document.getElementById('country_code').value.trim();
+                    const phoneValue = document.getElementById('phone').value.trim();
+                    const countryValue = document.getElementById('country').value.trim();
+                    const cityValue = document.getElementById('city').value.trim();
+                    const addressValue = document.getElementById('address').value.trim();
+                    const latitudeValue = document.getElementById('latitude').value.trim();
+                    const longitudeValue = document.getElementById('longitude').value.trim();
+
+                    // Optional file validations
+                    const profileFileValue = document.getElementById('profile').value;
+
+
+                    // Name validation
+                    if (nameValue == '') {
+                        document.getElementById('error1').innerText = 'Please enter user name.';
+                        returnVal = false;
+                    } else {
+                        document.getElementById('error1').innerText = '';
+                    }
+
+                    // Email validation (optional but if provided, must be valid)
+                    if (emailValue != '' && !validateEmail(emailValue)) {
+                        document.getElementById('error2').innerText = 'Please enter valid email.';
+                        returnVal = false;
+                    } else {
+                        document.getElementById('error2').innerText = '';
+                    }
+
+                    // Country code validation
+                    if (countryCodeValue == '') {
+                        document.getElementById('error3').innerText = 'Please enter country code.';
+                        returnVal = false;
+                    } else {
+                        document.getElementById('error3').innerText = '';
+                    }
+
+                    // Phone validation
+                    if (phoneValue == '') {
+                        document.getElementById('error4').innerText = 'Please enter mobile number.';
+                        returnVal = false;
+                    } else if (phoneValue.length < 10) {
+                        document.getElementById('error4').innerText = 'Mobile number must be at least 10 digits.';
+                        returnVal = false;
+                    } else {
+                        document.getElementById('error4').innerText = '';
+                    }
+
+                    // Country validation
+                    if (countryValue == '') {
+                        document.getElementById('error5').innerText = 'Please select country.';
+                        returnVal = false;
+                    } else {
+                        document.getElementById('error5').innerText = '';
+                    }
+
+                    // City validation
+                    if (cityValue == '') {
+                        document.getElementById('error6').innerText = 'Please select city.';
+                        returnVal = false;
+                    } else {
+                        document.getElementById('error6').innerText = '';
+                    }
+
+                    // Address validation
+                    if (addressValue == '') {
+                        document.getElementById('error7').innerText = 'Please enter address.';
+                        returnVal = false;
+                    } else {
+                        document.getElementById('error7').innerText = '';
+                    }
+
+                    // Latitude validation
+                    if (latitudeValue == '') {
+                        document.getElementById('error8').innerText = 'Please enter latitude.';
+                        returnVal = false;
+                    } else {
+                        document.getElementById('error8').innerText = '';
+                    }
+
+                    // Longitude validation
+                    if (longitudeValue == '') {
+                        document.getElementById('error9').innerText = 'Please enter longitude.';
+                        returnVal = false;
+                    } else {
+                        document.getElementById('error9').innerText = '';
+                    }
+
+                    // File validations (optional files)
+                    if (profileFileValue) {
+                        const profileExt = profileFileValue.substring(profileFileValue.lastIndexOf('.') + 1);
+                        if (profileExt == 'png' || profileExt == 'jpeg' || profileExt == 'jpg') {
+                            document.getElementById('error10').innerText = '';
+                        } else {
+                            document.getElementById('error10').innerText = 'Wrong file type. Only PNG, JPEG, JPG allowed.';
+                            returnVal = false;
+                        }
+                    }
+
+                    if (returnVal) {
+                        document.getElementById('submitBtn').disabled = true;
+                        document.getElementById('submitBtn').innerText = 'Creating...';
+                        formC.submit();
+                    }
+                }
+
+                function validateEmail(email) {
+                    return email.match(
+                        /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+                    );
+                }
+
+                // Initialize Materialize components
+                $(document).ready(function () {
+                    $('select').formSelect();
+                    M.updateTextFields();
+                });
+            </script>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/Dropify/0.2.2/js/dropify.min.js"></script>
+            <script src="/app-assets/js/scripts/form-file-uploads.min.js"></script>
+</body>
+
+</html>

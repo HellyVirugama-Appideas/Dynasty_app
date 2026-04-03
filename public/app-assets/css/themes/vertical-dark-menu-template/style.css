@@ -979,11 +979,11 @@
 }
 
 .teal {
-    background-color: #009688 !important;
+    background-color: #158944 !important;
 }
 
 .teal-text {
-    color: #009688 !important;
+    color: #158944 !important;
 }
 
 .teal.lighten-5 {
@@ -2083,11 +2083,11 @@
 }
 
 .grey.darken-1 {
-    background-color: #757575 !important;
+    background-color: black !important;
 }
 
 .grey-text.text-darken-1 {
-    color: #757575 !important;
+    color: black !important;
 }
 
 .grey.darken-2 {
@@ -3142,7 +3142,7 @@ html {
     font-weight: normal;
     line-height: 1.5;
 
-    color: #6b6f82;
+    color: black;
 }
 
 @media only screen and (min-width: 0) {
@@ -4483,11 +4483,11 @@ li.home:before {
 }
 
 .teal {
-    background-color: #009688 !important;
+    background-color: #158944 !important;
 }
 
 .teal-text {
-    color: #009688 !important;
+    color: #158944 !important;
 }
 
 .teal.lighten-5 {
@@ -5587,11 +5587,11 @@ li.home:before {
 }
 
 .grey.darken-1 {
-    background-color: #757575 !important;
+    background-color: black !important;
 }
 
 .grey-text.text-darken-1 {
-    color: #757575 !important;
+    color: black !important;
 }
 
 .grey.darken-2 {
@@ -6171,7 +6171,7 @@ li.home:before {
 }
 
 .btn-light-teal {
-    color: #009688 !important;
+    color: #158944 !important;
     background-color: #e0f2f1;
     box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.1), 0 3px 1px -2px rgba(0, 0, 0, 0),
         0 1px 5px 0 rgba(0, 0, 0, 0.08);
@@ -6192,7 +6192,7 @@ li.home:before {
 
 /* timeline */
 .widget-timeline li.timeline-items.timeline-icon-teal:before {
-    background: #009688 !important;
+    background: #158944 !important;
 }
 
 .btn-light-green {
@@ -6437,7 +6437,7 @@ li.home:before {
 .btn-light-grey:active,
 .btn-light-grey.active {
     color: #fff !important;
-    background-color: #757575 !important;
+    background-color: black !important;
 }
 
 /* timeline */
@@ -7240,7 +7240,7 @@ span.badge.pill {
 }
 
 .search-list li a .status small:not(:first-child) {
-    color: #757575;
+    color: black;
 }
 
 .search-list li.current_item a {
@@ -7389,7 +7389,7 @@ nav.display-none.search-sm .nav-wrapper form .input-field i {
 }
 
 .brand-sidebar .logo-wrapper a.brand-logo img {
-    height: 40px;
+    height: 45px;
 }
 
 .brand-sidebar .logo-wrapper a.navbar-toggler {
@@ -7432,7 +7432,7 @@ nav.display-none.search-sm .nav-wrapper form .input-field i {
 
     margin: 1px 0;
     /* padding: 22px 12px 22px 22px; */
-    padding: 10px 57px;
+    padding: 7px 62px;
 
     color: #333;
 }
@@ -8489,13 +8489,13 @@ nav.display-none.search-sm .nav-wrapper form .input-field i {
     position: relative;
     z-index: 1;
 
-    color: #fff;
+    color: #000;
     background-position: center center;
     background-size: cover;
 }
 
 #breadcrumbs-wrapper.breadcrumbs-bg-image .breadcrumbs-title {
-    color: #fff;
+    color: #000;
 }
 
 #breadcrumbs-wrapper.breadcrumbs-bg-image .breadcrumbs {

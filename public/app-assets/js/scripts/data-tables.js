@@ -121,6 +121,25 @@ $(document).ready(function () {
     }
   })
 
+  // —————————————————————————————————————
+  // CALENDAR (Datepicker)
+  // —————————————————————————————————————
+  $('.datepicker').datepicker({
+    format: 'yyyy-mm-dd',
+    autoClose: true,
+    yearRange: [2020, new Date().getFullYear() + 5],
+    showClearBtn: true,
+    i18n: {
+      cancel: 'Cancel',
+      clear: 'Clear',
+      done: 'Ok',
+      months: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
+      monthsShort: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+      weekdays: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
+      weekdaysShort: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+      weekdaysAbbrev: ['S', 'M', 'T', 'W', 'T', 'F', 'S']
+    }
+  });
 
   // Select Every Row 
 

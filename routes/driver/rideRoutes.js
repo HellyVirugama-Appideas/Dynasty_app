@@ -11,4 +11,8 @@ router.post('/verify_ride_otp', fileUpload(), rideController.verifyRideOTP);
 
 router.post('/response', fileUpload(), rideController.driverResponse);
 
+router.post('/start-journey',checkDriver, rideController.startJourney);
+
+router.post('/complete',rideController.completeRide)
+
 module.exports = router;

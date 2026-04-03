@@ -10,10 +10,6 @@ NOTE:
 PLACE HERE YOUR OWN CSS CODES AND IF NEEDED, OVERRIDE THE STYLES FROM THE OTHER STYLESHEETS.
 WE WILL RELEASE FUTURE UPDATES SO IN ORDER TO NOT OVERWRITE YOUR STYLES IT'S BETTER LIKE THIS.  */
 
-html {
-    color: #000;
-}
-
 .overflow {
     overflow-x: auto;
 }
@@ -35,6 +31,14 @@ html {
     max-height: 95px;
 }
 
+.theme-text{
+    color: #158944 !important;
+}
+.theme-warn-text{
+    color: #E82729 !important;
+}
+
+
 @media only screen and (max-width: 600px) {
     .btn-breadcrumbs {
         margin-top: 1rem;
@@ -51,7 +55,7 @@ html {
 }
 
 .breadcrumbs-title a {
-    color: #fff;
+    color: #000;
     cursor: pointer;
 }
 
@@ -65,8 +69,7 @@ th {
 }
 
 #sortable .item {
-    cursor: move;
-    /* fallback if grab cursor is unsupported */
+    cursor: move; /* fallback if grab cursor is unsupported */
     cursor: grab;
     cursor: -moz-grab;
     cursor: -webkit-grab;
@@ -82,22 +85,12 @@ label {
     color: black !important;
 }
 
-.select-dropdown li span {
-    color: black !important;
-}
-
 .select2-container--default
     .select2-selection--multiple
     .select2-selection__choice {
     color: black !important;
     background-color: #e4e4e4 !important;
     font-weight: 500;
-}
-
-.select2-container--default
-    .select2-selection--single
-    .select2-selection__rendered {
-    color: black !important;
 }
 
 .select2-container--default
@@ -111,46 +104,35 @@ label {
     padding: 10px !important;
 }
 
-::-webkit-input-placeholder {
-    /* WebKit, Blink, Edge */
-    color: #a6a6a6;
+#ul-horizontal-nav li i{
+    font-size: 24px !important;
 }
 
-:-moz-placeholder {
-    /* Mozilla Firefox 4 to 18 */
-    color: #a6a6a6;
-    opacity: 1;
+
+
+.error-message{
+    color: red;
 }
 
-::-moz-placeholder {
-    /* Mozilla Firefox 19+ */
-    color: #a6a6a6;
-    opacity: 1;
+.btn-add:hover {
+    background-color: #2C2C2C;
+    color: #fff;
 }
 
-:-ms-input-placeholder {
-    /* Internet Explorer 10-11 */
-    color: #a6a6a6;
+.btn-add{
+    background-color: #2C2C2C;
 }
 
-::-ms-input-placeholder {
-    /* Microsoft Edge */
-    color: #a6a6a6;
+.btn-edit:hover {
+    color: #fff;
 }
 
-::placeholder {
-    /* Most modern browsers support this now. */
-    color: #a6a6a6;
+.btn-delete:hover {
+    background-color: #c91111;
+    color: #fff;
+}
+.btn-delete{
+    background-color: #ec1717;
 }
 
-.alert-auto-close {
-    transition: opacity 0.5s ease-in-out, display 0.5s ease-in-out;
-}
 
-#profile-dropdown {
-    width: 230px !important;
-}
-
-#main .section-data-tables .dataTables_wrapper table.dataTable td {
-    font-weight: 400 !important;
-}

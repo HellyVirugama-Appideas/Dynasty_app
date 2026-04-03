@@ -10,23 +10,28 @@
 <!-- END:  -->
 
 <body class="vertical-layout page-header-light vertical-menu-collapsible vertical-dark-menu preload-transitions 1-column login-bg blank-page blank-page" data-open="click" data-menu="vertical-dark-menu" data-col="1-column">
-    <div class="row">
+    <div class="row login-container">
         <div class="col s12">
             <div class="container">
                 <div id="login-page" class="row">
-                    <div class="col s12 m6 l4 z-depth-4 card-panel border-radius-6 login-card bg-opacity-8">
+                    <div class="col s12 m6 l4 z-depth-4 card-panel border-radius-6 login-card bg-opacity-8" style="background-color: white;">
                         <form class="login-form" id="loginform" action="/admin/login" method="post" onsubmit="return validate()">
                             <div class="row">
-                                <div class="input-field col s12">
-                                    <h5 class="ml-4">Sign in</h5>
+                                <div class="s12" style="text-align: center;">
+                                    <br/>
+                                    <img src="/img/Logo.png" width="30%"/>
+                                </div>
+                                <div class="col s12" style="text-align: center;margin-bottom: 20px;">
+                                    <br/>
+                                    <span style="font-size: 22px;font-weight: 900;color: black;">ADMIN LOGIN</span>
                                 </div>
                             </div>
-                            <%- messages('messages', locals) %>
+                            <%- include('messages', { messages: messages }) %>
                             <div class="row margin">
                                 <div class="input-field col s12">
                                     <i class="material-icons prefix pt-2">person_outline</i>
                                     <input id="email" type="text" name="email">
-                                    <label for="email" class="center-align">Email</label>
+                                    <label for="email" class="center-align">Email Address</label>
                                     <small>
                                         <div id="error1" class="error" style="margin-left: 3rem;"></div>
                                     </small>
@@ -37,29 +42,20 @@
                                     <i class="material-icons prefix pt-2">lock_outline</i>
                                     <input id="pass" type="password" name="password">
                                     <label for="pass">Password</label>
+                                    <i class="material-icons toggle-password" style="position: absolute; right: 20px; top: 50%; transform: translateY(-50%); cursor: pointer; user-select: none;">
+                                        visibility_off
+                                    </i>
                                     <small>
                                         <div id="error2" class="error" style="margin-left: 3rem;"></div>
                                     </small>
                                 </div>
-                            </div>
-                            <div class="row">
-                                <div class="col s12 m12 l12 ml-2">
-                                    <p>
-                                        <label>
-                                            <input id="showPassword" type="checkbox" onclick="togglePassword()">
-                                            <span>Show Password</span>
-                                        </label>
-                                    </p>
+                                <div class="input-field col s12" style="margin-top: -10px;">
+                                    <p class="margin right-align medium-small"><a href="/admin/forgot" style="color: blue;">Forgot password ?</a></p>
                                 </div>
                             </div>
                             <div class="row">
-                                <div class="input-field col s12 mb-6">
-                                    <button class="btn waves-effect waves-light border-round gradient-45deg-purple-deep-orange col s12" type="submit" id="submitBtn">Log In</button>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="input-field col s12">
-                                    <p class="margin right-align medium-small"><a href="/admin/forgot">Forgot password ?</a></p>
+                                <div class="input-field col s12 mb-10">
+                                    <button class="btn waves-effect waves-light border-round col s12" type="submit" id="submitBtn" style="background-color: #3D3D3D;">Log In</button>
                                 </div>
                             </div>
                         </form>
@@ -119,14 +115,17 @@
             );
         }
 
-        function togglePassword() {
-            const x = document.getElementById("pass");
-            if (x.type === "password") {
-                x.type = "text";
-            } else {
-                x.type = "password";
-            }
-        }
+        const togglePassword = document.querySelector('.toggle-password');
+        const passwordInput = document.querySelector('#pass');
+
+        togglePassword.addEventListener('click', function () {
+            // Toggle the type attribute
+            const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+            passwordInput.setAttribute('type', type);
+
+            // Toggle the eye icon
+            this.textContent = type === 'password' ? 'visibility_off' : 'visibility';
+        });
     </script>
     <%- include('_layouts/commonJs') %>
 </body>

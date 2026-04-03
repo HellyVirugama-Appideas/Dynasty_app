@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html class="loading" lang="en" data-textdirection="ltr">
+
+<head>
+    <%- include('_layouts/head') %>
+        <title>Driver Documents | <%= title %>
+        </title>
+        <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+        <style>
+            /* === GENERAL === */
+            .doc-card {
+                border: 2px solid #e0e0e0;
+                border-radius: 12px;
+                padding: 20px;
+                margin-bottom: 20px;
+                transition: all 0.3s ease;
+                height: 100%;
+                display: flex;
+                flex-direction: column;
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            }
+
+            .doc-card:hover {
+                box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+                transform: translateY(-2px);
+            }
+
+            .doc-card.approved {
+                border-color: #4caf50;
+                background: #f1f8f4;
+            }
+
+            .doc-card.rejected {
+                border-color: #f44336;
+                background: #fef1f1;
+            }
+
+            .doc-card.pending {
+                border-color: #ff9800;
+                background: #fff8f0;
+            }
+
+            .doc-image {
+                max-width: 100%;
+                height: 260px;
+                object-fit: contain;
+                border-radius: 8px;
+                background: #f9f9f9;
+                border: 1px dashed #ccc;
+                margin: 12px 0;
+            }
+
+            .status-badge {
+                padding: 6px 14px;
+                border-radius: 20px;
+                font-size: 11px;
+                font-weight: 600;
+                float: right;
+            }
+
+            .divider {
+                margin: 12px 0;
+            }
+
+            /* === APPROVE ALL CARD === */
+            .approve-all-card {
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                color: white;
+                padding: 28px;
+                border-radius: 14px;
+                margin-bottom: 28px;
+                box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+            }
+
+            .approve-all-card h5 {
+                margin: 0 0 8px;
+                font-size: 1.5rem;
+            }
+
+            .approve-all-card p {
+                margin: 0;
+                opacity: 0.9;
+                font-size: 0.95rem;
+            }
+
+            /* === DRIVER INFO CARD === */
+            .driver-info-card .circle {
+                width: 60px;
+                height: 60px;
+                object-fit: cover;
+            }
+
+            .driver-info-card h5 {
+                margin: 0;
+                font-size: 1.4rem;
+            }
+
+            .driver-info-card p {
+                margin: 4px 0;
+                font-size: 0.9rem;
+                color: #555;
+            }
+
+            /* === BUTTONS === */
+            .btn-block {
+                width: 100%;
+                margin-bottom: 8px;
+            }
+
+            .btn-small {
+                font-size: 0.8rem;
+                height: 32px;
+                line-height: 32px;
+                padding: 0 12px;
+            }
+
+            /* === MODALS === */
+            .modal {
+                border-radius: 12px;
+                max-height: 90vh;
+            }
+
+            .modal .modal-content {
+                padding: 24px;
+            }
+
+            .modal h5 {
+                margin-bottom: 16px;
+            }
+
+            .modal .input-field {
+                margin-top: 20px;
+            }
+
+            /* === RESPONSIVE === */
+            @media (max-width: 600px) {
+                .doc-image {
+                    height: 200px;
+                }
+
+                .approve-all-card {
+                    padding: 20px;
+                    text-align: center;
+                }
+
+                .approve-all-card .col {
+                    margin-bottom: 16px;
+                }
+
+                .approve-all-card button {
+                    width: 100%;
+                }
+
+                .status-badge {
+                    float: none;
+                    display: inline-block;
+                    margin-top: 8px;
+                }
+
+                .driver-info-card .circle {
+                    width: 50px;
+                    height: 50px;
+                }
+
+                .driver-info-card h5 {
+                    font-size: 1.2rem;
+                }
+
+                .btn {
+                    font-size: 0.85rem;
+                    height: 40px;
+                    line-height: 40px;
+                }
+
+                .btn-block {
+                    margin-bottom: 12px;
+                }
+            }
+
+            @media (max-width: 992px) {
+                .doc-card {
+                    margin-bottom: 24px;
+                }
+            }
+        </style>
+</head>
+
+<body
+    class="vertical-layout page-header-light vertical-menu-collapsible vertical-dark-menu preload-transitions 2-columns"
+    data-open="click" data-menu="vertical-dark-menu" data-col="2-columns">
+
+    <%- include('_layouts/sidenavbar') %>
+
+        <div id="main">
+            <div class="row">
+                <div id="breadcrumbs-wrapper" data-image="/app-assets/images/gallery/breadcrumb-bg.jpg">
+                    <div class="container">
+                        <div class="row">
+                            <div class="col s12 m6 l6">
+                                <h5 class="breadcrumbs-title mt-0 mb-0"><span>Driver Documents</span></h5>
+                            </div>
+                            <div class="col s12 m6 l6 right-align-md">
+                                <ol class="breadcrumbs mb-0">
+                                    <li class="breadcrumb-item"><a href="/admin">Home</a></li>
+                                    <li class="breadcrumb-item"><a href="/admin/driver">Drivers</a></li>
+                                    <li class="breadcrumb-item active">Documents</li>
+                                </ol>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col s12">
+                    <div class="container">
+                        <div class="section">
+
+                            <!-- Flash Messages -->
+                            <div class="row">
+                                <div class="col s12"><%- messages('messages', locals) %></div>
+                            </div>
+
+                            <!-- Driver Info Card -->
+                            <div class="card driver-info-card">
+                                <div class="card-content">
+                                    <div class="row valign-wrapper">
+                                        <div class="col s3 m2 l1 center-align">
+                                            <% if (driver.profile) { %>
+                                                <img src="<%= driver.profile %>" alt="" class="circle responsive-img">
+                                                <% } else { %>
+                                                    <i class="material-icons circle blue white-text"
+                                                        style="font-size: 48px; padding: 12px;">person</i>
+                                                    <% } %>
+                                        </div>
+                                        <div class="col s9 m10 l11">
+                                            <h5 class="mb-0">
+                                                <%= driver.name %>
+                                            </h5>
+                                            <p class="mb-0">
+                                                <i class="material-icons tiny">phone</i>
+                                                <%= driver.country_code %>
+                                                    <%= driver.phone %>
+                                                        <% if (driver.email) { %> | <i
+                                                                class="material-icons tiny">email</i>
+                                                            <%= driver.email %>
+                                                                <% } %>
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Approve All Card -->
+                            <!-- <% if (allDocumentsUploaded && !driver.approved) { %>
+                                <div class="approve-all-card">
+                                    <div class="row mb-0">
+                                        <div class="col s12 m8">
+                                            <h5 class="white-text mb-1">Ready for Approval</h5>
+                                            <p class="white-text mb-0">All 3 documents have been uploaded. Approve
+                                                driver & all docs together.</p>
+                                        </div>
+                                        <div class="col s12 m4 right-align">
+                                            <form method="POST" action="/admin/driver/approve-all/<%= driver._id %>"
+                                                style="display: inline;">
+                                                <button type="submit"
+                                                    class="btn btn-large white purple-text waves-effect waves-light btn-block"
+                                                    onclick="return confirm('Approve driver and ALL documents?')">
+                                                    <i class="material-icons left">check_circle</i>APPROVE ALL
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                                <% } %> -->
+
+                                    <!-- Warning if documents missing -->
+                                    <% if (!allDocumentsUploaded) { %>
+                                        <div class="card-alert card orange lighten-4">
+                                            <div class="card-content orange-text">
+                                                <p><i class="material-icons left">warning</i> <strong>Cannot approve
+                                                        yet!</strong> Driver must upload all 4 documents first.</p>
+                                            </div>
+                                        </div>
+                                        <% } %>
+
+                                        
+                                            <!-- Documents Grid -->
+                                            <div class="row">
+                                                <% Object.entries(documents).forEach(([key, doc])=> { %>
+                                                    <% if (key !=='profile' ) { %>
+                                                        <div class="col s12 m6 l4">
+                                                            <div
+                                                                class="doc-card <%= doc.approved ? 'approved' : doc.rejected ? 'rejected' : 'pending' %>">
+                                                                <h6 class="mb-0">
+                                                                    <%= doc.title %>
+                                                                        <% if (doc.approved) { %>
+                                                                            <span
+                                                                                class="status-badge green white-text">Approved</span>
+                                                                            <% } else if (doc.rejected) { %>
+                                                                                <span
+                                                                                    class="status-badge red white-text">Rejected</span>
+                                                                                <% } else if (doc.uploaded) { %>
+                                                                                    <span
+                                                                                        class="status-badge orange white-text">Pending</span>
+                                                                                    <% } else { %>
+                                                                                        <span
+                                                                                            class="status-badge grey white-text">Not
+                                                                                            Uploaded</span>
+                                                                                        <% } %>
+                                                                </h6>
+                                                                <div class="divider"></div>
+
+                                                                <% if (doc.uploaded) { %>
+                                                                    <div class="center-align">
+                                                                        <img src="<%= doc.url %>" alt="<%= doc.title %>"
+                                                                            class="doc-image">
+                                                                    </div>
+
+                                                                    <% if (doc.rejected && doc.rejectionReason) { %>
+                                                                        <div class="card-alert card red lighten-5">
+                                                                            <div class="card-content red-text">
+                                                                                <p><strong>Rejection Reason:</strong>
+                                                                                    <%= doc.rejectionReason %>
+                                                                                </p>
+                                                                            </div>
+                                                                        </div>
+                                                                        <% } %>
+
+                                                                            <% if (!doc.approved && !driver.approved) {
+                                                                                %>
+                                                                                <div class="row mb-0">
+                                                                                    <div class="col s6">
+                                                                                        <form method="POST"
+                                                                                            action="/admin/driver/approve-document/<%= driver._id %>/<%= key %>">
+                                                                                            <button type="submit"
+                                                                                                class="btn green waves-effect waves-light btn-block">
+                                                                                                <i
+                                                                                                    class="material-icons left">check</i>Approve
+                                                                                            </button>
+                                                                                        </form>
+                                                                                    </div>
+                                                                                    <div class="col s6">
+                                                                                        <button type="button"
+                                                                                            class="btn red waves-effect waves-light btn-block"
+                                                                                            onclick="openRejectModal('<%= key %>', '<%= doc.title %>')">
+                                                                                            <i
+                                                                                                class="material-icons left">close</i>Reject
+                                                                                        </button>
+                                                                                    </div>
+                                                                                </div>
+                                                                                <% } %>
+
+                                                                                    <div class="center-align mt-2">
+                                                                                        <a href="<%= doc.url %>"
+                                                                                            target="_blank"
+                                                                                            class="btn-small blue">
+                                                                                            <i
+                                                                                                class="material-icons left">zoom_in</i>Full
+                                                                                            Size
+                                                                                        </a>
+                                                                                    </div>
+                                                                                    <% } else { %>
+                                                                                        <div class="center-align grey-text"
+                                                                                            style="padding: 50px 20px;">
+                                                                                            <i class="material-icons"
+                                                                                                style="font-size: 56px; opacity: 0.5;">cloud_upload</i>
+                                                                                            <p class="mt-2">Not uploaded
+                                                                                                yet</p>
+                                                                                        </div>
+                                                                                        <% } %>
+                                                            </div>
+                                                        </div>
+                                                        <% } %>
+                                                            <% }) %>
+                                            </div>
+
+                                            <!-- Reject All Button -->
+                                            <% if (!driver.approved && allDocumentsUploaded) { %>
+                                                <div class="row">
+                                                    <div class="col s12 center-align">
+                                                        <button type="button"
+                                                            class="btn red waves-effect waves-light btn-large"
+                                                            onclick="openRejectAllModal()">
+                                                            <i class="material-icons left">block</i>REJECT DRIVER & ALL
+                                                            DOCUMENTS
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                                <% } %>
+
+                                                    <!-- Back Button -->
+                                                    <div class="row">
+                                                        <div class="col s12">
+                                                            <a href="/admin/driver"
+                                                                class="btn grey waves-effect waves-light">
+                                                                <i class="material-icons left">arrow_back</i>Back to
+                                                                Drivers
+                                                            </a>
+                                                        </div>
+                                                    </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Reject Document Modal -->
+        <div id="rejectModal" class="modal">
+            <form id="rejectForm" method="POST">
+                <div class="modal-content">
+                    <h5>Reject <span id="docTitle"></span></h5>
+                    <p>Please provide a reason for rejection:</p>
+                    <div class="input-field">
+                        <textarea id="rejectionReason" name="reason" class="materialize-textarea" required></textarea>
+                        <label for="rejectionReason">Rejection Reason</label>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="modal-close btn-flat">Cancel</button>
+                    <button type="submit" class="btn red">Reject Document</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Reject All Modal -->
+        <div id="rejectAllModal" class="modal">
+            <form method="POST" action="/admin/driver/reject-all/<%= driver._id %>">
+                <div class="modal-content">
+                    <h5>Reject Driver & All Documents</h5>
+                    <p class="red-text">This action cannot be undone.</p>
+                    <div class="input-field">
+                        <textarea id="rejectionReasonAll" name="reason" class="materialize-textarea"
+                            required></textarea>
+                        <label for="rejectionReasonAll">Rejection Reason</label>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="modal-close btn-flat">Cancel</button>
+                    <button type="submit" class="btn red">Reject All</button>
+                </div>
+            </form>
+        </div>
+
+        <%- include('_layouts/commonJs') %>
+
+            <script>
+                document.addEventListener('DOMContentLoaded', function () {
+                    M.AutoInit();
+                });
+
+                function openRejectModal(docType, docTitle) {
+                    document.getElementById('docTitle').innerText = docTitle;
+                    document.getElementById('rejectForm').action = `/admin/driver/reject-document/<%= driver._id %>/${docType}`;
+                    document.getElementById('rejectionReason').value = '';
+                    M.updateTextFields();
+                    M.Modal.getInstance(document.getElementById('rejectModal')).open();
+                }
+
+                function openRejectAllModal() {
+                    document.getElementById('rejectionReasonAll').value = '';
+                    M.updateTextFields();
+                    M.Modal.getInstance(document.getElementById('rejectAllModal')).open();
+                }
+            </script>
+</body>
+
+</html>

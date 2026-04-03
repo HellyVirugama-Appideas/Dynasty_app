@@ -7,6 +7,7 @@ const Admin = require('../../models/adminModel');
 const OTP = require('../../models/adminOtpModel');
 const User = require('../../models/userModel');
 const Driver = require('../../models/driverModel');
+const Ride = require("../../models/rideModel") 
 
 exports.checkAdmin = async (req, res, next) => {
     try {
@@ -37,27 +38,157 @@ exports.checkAdmin = async (req, res, next) => {
     }
 };
 
+// exports.getDashboard = async (req, res) => {
+//     const [user, driver] = await Promise.all([
+//         User.find().select('date'),
+//         Driver.find({ isDeleted: false }).select('date'),
+//     ]);
+
+//     // user
+//     let newUser = 0;
+//     for (let i = 0; i < user.length; i++) if (isToday(user[i].date)) newUser++;
+
+//     // driver
+//     let newDriver = 0;
+//     for (let i = 0; i < driver.length; i++)
+//         if (isToday(driver[i].date)) newDriver++;
+
+//     res.render('index', {
+//         user: user.length,
+//         newUser,
+//         driver: driver.length,
+//         newDriver,
+//     });
+// };
+
 exports.getDashboard = async (req, res) => {
-    const [user, driver] = await Promise.all([
-        User.find().select('date'),
-        Driver.find({ isDeleted: false }).select('date'),
-    ]);
+    try {
+        // Date ranges
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
 
-    // user
-    let newUser = 0;
-    for (let i = 0; i < user.length; i++) if (isToday(user[i].date)) newUser++;
+        const tomorrow = new Date(today);
+        tomorrow.setDate(tomorrow.getDate() + 1);
 
-    // driver
-    let newDriver = 0;
-    for (let i = 0; i < driver.length; i++)
-        if (isToday(driver[i].date)) newDriver++;
+        const sevenDaysAgo = new Date(today);
+        sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
 
-    res.render('index', {
-        user: user.length,
-        newUser,
-        driver: driver.length,
-        newDriver,
-    });
+        const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+
+        const [
+            totalUsers,
+            newUsers,
+            totalDrivers,
+            newDrivers,
+            activeRides,
+            completedRides,
+            cancelledRides,
+            expiredRides,
+            ridesByStatus
+        ] = await Promise.all([
+            // Total active users (not soft-deleted)
+            User.countDocuments({ isDeleted: { $ne: true } }),
+
+            // New users in last 7 days
+            User.countDocuments({
+                isDeleted: { $ne: true },
+                createdAt: { $gte: sevenDaysAgo }
+            }),
+
+            // Total active drivers
+            Driver.countDocuments({ isDeleted: { $ne: true } }),
+
+            // New drivers in last 7 days
+            Driver.countDocuments({
+                isDeleted: { $ne: true },
+                createdAt: { $gte: sevenDaysAgo }
+            }),
+
+            // Ride counts by status
+            Ride.countDocuments({ status: 'Ongoing' }),
+            Ride.countDocuments({ status: 'Completed' }),
+            Ride.countDocuments({ status: 'Cancelled' }),
+            Ride.countDocuments({ status: 'Expired' }),
+
+            // Pie chart: Ride distribution by status (including Expired, Pending, etc.)
+            Ride.aggregate([
+                {
+                    $group: {
+                        _id: '$status',
+                        count: { $sum: 1 }
+                    }
+                },
+                { $sort: { count: -1 } }
+            ])
+        ]);
+
+        // Format data for Chart.js Pie Chart
+        const statusChartData = {
+            labels: [],
+            data: [],
+            colors: []
+        };
+
+        const statusColors = {
+            'Completed': '#4caf50',
+            'Ongoing': '#2196f3',
+            'Cancelled': '#f44336',
+            'Pending': '#ff9800',
+            'Expired': '#9e9e9e',
+            'Scheduled': '#9c27b0'
+        };
+
+        ridesByStatus.forEach(item => {
+            const status = item._id || 'Unknown';
+            statusChartData.labels.push(status);
+            statusChartData.data.push(item.count);
+            statusChartData.colors.push(statusColors[status] || '#757575');
+        });
+
+        // Optional: Add "No rides yet" if empty
+        if (statusChartData.labels.length === 0) {
+            statusChartData.labels = ['No Rides'];
+            statusChartData.data = [1];
+            statusChartData.colors = ['#e0e0e0'];
+        }
+
+        // Render dashboard
+        res.render('index', {
+            // Stats
+            user: totalUsers || 0,
+            newUser: newUsers || 0,
+            driver: totalDrivers || 0,
+            newDriver: newDrivers || 0,
+            activeRides: activeRides || 0,
+            completedRides: completedRides || 0,
+            cancelledRides: cancelledRides || 0,
+            expiredRides: expiredRides || 0,
+
+            // Chart data (safe for EJS/Handlebars)
+            statusChartData: JSON.stringify(statusChartData)
+        });
+
+    } catch (error) {
+        console.error('Dashboard Error:', error);
+        req.flash('red', 'Error loading dashboard: ' + error.message);
+
+        // Fallback values on error
+        res.render('index', {
+            user: 0,
+            newUser: 0,
+            driver: 0,
+            newDriver: 0,
+            activeRides: 0,
+            completedRides: 0,
+            cancelledRides: 0,
+            expiredRides: 0,
+            statusChartData: JSON.stringify({
+                labels: ['Error'],
+                data: [1],
+                colors: ['#f44336']
+            })
+        });
+    }
 };
 
 exports.getLogin = async (req, res) => {

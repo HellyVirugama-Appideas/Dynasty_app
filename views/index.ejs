@@ -1,79 +1,336 @@
 <!DOCTYPE html>
 <html class="loading" lang="en" data-textdirection="ltr">
-<!-- BEGIN: Head-->
-
-<head>
+<head> 
     <%- include('_layouts/head') %>
     <title>Dashboard | <%= title %></title>
     <link rel="stylesheet" type="text/css" href="/app-assets/css/pages/dashboard.css">
+    
+    <!-- ✅ Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    
+    <style>
+        /* === MAIN STATS CARDS (3 BOXES) === */
+        .stats-row { margin-bottom: 0; }
+        .stats-link { display: block; color: inherit; text-decoration: none; }
+        .stats-card {
+            border-radius: 12px;
+            transition: transform .25s ease, box-shadow .25s ease;
+            cursor: pointer;
+            height: 100%;
+            overflow: hidden;
+        }
+        .stats-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 12px 28px rgba(0,0,0,0.22);
+        }
+        .icon-bg {
+            width: 52px; height: 52px;
+            background: rgba(255,255,255,0.28);
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            margin: 0 auto;
+        }
+        .icon-bg i { font-size: 1.9rem; }
+        .stats-card .card-content { padding: 18px 14px !important; }
+        .stats-card h4 { font-size: 2rem; line-height: 1.2; margin: 0; font-weight: 600; }
+        .stats-card p { margin: 4px 0 0; font-size: 0.9rem; }
+
+        @media (max-width: 600px) {
+            .stats-card .col.s4,
+            .stats-card .col.s8 {
+                flex: 0 0 100%; max-width: 100%; text-align: center;
+            }
+            .stats-card .icon-bg { margin-bottom: 10px; }
+            .stats-card h4 { font-size: 1.7rem; }
+        }
+
+        /* === SECONDARY STATS (3 BOXES) === */
+        .secondary-stat-card {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 14px 16px; border-radius: 10px;
+            background: #f8f9fa; margin-bottom: 12px;
+            min-height: 72px; box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+        .secondary-stat-card .stat-text { flex: 1; }
+        .secondary-stat-card .stat-text p { margin: 0; font-size: 0.85rem; color: #666; }
+        .secondary-stat-card .stat-text h5 { margin: 4px 0 0; font-size: 1.4rem; font-weight: 600; }
+        .secondary-stat-card i { font-size: 2.3rem; opacity: 0.75; }
+
+        @media (max-width: 600px) {
+            .secondary-stat-card { flex-direction: column; text-align: center; padding: 18px; }
+            .secondary-stat-card i { margin-bottom: 8px; font-size: 2rem; }
+        }
+
+        /* === QUICK ACTIONS === */
+        .quick-actions { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 16px; }
+        .quick-action-btn {
+            flex: 1 1 calc(33.33% - 12px); min-width: 160px;
+            text-align: center; border-radius: 30px; height: 48px;
+            line-height: 48px; font-weight: 500; text-transform: none;
+            padding: 0 20px; box-shadow: 0 3px 10px rgba(0,0,0,0.15);
+            transition: all 0.3s ease;
+        }
+        .quick-action-btn i { margin-right: 8px; font-size: 1.35rem; }
+        .quick-action-btn:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(0,0,0,0.22); }
+
+        @media (max-width: 992px) { .quick-action-btn { flex: 1 1 calc(50% - 12px); } }
+        @media (max-width: 600px) { .quick-action-btn { flex: 1 1 100%; min-width: 100%; } }
+
+        /* === WELCOME CARD === */
+        .welcome-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 14px; padding: 32px; color: white; margin-bottom: 24px;
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.3);
+        }
+        @media (max-width: 600px) {
+            .welcome-card { padding: 22px; }
+            .welcome-card h4 { font-size: 1.5rem; }
+        }
+
+        /* ✅ CHART STYLES */
+        .chart-container {
+            position: relative;
+            height: 400px;
+            padding: 20px;
+        }
+        @media (max-width: 600px) {
+            .chart-container { height: 350px; padding: 15px; }
+        }
+
+        /* === GENERAL === */
+        .card-content { padding: 20px !important; }
+        @media (max-width: 600px) { .card-content { padding: 16px !important; } }
+    </style>
 </head>
-<!-- END: Head-->
 
 <body class="vertical-layout page-header-light vertical-menu-collapsible vertical-dark-menu preload-transitions 2-columns" data-open="click" data-menu="vertical-dark-menu" data-col="2-columns">
-
     <%- include('_layouts/sidenavbar') %>
 
-    <!-- BEGIN: Page Main-->
     <div id="main">
         <div class="row">
             <div class="col s12">
                 <div class="container">
                     <div class="section">
-                        <!--card stats start-->
-                        <div id="card-stats" class="pt-0">
-                            <div class="row">
-                                <%- messages('messages', locals) %>
+
+                        <!-- Welcome Card -->
+                        <div class="welcome-card animate fadeInUp">
+                            <div class="row mb-0">
+                                <div class="col s12 m8">
+                                    <h4 class="white-text">Welcome Back, Admin!</h4>
+                                    <p class="white-text opacity-8">Here's what's happening with your taxi service today.</p>
+                                    <p class="white-text">
+                                        <i class="material-icons tiny">date_range</i>
+                                        <%= new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }) %>
+                                    </p>
+                                </div>
+                                <div class="col s12 m4 right-align hide-on-small-only">
+                                    <i class="material-icons" style="font-size: 100px; opacity: 0.3;">dashboard</i>
+                                </div>
                             </div>
-                            <div class="row">
-                                <a href="/admin/user">
-                                    <div class="col s12 m6 l6 xl3">
-                                        <div class="card gradient-45deg-light-blue-cyan gradient-shadow min-height-100 white-text animate fadeLeft">
-                                            <div class="padding-4">
-                                                <div class="row">
-                                                    <div class="col s7 m7">
-                                                        <i class="material-icons background-round mt-5">person</i>
-                                                        <p>Users</p>
-                                                    </div>
-                                                    <div class="col s5 m5 right-align">
-                                                        <h5 class="mb-0 white-text"><%= newUser %></h5>
-                                                        <p class="no-margin">New</p>
-                                                        <p><%= user %></p>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </a>
-                                <a href="/admin/driver">
-                                    <div class="col s12 m6 l6 xl3">
-                                        <div class="card gradient-45deg-red-pink gradient-shadow min-height-100 white-text animate fadeLeft">
-                                            <div class="padding-4">
-                                                <div class="row">
-                                                    <div class="col s7 m7">
-                                                        <i class="material-icons background-round mt-5">people</i>
-                                                        <p>Drivers</p>
-                                                    </div>
-                                                    <div class="col s5 m5 right-align">
-                                                        <h5 class="mb-0 white-text"><%= newDriver %></h5>
-                                                        <p class="no-margin">New</p>
-                                                        <p><%= driver %></p>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </a>
-                            </div>
-                            <!--card stats end-->
                         </div>
-                        <!--end container-->
+
+                        <!-- Flash Messages -->
+                        <div class="row"><div class="col s12"><%- messages('messages', locals) %></div></div>
+
+                        <!-- Quick Actions -->
+                        <div class="row">
+                            <div class="col s12">
+                                <div class="card">
+                                    <div class="card-content">
+                                        <span class="card-title">Quick Actions</span>
+                                        <div class="quick-actions">
+                                            <a href="/admin/user/create-user" class="btn waves-effect waves-light gradient-45deg-purple-deep-purple quick-action-btn">
+                                                <i class="material-icons left">person_add</i>Add User
+                                            </a>
+                                            <a href="/admin/driver/add" class="btn waves-effect waves-light gradient-45deg-light-blue-cyan quick-action-btn">
+                                                <i class="material-icons left">directions_car</i>Add Driver
+                                            </a>
+                                            <a href="/admin/message" class="btn waves-effect waves-light gradient-45deg-amber-amber quick-action-btn">
+                                                <i class="material-icons left">message</i>Messages
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Main Statistics (3 Cards) -->
+                        <div class="row stats-row">
+                            <!-- TOTAL USERS -->
+                            <div class="col s12 m6 l4">
+                                <a href="/admin/user" class="stats-link">
+                                    <div class="card gradient-45deg-light-blue-cyan gradient-shadow stats-card animate fadeLeft">
+                                        <div class="card-content white-text">
+                                            <div class="row valign-wrapper mb-0">
+                                                <div class="col s4 center-align">
+                                                    <div class="icon-bg"><i class="material-icons">person</i></div>
+                                                </div>
+                                                <div class="col s8">
+                                                    <p class="mt-1 mb-0">Total Users</p>
+                                                    <h4 class="mb-0 white-text"><%= user || 0 %></h4>
+                                                    <p class="no-margin white-text"><small>+<%= newUser || 0 %> new</small></p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+
+                            <!-- TOTAL DRIVERS -->
+                            <div class="col s12 m6 l4">
+                                <a href="/admin/driver" class="stats-link">
+                                    <div class="card gradient-45deg-red-pink gradient-shadow stats-card animate fadeLeft" style="animation-delay:0.1s">
+                                        <div class="card-content white-text">
+                                            <div class="row valign-wrapper mb-0">
+                                                <div class="col s4 center-align">
+                                                    <div class="icon-bg"><i class="material-icons">local_taxi</i></div>
+                                                </div>
+                                                <div class="col s8">
+                                                    <p class="mt-1 mb-0">Total Drivers</p>
+                                                    <h4 class="mb-0 white-text"><%= driver || 0 %></h4>
+                                                    <p class="no-margin white-text"><small>+<%= newDriver || 0 %> new</small></p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+
+                            <!-- ACTIVE RIDES -->
+                            <div class="col s12 m6 l4">
+                                <a href="/admin/driver" class="stats-link">
+                                    <div class="card gradient-45deg-green-teal gradient-shadow stats-card animate fadeLeft" style="animation-delay:0.2s">
+                                        <div class="card-content white-text">
+                                            <div class="row valign-wrapper mb-0">
+                                                <div class="col s4 center-align">
+                                                    <div class="icon-bg"><i class="material-icons">directions_car</i></div>
+                                                </div>
+                                                <div class="col s8">
+                                                    <p class="mt-1 mb-0">Active Rides</p>
+                                                    <h4 class="mb-0 white-text"><%= activeRides || 0 %></h4>
+                                                    <p class="no-margin white-text"><small>ongoing</small></p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+
+                        <!-- Secondary Stats (3 Boxes) -->
+                        <div class="row">
+                            <!-- Completed Rides -->
+                            <div class="col s12 m4">
+                                <div class="secondary-stat-card">
+                                    <div class="stat-text">
+                                        <p class="grey-text mb-0">Completed</p>
+                                        <h5 class="mb-0 green-text"><%= completedRides || 0 %></h5>
+                                    </div>
+                                    <i class="material-icons green-text">check_circle</i>
+                                </div>
+                            </div>
+
+                            <!-- Cancelled Rides -->
+                            <div class="col s12 m4">
+                                <div class="secondary-stat-card">
+                                    <div class="stat-text">
+                                        <p class="grey-text mb-0">Cancelled</p>
+                                        <h5 class="mb-0 red-text"><%= cancelledRides || 0 %></h5>
+                                    </div>
+                                    <i class="material-icons red-text">cancel</i>
+                                </div>
+                            </div>
+
+                        
+                        </div>
+
+                        <!-- ✅ SINGLE CHART: Rides by Status -->
+                        <div class="row">
+                            <div class="col s12">
+                                <div class="card">
+                                    <div class="card-content">
+                                        <span class="card-title">Rides Distribution by Status</span>
+                                        <div class="chart-container">
+                                            <canvas id="statusChart"></canvas>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
                     </div>
                 </div>
             </div>
         </div>
     </div>
-    <!-- END: Page Main-->
-    <%- include('_layouts/commonJs') %>
-</body>
 
+    <%- include('_layouts/commonJs') %>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Counter animation for stats
+            const stats = document.querySelectorAll('.stats-card h4, .secondary-stat-card h5');
+            stats.forEach(stat => {
+                const text = stat.innerText;
+                const number = parseInt(text.replace(/[^0-9]/g, ''));
+                if (!isNaN(number) && number > 0) {
+                    let current = 0;
+                    const increment = Math.ceil(number / 50);
+                    const timer = setInterval(() => {
+                        current += increment;
+                        if (current >= number) {
+                            stat.innerHTML = text;
+                            clearInterval(timer);
+                        } else {
+                            stat.innerHTML = text.includes('₹') ? '₹' + current : current;
+                        }
+                    }, 20);
+                }
+            });
+
+            // ✅ RIDE STATUS CHART (Doughnut Chart with Expired)
+            const statusData = <%- statusChartData %>;
+            const statusCtx = document.getElementById('statusChart').getContext('2d');
+            new Chart(statusCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: statusData.labels,
+                    datasets: [{
+                        data: statusData.data,
+                        backgroundColor: statusData.colors,
+                        borderWidth: 2,
+                        borderColor: '#fff'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { 
+                            display: true, 
+                            position: 'bottom',
+                            labels: { 
+                                padding: 20, 
+                                font: { size: 14 },
+                                usePointStyle: true,
+                                pointStyle: 'circle'
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const label = context.label || '';
+                                    const value = context.parsed || 0;
+                                    const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                    const percentage = ((value / total) * 100).toFixed(1);
+                                    return `${label}: ${value} rides (${percentage}%)`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+</body>
 </html>

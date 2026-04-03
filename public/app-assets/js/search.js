@@ -226,7 +226,7 @@ $(function () {
       $(this).addClass("current_item");
    });
    $(document).on("click", ".search-list li", function (e) {
-      e.stopPropagation();
+      e.stopPropagation(); 
    });
 });
 

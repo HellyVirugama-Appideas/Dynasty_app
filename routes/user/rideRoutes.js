@@ -24,4 +24,4 @@ router.get('/rides', checkUser, rideController.getRides);
 // Rating
 router.post('/rate_driver', fileUpload(), checkUser, rideController.addRating);
 
-module.exports = router;
+module.exports = router; 

@@ -1,139 +1,287 @@
 <!DOCTYPE html>
 <html class="loading" lang="en" data-textdirection="ltr">
+
 <head>
     <%- include('_layouts/head') %>
-    <title>User View | <%= title %></title>
-    <link rel="stylesheet" type="text/css" href="/app-assets/css/pages/page-users.css">
+        <title>User Profile | <%= title %>
+        </title>
+        <link rel="stylesheet" type="text/css" href="/app-assets/css/pages/page-users.css">
+        <style>
+            .profile-card {
+                border-radius: 20px;
+                overflow: hidden;
+                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+            }
+
+            .profile-img {
+                width: 130px;
+                height: 130px;
+                border: 5px solid white;
+                box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+            }
+
+            .info-item {
+                padding: 10px 0;
+                border-bottom: 1px solid #eee;
+            }
+
+            .info-item:last-child {
+                border-bottom: none;
+            }
+
+            .stat-box {
+                text-align: center;
+                padding: 20px;
+                border-radius: 16px;
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                color: white;
+                margin: 10px 0;
+                box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+            }
+
+            .back-btn {
+                border-radius: 30px;
+                padding: 0 30px;
+                height: 44px;
+                font-weight: 500;
+            }
+
+            .pagination li.active {
+                background-color: #667eea;
+            }
+
+            .pagination li a {
+                color: #667eea;
+            }
+
+            .pagination li.active a {
+                color: white;
+            }
+
+            .driver-link {
+                color: #667eea;
+                font-weight: 600;
+                text-decoration: underline;
+            }
+
+            .driver-link:hover {
+                color: #764ba2;
+            }
+        </style>
 </head>
-<body class="vertical-layout page-header-light vertical-menu-collapsible vertical-dark-menu preload-transitions 2-columns"
-      data-open="click" data-menu="vertical-dark-menu" data-col="2-columns">
+
+<body
+    class="vertical-layout page-header-light vertical-menu-collapsible vertical-dark-menu preload-transitions 2-columns"
+    data-open="click" data-menu="vertical-dark-menu" data-col="2-columns">
 
     <%- include('_layouts/sidenavbar') %>
 
-    <div id="main">
-        <div class="row">
-            <div id="breadcrumbs-wrapper" data-image="/app-assets/images/gallery/breadcrumb-bg.jpg">
-                <div class="container">
-                    <div class="row">
-                        <div class="col s12 m6 l6">
-                            <h5 class="breadcrumbs-title mt-0 mb-0"><span>User View</span></h5>
-                        </div>
-                        <div class="col s12 m6 l6 right-align-md">
-                            <ol class="breadcrumbs mb-0">
-                                <li class="breadcrumb-item"><a href="/admin">Home</a></li>
-                                <li class="breadcrumb-item"><a href="/admin/user">User</a></li>
-                                <li class="breadcrumb-item active">User Details</li>
-                            </ol>
+        <div id="main">
+            <div class="row">
+                <div id="breadcrumbs-wrapper" data-image="/app-assets/images/gallery/breadcrumb-bg.jpg">
+                    <div class="container">
+                        <div class="row">
+                            <div class="col s12 m6 l6">
+                                <h5 class="breadcrumbs-title mt-0 mb-0"><span>User Profile</span></h5>
+                            </div>
+                            <div class="col s12 m6 l6 right-align-md">
+                                <ol class="breadcrumbs mb-0">
+                                    <li class="breadcrumb-item"><a href="/admin">Home</a></li>
+                                    <li class="breadcrumb-item"><a href="/admin/user">Users</a></li>
+                                    <li class="breadcrumb-item active">Profile</li>
+                                </ol>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
 
-            <div class="col s12">
-                <div class="container">
-                    <div class="section users-view">
-                        <!-- Media -->
-                        <div class="card-panel">
+                <div class="col s12">
+                    <div class="container">
+                        <div class="section">
+
                             <div class="row">
-                                <div class="col s12 m7">
-                                    <div class="display-flex media">
-                                        <img src="<%= user.profile %>" alt="user avatar"
-                                             class="z-depth-2 circle mr-3" height="64" width="64"
-                                             onerror="this.onerror=null; this.src='/uploads/default_user.jpg';">
-                                        <div class="media-body">
-                                            <h6 class="media-heading">
-                                                <span class="users-view-name"><%= user.name %></span>
-                                            </h6>
-                                            <span>Mobile:</span>
-                                            <span class="users-view-id"><%= user.country_code %> <%= user.phone %></span>
+                                <!-- Left: User Info -->
+                                <div class="col s12 m4">
+                                    <div class="card profile-card">
+                                        <div class="card-content center" style="padding-top:30px;">
+                                            <div class="circle"
+                                                style="width:130px;height:130px;margin:0 auto 20px;overflow:hidden;background:#e0e0e0;">
+                                                <% if (user.profile && user.profile.trim() &&
+                                                    !user.profile.includes('default')) { %>
+                                                    <img src="<%= user.profile %>" alt="profile"
+                                                        class="responsive-img" style="object-fit: cover;"
+                                                        onerror="this.src='/uploads/default_user.jpg';">
+                                                    <% } %>
+                                                        <i class="mdi mdi-account-circle"
+                                                            style="font-size:78px;color:#999;line-height:130px;"></i>
+                                            </div>
+
+                                            <h5 class="mb-2">
+                                                <%= user.name %>
+                                            </h5>
+                                            <p class="grey-text">
+                                                <%= user.country_code %>
+                                                    <%= user.phone %>
+                                            </p>
+
+                                            <div class="divider" style="margin:20px 0"></div>
+
+                                            <% if (user.email) { %>
+                                                <div class="info-item">
+                                                    <strong>Email:</strong><br>
+                                                    <span class="grey-text">
+                                                        <%= user.email %>
+                                                    </span>
+                                                </div>
+                                                <% } %>
+
+                                                    <% if (user.city?.en?.name) { %>
+                                                        <div class="info-item">
+                                                            <strong>Location:</strong><br>
+                                                            <span class="grey-text">
+                                                                <%= user.city.en.name %>, <%= user.country?.en?.name
+                                                                        || 'India' %>
+                                                            </span>
+                                                        </div>
+                                                        <% } %>
+
+                                                            <div class="info-item">
+                                                                <strong>Status:</strong><br>
+                                                                <span
+                                                                    class="chip <%= user.blocked ? 'red' : 'green' %> white-text">
+                                                                    <%= user.blocked ? 'Blocked' : 'Active' %>
+                                                                </span>
+                                                            </div>
+
+                                                            <div class="info-item">
+                                                                <strong>Joined On:</strong><br>
+                                                                <span class="grey-text">
+                                                                    <%= new Date(user.date ||
+                                                                        user.createdAt).toLocaleDateString('en-IN') %>
+                                                                </span>
+                                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                            </div>
-                        </div>
 
-                        <!-- Details Table -->
-                        <div class="card">
-                            <div class="card-content">
-                                <div class="row">
-                                    <div class="col s12">
-                                        <table class="striped">
-                                            <tbody>
-                                                <tr>
-                                                    <th style="width: 200px;">Name</th>
-                                                    <td><%= user.name %></td>
-                                                </tr>
-                                                <tr>
-                                                    <th>Mobile</th>
-                                                    <td><%= user.country_code %> <%= user.phone %></td>
-                                                </tr>
-                                                <tr>
-                                                    <th>Email</th>
-                                                    <td><%= user.email %></td>
-                                                </tr>
-                                                <% if (user.city) { %>
-                                                <tr>
-                                                    <th>City</th>
-                                                    <td><%= user.city.en.name %></td>
-                                                </tr>
-                                                <% } %>
-                                                <% if (user.country) { %>
-                                                <tr>
-                                                    <th>Country</th>
-                                                    <td><%= user.country.en.name %></td>
-                                                </tr>
-                                                <% } %>
-                                                <tr>
-                                                    <th>Status</th>
-                                                    <td>
-                                                        <span class="chip <%= user.blocked ? 'red' : 'green' %> white-text">
-                                                            <%= user.blocked ? 'Blocked' : 'Active' %>
-                                                        </span>
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <th>Date</th>
-                                                    <td><%= user.date.toLocaleDateString('en-GB') %></td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
+                                    <!-- Total Stats -->
+                                    <div class="stat-box">
+                                        <h4>₹<%= totalMoneySpent ? totalMoneySpent.toLocaleString('en-IN') : 0 %>
+                                        </h4>
+                                        <p>Total Spent</p>
+                                    </div>
+                                    <div class="stat-box"
+                                        style="background:linear-gradient(135deg,#4facfe 0%,#00f2fe 100%)">
+                                        <h4>
+                                            <%= totalRides || 0 %>
+                                        </h4>
+                                        <p>Total Rides Booked</p>
                                     </div>
                                 </div>
 
-                                <!-- Action Buttons -->
-                                <div class="row">
-                                    <div class="col s12" style="margin-left: 15px;">
-                                        <a onclick="history.back()" class="btn btn-danger waves-effect waves-light">Back</a>
-                                        <!-- <a href="/admin/user/edit/<%= user._id %>" class="btn btn-primary waves-effect waves-light">
-                                            <i class="material-icons left">edit</i> Edit
+                                <!-- Right: Full Ride History with Pagination -->
+                                <div class="col s12 m8">
+                                    <div class="card">
+                                        <div class="card-content">
+                                            <p class="card-title">Ride History</p>
+                                            <div class="collection">
+                                                <% if (rides && rides.length> 0) { %>
+                                                    <% rides.forEach(ride=> { %>
+                                                        <div class="collection-item avatar">
+                                                            <i
+                                                                class="mdi mdi-car circle <%= ride.status==='Completed'?'green':ride.status==='Cancelled'?'red':'blue' %>"></i>
+                                                            <span class="title">
+                                                                ₹<%= ride.price %>
+                                                                    <% if (ride.driver) { %>
+                                                                        • <a href="/admin/driver/<%= ride.driver._id %>"
+                                                                            class="driver-link">
+                                                                            <%= ride.driver.name %>
+                                                                        </a>
+                                                                        <% } else { %>
+                                                                            • Auto Assigned
+                                                                            <% } %>
+                                                            </span>
+                                                            <p class="grey-text">
+                                                                <%= new Date(ride.createdAt).toLocaleDateString('en-IN')
+                                                                    %>
+                                                                    <%= new
+                                                                        Date(ride.createdAt).toLocaleTimeString('en-IN',
+                                                                        {hour:'2-digit', minute:'2-digit'}) %>
+                                                                        <br>
+                                                                        <small>
+                                                                            <%= ride.pickupAddress.substring(0, 40) %>
+                                                                                ... → <%= ride.endAddress.substring(0,
+                                                                                    40) %>...
+                                                                        </small>
+                                                            </p>
+                                                            <span class="secondary-content">
+                                                                <span
+                                                                    class="new badge <%= ride.status==='Completed'?'green':ride.status==='Cancelled'?'red':'blue' %>">
+                                                                    <%= ride.status %>
+                                                                </span>
+                                                            </span>
+                                                        </div>
+                                                        <% }) %>
+                                                            <% } else { %>
+                                                                <div class="collection-item center grey-text">
+                                                                    <i class="mdi mdi-car-off mdi-36px"></i><br>
+                                                                    No rides booked yet
+                                                                </div>
+                                                                <% } %>
+                                            </div>
+
+                                            <!-- Pagination -->
+                                            <% if (totalPages> 1) { %>
+                                                <div class="center" style="margin-top: 25px;">
+                                                    <ul class="pagination">
+                                                        <li
+                                                            class="<%= currentPage == 1 ? 'disabled' : 'waves-effect' %>">
+                                                            <a href="?page=<%= currentPage - 1 %>"><i
+                                                                    class="mdi mdi-chevron-left"></i></a>
+                                                        </li>
+                                                        <% for(let i=1; i <=totalPages; i++) { %>
+                                                            <% if(i==1 || i==totalPages || (i>= currentPage - 1 && i <=
+                                                                    currentPage + 1)) { %>
+                                                                    <li
+                                                                        class="<%= currentPage == i ? 'active' : 'waves-effect' %>">
+                                                                        <a href="?page=<%= i %>">
+                                                                            <%= i %>
+                                                                        </a>
+                                                                    </li>
+                                                                    <% } else if (i==currentPage - 2 || i==currentPage +
+                                                                        2) { %>
+                                                                        <li class="waves-effect"><a>...</a></li>
+                                                                        <% } %>
+                                                                            <% } %>
+                                                                                <li
+                                                                                    class="<%= currentPage == totalPages ? 'disabled' : 'waves-effect' %>">
+                                                                                    <a
+                                                                                        href="?page=<%= currentPage + 1 %>"><i
+                                                                                            class="mdi mdi-chevron-right"></i></a>
+                                                                                </li>
+                                                    </ul>
+                                                </div>
+                                                <% } %>
+                                        </div>
+                                    </div>
+
+                                    <!-- Back Button -->
+                                    <div class="left">
+                                        <a onclick="history.back()"
+                                            class="btn red darken-1 waves-effect waves-light">
+                                            Back to Users
                                         </a>
-                                        <form action="/admin/user/delete/<%= user._id %>?_method=DELETE" method="POST" style="display:inline;">
-                                            <button type="submit" class="btn btn-danger waves-effect waves-light"
-                                                    onclick="return confirm('Delete <%= user.name %>?');">
-                                                <i class="material-icons left">delete</i> Delete
-                                            </button>
-                                        </form> -->
-                                        <!-- <% if (user.blocked) { %>
-                                            <a href="/admin/user/unblock/<%= user._id %>" class="btn btn-success waves-effect waves-light">
-                                                <i class="material-icons left">lock_open</i> Unblock
-                                            </a>
-                                        <% } else { %>
-                                            <a href="/admin/user/block/<%= user._id %>" class="btn btn-warning waves-effect waves-light">
-                                                <i class="material-icons left">lock</i> Block
-                                            </a>
-                                        <% } %> -->
                                     </div>
                                 </div>
                             </div>
-                        </div> 
+
+                        </div>
                     </div>
+                    <div class="content-overlay"></div>
                 </div>
-                <div class="content-overlay"></div>
             </div>
         </div>
-    </div>
 
-    <%- include('_layouts/commonJs') %>
+        <%- include('_layouts/commonJs') %>
 </body>
-</html>
 
+</html>

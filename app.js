@@ -18,7 +18,7 @@ const User = require('./models/userModel');
 const Car = require('./models/carModel');
 const userPaymentRoutes = require('./routes/user/paymentRoutes');
 // const webhookRoutes = require('./routes/webhookRoutes');
-const methodOverride = require('method-override');
+const methodOverride = require('method-override');  
 
 // Start express app
 const app = express();
@@ -108,6 +108,7 @@ app.use('/api/user', require('./routes/user/profileRoutes'));
 app.use('/api/user', require('./routes/user/homeRoutes'));
 app.use('/api/user', require('./routes/user/rideRoutes'));
 app.use('/api/user', require('./routes/user/rentRoutes'));
+app.use("/api/chat", require("./routes/chatRoutes.js"))
 app.use('/api/user', userPaymentRoutes);
 
 // DRIVER ROUTES
@@ -212,6 +213,7 @@ app.post('/request-delete-driver', async (req, res, next) => {
             errorMessage: 'Email and password are required.',
         });
     }
+    
 
     try {
         const driver = await Driver.findOne({ email });

@@ -1,4 +1,5 @@
 const createError = require('http-errors');
+const mongoose = require("mongoose")
 const multilingual = require('../../utils/multilingual');
 const deleteFile = require('../../utils/deleteFile');
 
@@ -143,19 +144,60 @@ exports.editCar = async (req, res, next) => {
     }
 };
 
+// exports.deleteCar = async (req, res, next) => {
+//     try {
+//         const car = await Car.findOneAndUpdate(
+//             { _id: req.params.id, driver: req.driver.id, isDeleted: false },
+//             { isDeleted: true }
+//         );
+
+//         if (!car) return next(createError.NotFound('Car not found.'));
+
+//         res.json({ code: '1', message: req.t('car.deleted') });
+//     } catch (error) {
+//         if (error.name == 'CastError')
+//             return next(createError.NotFound('Car not found.'));
+//         next(error);
+//     }
+// };
+
 exports.deleteCar = async (req, res, next) => {
     try {
+        console.log("🔥 DELETE HIT");
+        console.log("Car ID:", req.params.id);
+        console.log("Driver ID:", req.driver.id);
+
         const car = await Car.findOneAndUpdate(
-            { _id: req.params.id, driver: req.driver.id, isDeleted: false },
-            { isDeleted: true }
+            {
+                _id: req.params.id,
+                driver: req.driver.id, // (ObjectId auto match hota hai mostly)
+                isDeleted: false
+            },
+            {
+                isDeleted: true
+            },
+            {
+                new: true
+            }
         );
 
-        if (!car) return next(createError.NotFound('Car not found.'));
+        if (!car) {
+            console.log("❌ Not found or mismatch");
+            return res.status(404).json({
+                success: false,
+                message: "Car not found or already deleted"
+            });
+        }
 
-        res.json({ code: '1', message: req.t('car.deleted') });
+        console.log("✅ Deleted:", car._id);
+
+        res.json({
+            success: true,
+            message: "Car deleted successfully"
+        });
+
     } catch (error) {
-        if (error.name == 'CastError')
-            return next(createError.NotFound('Car not found.'));
+        console.log("ERROR:", error);
         next(error);
     }
 };
