@@ -86,9 +86,9 @@ exports.sendOTP = async (req, res, next) => {
 
         // Validate mobile
         if (!country_code)
-            return next(createError.BadRequest('validation.country_code'));
+            return next(createError.BadRequest('Country code is required'));
         if (!phone) 
-            return next(createError.BadRequest('validation.phone'));
+            return next(createError.BadRequest('Phone number is required'));
 
         const mobile = country_code + phone;
 
@@ -105,7 +105,7 @@ exports.sendOTP = async (req, res, next) => {
             await sendOTP(mobile, otp);
         } catch (smsError) {
             console.error('Twilio SMS Error:', smsError.message);
-            return next(createError.InternalServerError('otp.sendFailed'));
+            return next(createError.InternalServerError('Failed to send OTP.'));
         }
 
         res.json({
@@ -205,7 +205,7 @@ exports.createProfile = async (req, res, next) => {
             city: city?.id,
             country: country?.id,
             address: req.body.address,
-            useFor: req.body.useFor,
+            useFor: req.body.useFor,    
             profile,
             fcmToken: req.body.fcmToken,
         });

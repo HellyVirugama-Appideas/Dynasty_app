@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html class="loading" lang="en" data-textdirection="ltr">
+<head>
+    <%- include('_layouts/head') %>
+      <link href="https://fonts.googleapis.com/icon?family=Material+Icons|Material+Icons+Two+Tone" rel="stylesheet">
+    <title>Commission Settings | <%= title %></title>
+    <style>
+        .commission-card {
+            border-radius: 14px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.10);
+        }
+        .commission-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 24px 28px;
+            color: white;
+        }
+        .commission-header h5 { margin: 0; font-size: 1.3rem; font-weight: 600; }
+        .commission-header p { margin: 6px 0 0; opacity: 0.85; font-size: 0.92rem; }
+        .commission-body { padding: 28px; }
+        .type-selector { display: flex; gap: 16px; margin-bottom: 28px; }
+        .type-btn {
+            flex: 1; padding: 14px; border-radius: 10px; border: 2px solid #e0e0e0;
+            text-align: center; cursor: pointer; transition: all .25s;
+            background: #fafafa;
+        }
+        .type-btn.active {
+            border-color: #7c4dff;
+            background: #f3eeff;
+        }
+        .type-btn i { font-size: 2rem; color: #7c4dff; display: block; margin-bottom: 6px; }
+        .type-btn span { font-weight: 600; color: #333; font-size: 0.95rem; }
+        .commission-preview {
+            background: #f8f9ff;
+            border-radius: 10px;
+            padding: 18px 20px;
+            margin-top: 24px;
+            border-left: 4px solid #7c4dff;
+        }
+        .commission-preview h6 { margin: 0 0 10px; color: #444; font-weight: 600; }
+        .preview-row { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid #e8e8f0; }
+        .preview-row:last-child { border-bottom: none; }
+        .preview-label { color: #666; }
+        .preview-value { font-weight: 700; color: #7c4dff; }
+        .save-btn {
+            width: 100%; height: 48px; border-radius: 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white; font-weight: 600; font-size: 1rem;
+            border: none; cursor: pointer; margin-top: 24px;
+            box-shadow: 0 4px 15px rgba(102,126,234,0.4);
+            transition: all .25s;
+        }
+        .save-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(102,126,234,0.5); }
+        .input-field label { font-weight: 500; color: #555; }
+        .suffix-label {
+            position: absolute; right: 0; bottom: 10px;
+            font-weight: 700; color: #7c4dff; font-size: 1rem;
+        }
+        .info-badge {
+            display: inline-block; background: #e8f5e9; color: #2e7d32;
+            border-radius: 20px; padding: 4px 12px; font-size: 0.82rem;
+            font-weight: 600; margin-left: 8px;
+        }
+    </style>
+</head>
+
+<body class="vertical-layout page-header-light vertical-menu-collapsible vertical-dark-menu preload-transitions 2-columns"
+    data-open="click" data-menu="vertical-dark-menu" data-col="2-columns">
+    <%- include('_layouts/sidenavbar') %>
+
+    <div id="main">
+        <div class="row">
+            <div id="breadcrumbs-wrapper" data-image="/app-assets/images/gallery/breadcrumb-bg.jpg">
+                <div class="container">
+                    <div class="row">
+                        <div class="col s12 m6 l6">
+                            <h5 class="breadcrumbs-title mt-0 mb-0">Commission Settings</h5>
+                        </div>
+                        <div class="col s12 m6 l6 right-align-md">
+                            <ol class="breadcrumbs mb-0">
+                                <li class="breadcrumb-item"><a href="/admin">Home</a></li>
+                                <li class="breadcrumb-item active">Commission</li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="container" style="margin-top: 30px;">
+                <div class="row">
+                    <div class="col s12">
+                        <%- messages('messages', locals) %>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <!-- Commission Form -->
+                    <div class="col s12 m8 l7">
+                        <div class="card commission-card">
+                            <div class="commission-header">
+                                <h5><i class="material-icons" style="vertical-align:middle;margin-right:8px;">monetization_on</i>Set Admin Commission</h5>
+                                <p>Define what percentage or fixed amount admin takes from each transaction.</p>
+                            </div>
+                            <div class="commission-body">
+                                <form method="POST" action="/admin/commission" id="commissionForm">
+                                    <!-- Commission Type -->
+                                    <p style="font-weight:600;color:#444;margin-bottom:12px;">Commission Type</p>
+                                    <div class="type-selector">
+                                        <div class="type-btn <%= commission.commissionType === 'percentage' ? 'active' : '' %>" onclick="selectType('percentage')">
+                                            <i class="material-icons-two-tone">percent</i>
+                                           
+                                            <span>Percentage (%)</span>
+                                        </div>
+                                        <div class="type-btn <%= commission.commissionType === 'fixed' ? 'active' : '' %>" onclick="selectType('fixed')">
+                                            <i class="material-icons">attach_money</i>
+                                            <span>Fixed Amount</span>
+                                        </div>
+                                    </div>
+                                    <input type="hidden" name="commissionType" id="commissionType" value="<%= commission.commissionType || 'percentage' %>">
+
+                                    <!-- Ride Commission -->
+                                    <div class="row" style="margin-bottom:0;">
+                                        <div class="input-field col s12 m6" style="position:relative;">
+                                            <input
+                                                id="rideCommission"
+                                                name="rideCommission"
+                                                type="number"
+                                                step="0.01"
+                                                min="0"
+                                                max="100"
+                                                value="<%= commission.rideCommission %>"
+                                                required
+                                                oninput="updatePreview()"
+                                                style="padding-right:30px;"
+                                            >
+                                            <label for="rideCommission" class="active">
+                                                Ride Commission
+                                                <span class="info-badge">Taxi Rides</span>
+                                            </label>
+                                            <span class="suffix-label" id="rideSuffix"><%= commission.commissionType === 'fixed' ? '$' : '%' %></span>
+                                            <div id="rideError" style="color:red;font-size:0.82rem;"></div>
+                                        </div>
+
+                                        <!-- Rent Commission -->
+                                        <div class="input-field col s12 m6" style="position:relative;">
+                                            <input
+                                                id="rentCommission"
+                                                name="rentCommission"
+                                                type="number"
+                                                step="0.01"
+                                                min="0"
+                                                max="100"
+                                                value="<%= commission.rentCommission %>"
+                                                required
+                                                oninput="updatePreview()"
+                                                style="padding-right:30px;"
+                                            >
+                                            <label for="rentCommission" class="active">
+                                                Rent Commission
+                                                <span class="info-badge">Car Rental</span>
+                                            </label>
+                                            <span class="suffix-label" id="rentSuffix"><%= commission.commissionType === 'fixed' ? '$' : '%' %></span>
+                                            <div id="rentError" style="color:red;font-size:0.82rem;"></div>
+                                        </div>
+                                    </div>
+
+                                    <button type="submit" class="save-btn" onclick="return validateForm()">
+                                        <i class="material-icons" style="vertical-align:middle;margin-right:6px;">save</i>
+                                        Save Commission Settings
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Preview Panel -->
+                    <div class="col s12 m4 l5">
+                        <div class="card" style="border-radius:14px; box-shadow:0 4px 20px rgba(0,0,0,0.10);">
+                            <div class="card-content">
+                                <span class="card-title" style="font-weight:700;">Live Preview</span>
+                                <p style="color:#888;font-size:0.88rem;">How commission is calculated on a sample ₹100 transaction</p>
+
+                                <div class="commission-preview">
+                                    <h6>Ride (Taxi)</h6>
+                                    <div class="preview-row">
+                                        <span class="preview-label">Transaction Amount</span>
+                                        <span class="preview-value">₹100.00</span>
+                                    </div>
+                                    <div class="preview-row">
+                                        <span class="preview-label">Admin Commission</span>
+                                        <span class="preview-value" id="rideCommissionAmt">-</span>
+                                    </div>
+                                    <div class="preview-row">
+                                        <span class="preview-label">Driver Receives</span>
+                                        <span class="preview-value green-text" id="rideDriverAmt">-</span>
+                                    </div>
+                                </div>
+
+                                <div class="commission-preview" style="margin-top:16px; border-left-color:#4caf50;">
+                                    <h6>Rent (Car Rental)</h6>
+                                    <div class="preview-row">
+                                        <span class="preview-label">Transaction Amount</span>
+                                        <span class="preview-value">₹100.00</span>
+                                    </div>
+                                    <div class="preview-row">
+                                        <span class="preview-label">Admin Commission</span>
+                                        <span class="preview-value" id="rentCommissionAmt">-</span>
+                                    </div>
+                                    <div class="preview-row">
+                                        <span class="preview-label">Driver Receives</span>
+                                        <span class="preview-value green-text" id="rentDriverAmt">-</span>
+                                    </div>
+                                </div>
+
+                                <!-- Last Updated -->
+                                <% if (commission.updatedAt) { %>
+                                <div style="margin-top:20px; text-align:center; color:#aaa; font-size:0.82rem;">
+                                    <i class="material-icons tiny">update</i>
+                                    Last updated: <%= new Date(commission.updatedAt).toLocaleDateString('en-IN', { day:'2-digit', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit' }) %>
+                                </div>
+                                <% } %>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <%- include('_layouts/commonJs') %>
+
+    <script>
+        let currentType = '<%= commission.commissionType || "percentage" %>';
+
+        function selectType(type) {
+            currentType = type;
+            document.getElementById('commissionType').value = type;
+            document.querySelectorAll('.type-btn').forEach(btn => btn.classList.remove('active'));
+            event.currentTarget.classList.add('active');
+
+            const suffix = type === 'fixed' ? '$' : '%';
+            document.getElementById('rideSuffix').textContent = suffix;
+            document.getElementById('rentSuffix').textContent = suffix;
+            updatePreview();
+        }
+
+        function updatePreview() {
+            const ride = parseFloat(document.getElementById('rideCommission').value) || 0;
+            const rent = parseFloat(document.getElementById('rentCommission').value) || 0;
+            const sample = 100;
+
+            let rideComm, rentComm;
+            if (currentType === 'percentage') {
+                rideComm = (sample * ride / 100).toFixed(2);
+                rentComm = (sample * rent / 100).toFixed(2);
+            } else {
+                rideComm = ride.toFixed(2);
+                rentComm = rent.toFixed(2);
+            }
+
+            document.getElementById('rideCommissionAmt').textContent = '₹' + rideComm;
+            document.getElementById('rideDriverAmt').textContent = '₹' + (sample - parseFloat(rideComm)).toFixed(2);
+            document.getElementById('rentCommissionAmt').textContent = '₹' + rentComm;
+            document.getElementById('rentDriverAmt').textContent = '₹' + (sample - parseFloat(rentComm)).toFixed(2);
+        }
+
+        function validateForm() {
+            let valid = true;
+            const ride = parseFloat(document.getElementById('rideCommission').value);
+            const rent = parseFloat(document.getElementById('rentCommission').value);
+
+            document.getElementById('rideError').textContent = '';
+            document.getElementById('rentError').textContent = '';
+
+            if (isNaN(ride) || ride < 0 || (currentType === 'percentage' && ride > 100)) {
+                document.getElementById('rideError').textContent = 'Enter a valid ride commission (0-100).';
+                valid = false;
+            }
+            if (isNaN(rent) || rent < 0 || (currentType === 'percentage' && rent > 100)) {
+                document.getElementById('rentError').textContent = 'Enter a valid rent commission (0-100).';
+                valid = false;
+            }
+            return valid;
+        }
+
+        // Init preview on load
+        updatePreview();
+    </script>
+</body>
+</html>

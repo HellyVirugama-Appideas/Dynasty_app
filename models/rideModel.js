@@ -12,6 +12,11 @@ const rideSchema = new mongoose.Schema({
         required: true,
     },
 
+    type: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Type',
+    },
+
     pickupAddress: { type: String, required: true },
     pickupLat: { type: String, required: true },
     pickupLng: { type: String, required: true },
@@ -31,9 +36,9 @@ const rideSchema = new mongoose.Schema({
     },
     rideStatus: {
         type: String,
-        enum: ['start', 'wayToPickup', 'wayToDone', 'complete'],
+        enum: ['start', 'wayToPickup','tripStarted', 'wayToDone', 'complete'],
         default: 'start',
-    },
+    }, 
     paymentStatus: String,
     paymentMethod: String,
     cancellationReason: String,

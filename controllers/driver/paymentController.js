@@ -8,6 +8,62 @@ const mongoose = require('mongoose');
 /**
  * Get driver's wallet balance and transaction history
  */
+// exports.getWalletBalance = async (req, res, next) => {
+//     try {
+//         const { page = 1, limit = 20 } = req.query;
+//         const skip = (page - 1) * limit;
+
+//         // Get current wallet balance
+//         const availableBalance = await Wallet.calculateAvailableBalance(req.driver._id);
+
+//         // Get paginated transaction history
+//         const transactions = await Wallet.find({ driverId: req.driver._id })
+//             .sort({ createdAt: -1 })
+//             .skip(skip)
+//             .limit(parseInt(limit))
+//             .populate('rideId', 'pickupAddress endAddress price')
+//             .populate('bookingId', 'address price bookedFrom bookedTo')
+//             .select('-__v');
+
+//         const total = await Wallet.countDocuments({ driverId: req.driver._id });
+
+//         // Get pending withdrawals
+//         const pendingWithdrawals = await Wallet.getPendingWithdrawals(req.driver._id);
+//         const pendingAmount = pendingWithdrawals.reduce((sum, w) => sum + w.amount, 0);
+
+//         const formattedTransactions = transactions.map(t => ({
+//             ...t.toObject(),
+//             formattedAmount: t.amount / 100,
+//             formattedNetAmount: t.netAmount ? t.netAmount / 100 : null,
+//         }));
+
+//         res.json({
+//             code: '1',
+//             message: req.t('success'),
+//             balance: availableBalance / 100,
+//             pendingWithdrawals: pendingAmount / 100,
+//             canWithdraw: req.driver.canWithdraw(),
+//             withdrawalSettings: req.driver.withdrawalSettings,
+//             transactions: formattedTransactions,
+//             pagination: {
+//                 currentPage: parseInt(page),
+//                 totalPages: Math.ceil(total / limit),
+//                 totalTransactions: total,
+//                 hasMore: skip + transactions.length < total,
+//             },
+//         });
+//     } catch (error) {
+//         console.error('Get wallet balance error:', error);
+//         next(error);
+//     }
+// };
+
+/**
+ * Get driver's wallet balance and transaction history
+ */
+/**
+ * Get driver's wallet balance and transaction history
+ */
 exports.getWalletBalance = async (req, res, next) => {
     try {
         const { page = 1, limit = 20 } = req.query;
@@ -16,8 +72,14 @@ exports.getWalletBalance = async (req, res, next) => {
         // Get current wallet balance
         const availableBalance = await Wallet.calculateAvailableBalance(req.driver._id);
 
-        // Get paginated transaction history
-        const transactions = await Wallet.find({ driverId: req.driver._id })
+        // 🔥 Safe Query: Sirf withdrawal aur non-withdrawal_fee transactions dikhaye
+        // withdrawal_fee ko hide kiya, baaki sab "Received" mein aayenge
+        const query = {
+            driverId: req.driver._id,
+            type: { $ne: 'withdrawal_fee' }   // only withdrawal_fee ko exclude
+        };
+
+        const transactions = await Wallet.find(query)
             .sort({ createdAt: -1 })
             .skip(skip)
             .limit(parseInt(limit))
@@ -25,17 +87,31 @@ exports.getWalletBalance = async (req, res, next) => {
             .populate('bookingId', 'address price bookedFrom bookedTo')
             .select('-__v');
 
-        const total = await Wallet.countDocuments({ driverId: req.driver._id });
+        const total = await Wallet.countDocuments(query);
 
-        // Get pending withdrawals
+        // Get pending withdrawals amount
         const pendingWithdrawals = await Wallet.getPendingWithdrawals(req.driver._id);
         const pendingAmount = pendingWithdrawals.reduce((sum, w) => sum + w.amount, 0);
 
-        const formattedTransactions = transactions.map(t => ({
-            ...t.toObject(),
-            formattedAmount: t.amount / 100,
-            formattedNetAmount: t.netAmount ? t.netAmount / 100 : null,
-        }));
+        const formattedTransactions = transactions.map(t => {
+            const isWithdrawal = t.type === 'withdrawal';
+
+            return {
+                ...t.toObject(),
+                formattedAmount: t.amount / 100,
+                
+                // Ride, booking, refund sab ke liye netAmount dikhaye (agar null ho to amount use karo)
+                formattedNetAmount: t.netAmount 
+                    ? t.netAmount / 100 
+                    : (isWithdrawal ? null : t.amount / 100),
+
+                // Type field as per your requirement
+                type: isWithdrawal ? 'Withdraw' : 'Received',
+
+                // Status for better UX (especially pending withdrawals)
+                status: t.status || 'completed',
+            };
+        });
 
         res.json({
             code: '1',
@@ -57,7 +133,6 @@ exports.getWalletBalance = async (req, res, next) => {
         next(error);
     }
 };
-
 /**
  * Get driver's transaction history with filters
  */
@@ -160,6 +235,49 @@ exports.updateAccountStatus = async (req, res, next) => {
 /**
  * Create withdrawal request
  */
+// exports.createWithdrawalRequest = async (req, res, next) => {
+//     try {
+//         // Validate request
+//         const errors = validationResult(req);
+//         if (!errors.isEmpty()) {
+//             return res.status(400).json({
+//                 code: '0',
+//                 message: 'Validation failed',
+//                 errors: errors.array(),
+//             });
+//         }
+
+//         const { amount, description } = req.body;
+//         const amountInCents = Math.round(amount * 100); // Convert to cents
+
+//         // Create withdrawal request
+//         const withdrawal = await withdrawalService.createWithdrawalRequest(
+//             req.driver._id,
+//             amountInCents,
+//             description
+//         );
+
+//         res.json({
+//             code: '1',
+//             message: req.t('withdrawal_request_created'),
+//             withdrawal: {
+//                 id: withdrawal._id,
+//                 amount: withdrawal.amount / 100,
+//                 netAmount: withdrawal.netAmount / 100,
+//                 processingFee: withdrawal.processingFee / 100,
+//                 status: withdrawal.status,
+//                 createdAt: withdrawal.createdAt,
+//             },
+//         });
+//     } catch (error) {
+//         console.error('Create withdrawal request error:', error);
+//         next(error);
+//     }
+// };
+
+/**
+ * Create withdrawal request
+ */
 exports.createWithdrawalRequest = async (req, res, next) => {
     try {
         // Validate request
@@ -172,10 +290,10 @@ exports.createWithdrawalRequest = async (req, res, next) => {
             });
         }
 
-        const { amount, description } = req.body;
-        const amountInCents = Math.round(amount * 100); // Convert to cents
+        const { amount, description = '' } = req.body;
+        const amountInCents = Math.round(amount * 100);
 
-        // Create withdrawal request
+        // 🔥 Service mein saare checks already hain (balance, pending, stripe etc.)
         const withdrawal = await withdrawalService.createWithdrawalRequest(
             req.driver._id,
             amountInCents,
@@ -199,7 +317,6 @@ exports.createWithdrawalRequest = async (req, res, next) => {
         next(error);
     }
 };
-
 
 /**
  * Process withdrawal (admin or automated)

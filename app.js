@@ -88,7 +88,7 @@ app.options('*', cors(corsOptions));
 
 // caching disabled for every route
 app.use(function (req, res, next) {
-    res.set(
+    res.set( 
         'Cache-Control',
         'no-cache, private, no-store, must-revalidate, max-stale=0, post-check=0, pre-check=0'
     );
@@ -140,6 +140,7 @@ app.use('/admin/cms', require('./routes/admin/cmsRoutes'));
 app.use('/admin/user', require('./routes/admin/userRoutes'));
 app.use('/admin/message', require('./routes/admin/messageRoutes'));
 app.use('/admin/driver', require('./routes/admin/driverRoutes'));
+app.use('/admin/', require('./routes/admin/commissionRoutes'));
 app.use('/admin/', require('./routes/admin/adminRoutes'));
 
 // 404 admin

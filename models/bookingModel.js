@@ -94,7 +94,7 @@ const bookingSchema = new mongoose.Schema(
         bookedTo: { type: Date, required: true },
         pickupTime: { type: String, required: true }, // Fixed typo: was 'require'
         returnTime: { type: String, required: true }, // Fixed typo: was 'require'
-        price: { type: Number, default: 10 },
+        price: { type: Number,default: 0 },
 
         pickupCheck: { type: Boolean, default: false },
         pickupSign: {

@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { getChatHistory, sendMessage, markAsRead, deleteMessage, editMessage } = require('../controllers/chatController');
+const { getChatHistory, sendMessage, markAsRead, deleteMessage, editMessage, clearChat } = require('../controllers/chatController');
 const { checkUser } = require('../controllers/user/authController');
 const { checkDriver } = require('../controllers/driver/authController');
 
@@ -11,6 +11,8 @@ router.patch('/user/message/:messageId',checkUser, editMessage);
 
 router.get('/user/history',checkUser, getChatHistory);
 
+router.post("/user/clear",checkUser,clearChat)
+
 ////////////////////////////////driver
 
 router.post('/driver/message',checkDriver , sendMessage);
@@ -19,5 +21,7 @@ router.delete('/driver/message/:messageId',checkDriver, deleteMessage);
 router.patch('/driver/message/:messageId',checkDriver, editMessage);
 
 router.get('/driver/history',checkDriver, getChatHistory);
+
+router.post("/driver/clear",checkDriver,clearChat)
 
 module.exports = router;

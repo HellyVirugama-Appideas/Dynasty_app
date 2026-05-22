@@ -7,9 +7,29 @@ const transactionSchema = new mongoose.Schema({
         required: true,
     },
     amount: { type: Number, required: true },
+
+    // Admin commission details
+    commissionType: {
+        type: String,
+        enum: ['percentage', 'fixed'],
+        default: 'percentage',
+    },
+    commissionRate: {
+        type: Number,
+        default: 0, // e.g. 10 means 10%
+    },
+    adminCommission: {
+        type: Number,
+        default: 0, // Admin ka hissa (same unit as amount)
+    },
+    driverAmount: {
+        type: Number,
+        default: 0, // Driver ko milne wala amount after commission
+    },
+
     paymentMethod: {
         type: String,
-        enum: ['wallet', 'cash'],
+        enum: ['wallet', 'cash', 'card'],
         required: true,
     },
 
@@ -24,8 +44,11 @@ const transactionSchema = new mongoose.Schema({
         default: 'pending',
     },
 
+
     rideId: { type: mongoose.Schema.Types.ObjectId, ref: 'Ride' }, // if related to ride
+    bookingId: { type: mongoose.Schema.Types.ObjectId, ref: 'Booking' },
     stripePaymentId: String, // for Stripe transactions
+
     createdAt: { type: Date, default: Date.now },
 });
 

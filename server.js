@@ -4,6 +4,7 @@ const socketIO = require('socket.io');
 const driverPaymentRoutes = require('./routes/driver/paymentRoutes');
 // const webhookRoutes = require('./routes/webhookRoutes');
 const socketHandler = require('./utils/socketHandler');
+const chatSocket = require('./utils/chatSocket');
 
 process.on('uncaughtException', err => {
     console.log('UNCAUGHT EXCEPTION! 💥 Shutting down...');
@@ -47,6 +48,8 @@ const io = socketIo(server, {
     pingTimeout: 60000,
     pingInterval: 25000,
 });
+
+chatSocket(io);
 
 // ✅ CRITICAL: Make io globally accessible
 global.io = io;

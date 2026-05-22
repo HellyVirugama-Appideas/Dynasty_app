@@ -13,6 +13,6 @@ router.post('/response', fileUpload(), rideController.driverResponse);
 
 router.post('/start-journey',checkDriver, rideController.startJourney);
 
-router.post('/complete',rideController.completeRide)
+router.post('/complete',checkDriver,rideController.completeRide)
 
 module.exports = router;

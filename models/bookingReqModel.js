@@ -132,6 +132,10 @@ const bookingReqSchema = new mongoose.Schema(
         paidAt: {
             type: Date,
         },
+        amount: {
+            type: Number,
+            default: 0
+        }
     },
     {
         timestamps: true, // Adds createdAt and updatedAt

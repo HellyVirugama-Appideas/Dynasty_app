@@ -127,6 +127,38 @@ const sendOnlyNotification = async (registrationToken, data) => {
 //     }
 // };
 
+// const sendRideNotification = async (registrationToken, data) => {
+//     if (!registrationToken) {
+//         console.warn('No FCM token → skipping ride notification');
+//         return;
+//     }
+
+//     const { title, body, ...restData } = data;
+
+//     console.log('Sending ride notification to token:', registrationToken.substring(0, 20) + '...');
+
+//     const message = {
+//         notification: { title, body },
+//         data: {
+//             data: JSON.stringify(restData),
+//         },
+//         token: registrationToken,
+//     };
+
+//     try {
+//         const response = await admin.messaging().send(message);
+//         console.log('Ride notification SUCCESS → messageId:', response);
+//         // await Notification.create(data); // uncomment when stable
+//         return response;
+//     } catch (error) {
+//         console.error('Ride FCM failed:');
+//         console.error('→ Code:', error.code);
+//         console.error('→ Message:', error.message);
+//         if (error.errorInfo) console.error('→ ErrorInfo:', error.errorInfo);
+//         throw error;
+//     }
+// };
+
 const sendRideNotification = async (registrationToken, data) => {
     if (!registrationToken) {
         console.warn('No FCM token → skipping ride notification');
@@ -135,26 +167,32 @@ const sendRideNotification = async (registrationToken, data) => {
 
     const { title, body, ...restData } = data;
 
-    console.log('Sending ride notification to token:', registrationToken.substring(0, 20) + '...');
-
     const message = {
         notification: { title, body },
-        data: {
-            data: JSON.stringify(restData),
-        },
+        data: { data: JSON.stringify(restData) },
         token: registrationToken,
     };
 
     try {
         const response = await admin.messaging().send(message);
         console.log('Ride notification SUCCESS → messageId:', response);
-        // await Notification.create(data); // uncomment when stable
+
+        // ✅ पूरा data नहीं — सिर्फ जरूरी fields save करो
+        const notifData = {
+            title: title || 'Ride Notification',
+            body: body || '',
+        };
+
+        // ✅ सिर्फ valid ObjectId fields add करो
+        if (data.user)   notifData.user   = data.user;
+        if (data.driver) notifData.driver = data.driver;
+
+        await Notification.create(notifData);
+        console.log('✅ Notification saved | user:', notifData.user, '| driver:', notifData.driver);
+
         return response;
     } catch (error) {
-        console.error('Ride FCM failed:');
-        console.error('→ Code:', error.code);
-        console.error('→ Message:', error.message);
-        if (error.errorInfo) console.error('→ ErrorInfo:', error.errorInfo);
+        console.error('Ride FCM failed:', error.code, error.message);
         throw error;
     }
 };

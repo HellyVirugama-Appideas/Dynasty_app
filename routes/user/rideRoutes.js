@@ -3,6 +3,7 @@ const fileUpload = require('express-fileupload');
 
 const { checkUser } = require('../../controllers/user/authController');
 const rideController = require('../../controllers/user/rideController');
+const Driver = require("../../models/driverModel")
 
 // Booking
 router.post('/get_vehicle_types', fileUpload(), rideController.getVehicleTypes);
@@ -23,5 +24,6 @@ router.get('/rides', checkUser, rideController.getRides);
 
 // Rating
 router.post('/rate_driver', fileUpload(), checkUser, rideController.addRating);
+
 
 module.exports = router; 

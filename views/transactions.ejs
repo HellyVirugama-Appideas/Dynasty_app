@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html class="loading" lang="en" data-textdirection="ltr">
+<head>
+    <%- include('_layouts/head') %>
+    <title>Transactions | <%= title %></title>
+    <style>
+        .tab-filter { display:flex; gap:10px; margin-bottom:20px; flex-wrap:wrap; }
+        .tab-btn {
+            padding: 9px 22px; border-radius: 30px; border: 2px solid #e0e0e0;
+            font-weight: 600; font-size: 0.88rem; cursor: pointer;
+            text-decoration: none; color: #555; background: #fff; transition: all .2s;
+        }
+        .tab-btn.active, .tab-btn:hover {
+            background: linear-gradient(135deg,#667eea,#764ba2);
+            color: white; border-color: transparent;
+        }
+        .section-title {
+            font-size: 1.05rem; font-weight: 700; color: #333;
+            margin: 24px 0 12px; display: flex; align-items: center; gap: 8px;
+        }
+        .section-title i { color: #7c4dff; }
+        .badge-pill {
+            display: inline-block; padding: 2px 10px; border-radius: 20px;
+            font-size: 0.75rem; font-weight: 700;
+        }
+        .badge-completed { background:#e8f5e9; color:#2e7d32; }
+        .badge-pending   { background:#fff8e1; color:#f57f17; }
+        .badge-failed    { background:#ffebee; color:#c62828; }
+        .badge-add       { background:#e3f2fd; color:#1565c0; }
+        .badge-use       { background:#fce4ec; color:#880e4f; }
+        .badge-withdrawal{ background:#f3e5f5; color:#6a1b9a; }
+        .badge-ride_payment { background:#e8f5e9; color:#2e7d32; }
+        .badge-rent.car  { background:#e3f2fd; color:#0d47a1; }
+        .amount-positive { color: #2e7d32; font-weight: 700; }
+        .amount-negative { color: #c62828; font-weight: 700; }
+        .summary-cards { display:flex; gap:14px; flex-wrap:wrap; margin-bottom:24px; }
+        .summary-card {
+            flex: 1; min-width: 160px; border-radius: 12px; padding: 16px 18px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+        }
+        .summary-card p { margin:0; font-size:0.82rem; color:#777; }
+        .summary-card h5 { margin:4px 0 0; font-size:1.4rem; font-weight:700; }
+        .table-responsive { overflow-x:auto; }
+        table.striped tbody tr:hover { background:#f5f0ff; }
+        .no-data { text-align:center; padding:40px; color:#aaa; }
+        .no-data i { font-size:3rem; display:block; margin-bottom:10px; }
+    </style>
+</head>
+
+<body class="vertical-layout page-header-light vertical-menu-collapsible vertical-dark-menu preload-transitions 2-columns"
+    data-open="click" data-menu="vertical-dark-menu" data-col="2-columns">
+    <%- include('_layouts/sidenavbar') %>
+
+    <div id="main">
+        <div class="row">
+            <div id="breadcrumbs-wrapper" data-image="/app-assets/images/gallery/breadcrumb-bg.jpg">
+                <div class="container">
+                    <div class="row">
+                        <div class="col s12 m6 l6">
+                            <h5 class="breadcrumbs-title mt-0 mb-0">Transactions</h5>
+                        </div>
+                        <div class="col s12 m6 l6 right-align-md">
+                            <ol class="breadcrumbs mb-0">
+                                <li class="breadcrumb-item"><a href="/admin">Home</a></li>
+                                <li class="breadcrumb-item active">Transactions</li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="container" style="margin-top:26px;">
+                <div class="row"><div class="col s12"><%- messages('messages', locals) %></div></div>
+
+                <!-- Summary Cards -->
+                <div class="summary-cards">
+                    <div class="summary-card" style="background:linear-gradient(135deg,#667eea,#764ba2);color:white;">
+                        <p style="color:rgba(255,255,255,0.8);">Total User Transactions</p>
+                        <h5 style="color:white;"><%= totalUser || userTransactions.length %></h5>
+                    </div>
+                    <div class="summary-card" style="background:linear-gradient(135deg,#f093fb,#f5576c);color:white;">
+                        <p style="color:rgba(255,255,255,0.8);">Total Driver Transactions</p>
+                        <h5 style="color:white;"><%= totalDriver || driverTransactions.length %></h5>
+                    </div>
+                    <div class="summary-card" style="background:linear-gradient(135deg,#f7971e,#ffd200);color:white;">
+                        <p style="color:rgba(255,255,255,0.9);">Total Admin Commission</p>
+                        <h5 style="color:white;">₹<%= ((totalAdminCommission || 0) / 100).toFixed(2) %></h5>
+                    </div>
+                    <div class="summary-card" style="background:linear-gradient(135deg,#11998e,#38ef7d);color:white;">
+                        <p style="color:rgba(255,255,255,0.9);">Ride Commission</p>
+                        <h5 style="color:white;">₹<%= ((rideCommissionTotal || 0) / 100).toFixed(2) %></h5>
+                    </div>
+                    <div class="summary-card" style="background:linear-gradient(135deg,#2196f3,#0d47a1);color:white;">
+                        <p style="color:rgba(255,255,255,0.9);">Rent Commission</p>
+                        <h5 style="color:white;">₹<%= ((rentCommissionTotal || 0) / 100).toFixed(2) %></h5>
+                    </div>
+                </div>
+
+                <!-- Filter Tabs -->
+                <div class="tab-filter">
+                    <a href="/admin/transactions?type=all" class="tab-btn <%= filterType === 'all' ? 'active' : '' %>">
+                        <i class="material-icons tiny">list</i> All
+                    </a>
+                    <a href="/admin/transactions?type=user" class="tab-btn <%= filterType === 'user' ? 'active' : '' %>">
+                        <i class="material-icons tiny">person</i> User Transactions
+                    </a>
+                    <a href="/admin/transactions?type=driver" class="tab-btn <%= filterType === 'driver' ? 'active' : '' %>">
+                        <i class="material-icons tiny">local_taxi</i> Driver Transactions
+                    </a>
+                </div>
+
+                <!-- USER TRANSACTIONS TABLE -->
+                <% if (filterType === 'all' || filterType === 'user') { %>
+                <div class="card" style="border-radius:14px;box-shadow:0 4px 18px rgba(0,0,0,0.09);">
+                    <div class="card-content">
+                        <div class="section-title">
+                            <i class="material-icons">person</i>
+                            User Transactions
+                        </div>
+
+                        <% if (userTransactions.length === 0) { %>
+                        <div class="no-data">
+                            <i class="material-icons grey-text">receipt</i>
+                            No user transactions found.
+                        </div>
+                        <% } else { %>
+                        <div class="table-responsive">
+                            <table class="striped responsive-table">
+                                <thead>
+                                    <tr style="background:#f5f0ff;">
+                                        <th>#</th>
+                                        <th>User</th>
+                                        <th>Total Paid</th>
+                                        <th>Admin Commission</th>
+                                        <th>Driver Receives</th>
+                                        <th>Rate</th>
+                                        <th>Method</th>
+                                        <th>Type</th>
+                                        <th>Status</th>
+                                        <th>Date</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <% userTransactions.forEach((tx, i) => { %>
+                                    <tr>
+                                        <td><%= i + 1 %></td>
+                                        <td>
+                                            <% if (tx.userId) { %>
+                                                <strong><%= tx.userId.name || 'N/A' %></strong><br>
+                                                <small class="grey-text"><%= tx.userId.email || tx.userId.phone || '' %></small>
+                                            <% } else { %>
+                                                <span class="grey-text">Deleted User</span>
+                                            <% } %>
+                                        </td>
+                                        <td class="amount-positive"><strong>₹<%= ((tx.amount || 0) / 100).toFixed(2) %></strong></td>
+                                        <td>
+                                            <% if (tx.adminCommission > 0) { %>
+                                                <span class="badge-pill" style="background:#fff3e0;color:#e65100;font-size:0.82rem;">
+                                                    ₹<%= ((tx.adminCommission || 0) / 100).toFixed(2) %>
+                                                </span>
+                                            <% } else { %>
+                                                <span class="grey-text">-</span>
+                                            <% } %>
+                                        </td>
+                                        <td>
+                                            <% if (tx.driverAmount > 0) { %>
+                                                <span class="amount-positive">₹<%= ((tx.driverAmount || 0) / 100).toFixed(2) %></span>
+                                            <% } else { %>
+                                                <span class="grey-text">-</span>
+                                            <% } %>
+                                        </td>
+                                        <td>
+                                            <% if (tx.commissionRate > 0) { %>
+                                                <small><%= tx.commissionRate %><%= tx.commissionType === 'fixed' ? ' (fixed)' : '%' %></small>
+                                            <% } else { %>
+                                                <span class="grey-text">-</span>
+                                            <% } %>
+                                        </td>
+                                        <td>
+                                            <span style="text-transform:capitalize;"><%= tx.paymentMethod || '-' %></span>
+                                        </td>
+                                        <td>
+                                            <span class="badge-pill badge-<%= (tx.type || '').replace(' ','_') %>">
+                                                <%= tx.type || '-' %>
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <span class="badge-pill badge-<%= tx.status || 'pending' %>">
+                                                <%= tx.status || 'pending' %>
+                                            </span>
+                                        </td>
+                                        <td><small><%= tx.createdAt ? new Date(tx.createdAt).toLocaleDateString('en-IN', {day:'2-digit',month:'short',year:'numeric'}) : '-' %></small></td>
+                                    </tr>
+                                    <% }) %>
+                                </tbody>
+                            </table>
+                        </div>
+                        <% } %>
+                    </div>
+                </div>
+                <% } %>
+
+                <!-- DRIVER TRANSACTIONS TABLE -->
+                <% if (filterType === 'all' || filterType === 'driver') { %>
+                <div class="card" style="border-radius:14px;box-shadow:0 4px 18px rgba(0,0,0,0.09);margin-top:10px;">
+                    <div class="card-content">
+                        <div class="section-title">
+                            <i class="material-icons">local_taxi</i>
+                            Driver Transactions (Wallet)
+                        </div>
+
+                        <% if (driverTransactions.length === 0) { %>
+                        <div class="no-data">
+                            <i class="material-icons grey-text">account_balance_wallet</i>
+                            No driver transactions found.
+                        </div>
+                        <% } else { %>
+                        <div class="table-responsive">
+                            <table class="striped responsive-table">
+                                <thead>
+                                    <tr style="background:#fce4ec;">
+                                        <th>#</th>
+                                        <th>Driver</th>
+                                        <th>Gross Amount</th>
+                                        <th>Admin Commission</th>
+                                        <th>Driver Receives</th>
+                                        <th>Rate</th>
+                                        <th>Type</th>
+                                        <th>Status</th>
+                                        <th>Reference</th>
+                                        <th>Date</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <% driverTransactions.forEach((tx, i) => { %>
+                                    <tr>
+                                        <td><%= i + 1 %></td>
+                                        <td>
+                                            <% if (tx.driverId) { %>
+                                                <strong><%= tx.driverId.name || 'N/A' %></strong><br>
+                                                <small class="grey-text"><%= tx.driverId.email || tx.driverId.phone || '' %></small>
+                                            <% } else { %>
+                                                <span class="grey-text">Deleted Driver</span>
+                                            <% } %>
+                                        </td>
+                                        <td>
+                                            <% if (tx.grossAmount > 0) { %>
+                                                <span class="grey-text">₹<%= ((tx.grossAmount || 0) / 100).toFixed(2) %></span>
+                                            <% } else { %>
+                                                <span class="grey-text">-</span>
+                                            <% } %>
+                                        </td>
+                                        <td>
+                                            <% if (tx.adminCommission > 0) { %>
+                                                <span class="badge-pill" style="background:#fff3e0;color:#e65100;">
+                                                    ₹<%= ((tx.adminCommission || 0) / 100).toFixed(2) %>
+                                                </span>
+                                            <% } else { %>
+                                                <span class="grey-text">-</span>
+                                            <% } %>
+                                        </td>
+                                        <td class="<%= tx.type === 'add' ? 'amount-positive' : 'amount-negative' %>">
+                                            <strong><%= tx.type === 'add' ? '+' : '-' %>₹<%= ((tx.amount || 0) / 100).toFixed(2) %></strong>
+                                        </td>
+                                        <td>
+                                            <% if (tx.commissionRate > 0) { %>
+                                                <small><%= tx.commissionRate %><%= tx.commissionType === 'fixed' ? ' (fixed)' : '%' %></small>
+                                            <% } else { %>
+                                                <span class="grey-text">-</span>
+                                            <% } %>
+                                        </td>
+                                        <td>
+                                            <span class="badge-pill badge-<%= tx.type %>">
+                                                <%= tx.type %>
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <span class="badge-pill badge-<%= tx.status %>">
+                                                <%= tx.status %>
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <% if (tx.rideId) { %>
+                                                <small>Ride: <%= tx.rideId.status || '' %></small>
+                                            <% } else if (tx.bookingId) { %>
+                                                <small>Booking: <%= tx.bookingId.status || '' %></small>
+                                            <% } else { %>
+                                                <span class="grey-text">-</span>
+                                            <% } %>
+                                        </td>
+                                        <td><small><%= tx.createdAt ? new Date(tx.createdAt).toLocaleDateString('en-IN', {day:'2-digit',month:'short',year:'numeric'}) : '-' %></small></td>
+                                    </tr>
+                                    <% }) %>
+                                </tbody>
+                            </table>
+                        </div>
+                        <% } %>
+                    </div>
+                </div>
+                <% } %>
+
+                <!-- Pagination -->
+                <% if (totalPages > 1) { %>
+                <div style="text-align:center;margin:20px 0;">
+                    <% for(let p = 1; p <= totalPages; p++) { %>
+                        <a href="/admin/transactions?type=<%= filterType %>&page=<%= p %>"
+                           class="btn btn-small <%= p === currentPage ? 'purple' : 'grey lighten-3 black-text' %>"
+                           style="margin:2px;border-radius:20px;">
+                            <%= p %>
+                        </a>
+                    <% } %>
+                </div>
+                <% } %>
+
+            </div>
+        </div>
+    </div>
+
+    <%- include('_layouts/commonJs') %>
+</body>
+</html>

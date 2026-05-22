@@ -889,6 +889,7 @@ const RideReq = require('../../models/rideReqModel');
 const Ride = require('../../models/rideModel');
 const Driver = require('../../models/driverModel');
 const Rating = require('../../models/driverRatingModel');
+const Transaction = require("../../models/transaction")
 
 
 // ✅ Single getVehicleTypes — useFor based matching
@@ -969,8 +970,8 @@ exports.getVehicleTypes = async (req, res, next) => {
                 status: 'online',
                 isDeleted: false,
             })
-            .select('_id type location useFor')
-            .populate('type', 'name typeFor _id');
+                .select('_id type location useFor')
+                .populate('type', 'name typeFor _id');
 
             nearbyDrivers = dbDrivers.map(d => {
                 const lat = d.location?.coordinates?.[1];
@@ -1106,6 +1107,295 @@ exports.getVehicleTypes = async (req, res, next) => {
 };
 
 
+// exports.bookRide = async (req, res, next) => {
+//     try {
+//         console.log('========== BOOK RIDE API CALLED ==========');
+//         console.log('Request Body:', {
+//             pickupAddress: req.body.pickupAddress,
+//             pickupLat: req.body.pickupLat,
+//             pickupLng: req.body.pickupLng,
+//             endAddress: req.body.endAddress,
+//             endLat: req.body.endLat,
+//             endLng: req.body.endLng,
+//             type: req.body.type,
+//             price: req.body.price,
+//             isSchedule: req.body.isSchedule
+//         });
+
+//         const user = req.user;
+//         const isSchedule = req.body.isSchedule === 'true';
+
+//         const nearbyDrivers = await Driver.find({
+//             location: {
+//                 $near: {
+//                     $geometry: {
+//                         type: 'Point',
+//                         coordinates: [req.body.pickupLng, req.body.pickupLat],
+//                     },
+//                     $maxDistance: process.env.radiusInMeters || 5000,
+//                 },
+//             },
+//             type: req.body.type,
+//             status: 'online',
+//             isDeleted: false,
+//         }).limit(5);
+
+//         console.log(`✅ Found ${nearbyDrivers.length} nearby drivers`);
+
+//         if (nearbyDrivers.length === 0) {
+//             return next(createError.BadRequest('ride.fail'));
+//         }
+
+//         const ride = await RideReq.create({
+//             user: req.user.id,
+//             pickupAddress: req.body.pickupAddress,
+//             pickupLat: req.body.pickupLat,
+//             pickupLng: req.body.pickupLng,
+//             endAddress: req.body.endAddress,
+//             endLat: req.body.endLat,
+//             endLng: req.body.endLng,
+//             type: req.body.type,
+//             price: req.body.price,
+//             isSchedule,
+//             scheduleTime: isSchedule ? req.body.scheduleTime : undefined,
+//         });
+
+//         await ride.populate('user', 'name phone');
+//         console.log('✅ Ride Request Created | ID:', ride._id.toString());
+
+//         const drivers = nearbyDrivers.map((driver, index) => {
+//             const driverLocation = {
+//                 latitude: driver.location.coordinates[1],
+//                 longitude: driver.location.coordinates[0],
+//             };
+//             const pickupLocation = {
+//                 latitude: Number(ride.pickupLat),
+//                 longitude: Number(ride.pickupLng),
+//             };
+
+//             const distanceInMeters = geolib.getDistance(driverLocation, pickupLocation);
+//             const distanceInKm = (distanceInMeters / 1000).toFixed(1);
+//             const timeInMinutes = Math.round((distanceInKm / 30) * 60);
+
+//             const distanceText = distanceInMeters < 100
+//                 ? `${distanceInMeters} meter away`
+//                 : `${distanceInKm} km away`;
+
+//             const timeText = timeInMinutes < 1
+//                 ? 'less than a minute away'
+//                 : `${timeInMinutes} minutes away`;
+
+//             console.log(`Driver ${index + 1}: ${distanceText} | ${timeText}`);
+
+//             return { id: driver.id, distance: distanceText, time: timeText, distanceInKm: parseFloat(distanceInKm) };
+//         });
+
+//         console.log('📤 Sending Firebase notifications...');
+//         const response = await notifyDriversFirebase(drivers, ride.toObject(), user);
+//         console.log('Firebase Response:', response);
+
+//         const rideDataForSocket = {
+//             rideId: ride._id.toString(),
+//             user: { name: ride.user?.name || 'Customer', phone: ride.user?.phone || '' },
+//             pickup: { address: ride.pickupAddress, lat: ride.pickupLat, lng: ride.pickupLng },
+//             dropoff: { address: ride.endAddress, lat: ride.endLat, lng: ride.endLng },
+//             price: ride.price || 0,
+//             distance: drivers[0]?.distance || 'N/A',
+//             estimatedTime: drivers[0]?.time || 'N/A'
+//         };
+
+//         if (global.io) {
+//             global.io.emit('newRideRequest', rideDataForSocket);
+//             global.io.to(user.id.toString()).emit('rideRequested', {
+//                 rideId: ride._id.toString(),
+//                 message: 'Waiting for driver to accept...'
+//             });
+//             console.log('✅ Socket events emitted');
+//         }
+
+//         console.log('========== BOOK RIDE COMPLETED ==========\n');
+//         return res.json({ code: '1', message: req.t('success') });
+
+//     } catch (error) {
+//         console.error('❌ bookRide Error:', error);
+//         if (error.name === 'CastError')
+//             return next(createError.BadRequest('Invalid type id.'));
+//         next(error);
+//     }
+// };
+
+/////////////////////////////////////////////2
+// exports.bookRide = async (req, res, next) => {
+//     try {
+//         console.log('========== BOOK RIDE API CALLED ==========');
+
+//         const user = req.user;
+//         const isSchedule = req.body.isSchedule === true || req.body.isSchedule === 'true';
+
+//         let scheduleTime = null;
+
+//         // ✅ Proper validation and date parsing for scheduled ride
+//         if (isSchedule) {
+//             if (!req.body.scheduleTime) {
+//                 return next(createError.BadRequest('scheduleTime is required for scheduled ride'));
+//             }
+
+//             scheduleTime = new Date(req.body.scheduleTime);
+
+//             // Check if date is valid
+//             if (isNaN(scheduleTime.getTime())) {
+//                 return next(createError.BadRequest('Invalid scheduleTime format. Please send valid date'));
+//             }
+
+//             // Check if schedule time is in future
+//             if (scheduleTime <= new Date()) {
+//                 return next(createError.BadRequest('Schedule time must be in the future'));
+//             }
+//         }
+
+//         // Find nearby drivers
+//         const nearbyDrivers = await Driver.find({
+//             location: {
+//                 $near: {
+//                     $geometry: { type: 'Point', coordinates: [req.body.pickupLng, req.body.pickupLat] },
+//                     $maxDistance: process.env.RADIUS_IN_METERS || 5000,
+//                 },
+//             },
+//             type: req.body.type,
+//             status: 'online',
+//             isDeleted: false,
+//         }).limit(5);
+
+//         if (nearbyDrivers.length === 0) {
+//             return next(createError.BadRequest('No drivers available nearby'));
+//         }   
+
+//         // Create Ride Request - Safe way
+//         const rideData = {
+//             user: req.user.id,
+//             pickupAddress: req.body.pickupAddress,
+//             pickupLat: req.body.pickupLat,
+//             pickupLng: req.body.pickupLng,
+//             endAddress: req.body.endAddress,
+//             endLat: req.body.endLat,
+//             endLng: req.body.endLng,
+//             type: req.body.type,
+//             price: req.body.price,
+//             isSchedule,
+//         };
+
+//         // Only add scheduleTime if it's a scheduled ride and valid
+//         if (isSchedule && scheduleTime) {
+//             rideData.scheduleTime = scheduleTime;
+//         }
+
+//         const ride = await RideReq.create(rideData);
+
+//         await ride.populate('user', 'name phone');
+
+//         console.log(`✅ Ride Request Created | ID: ${ride._id} | Scheduled: ${isSchedule}`);
+
+//         // ==================== SCHEDULED RIDE LOGIC ====================
+//         if (isSchedule) {
+//             const schedule = require('node-schedule');
+
+//             schedule.scheduleJob(scheduleTime, async () => {
+//                 try {
+//                     console.log(`🔔 Scheduled Ride Time Reached! Sending notification for Ride: ${ride._id}`);
+
+//                     const drivers = nearbyDrivers.map(driver => ({
+//                         id: driver._id,
+//                         distance: 'N/A',
+//                         time: 'N/A'
+//                     }));
+
+//                     await notifyDriversFirebase(drivers, ride.toObject(), user);
+
+//                     if (global.io) {
+//                         global.io.emit('newScheduledRideRequest', {
+//                             rideId: ride._id.toString(),
+//                             message: `You have a scheduled ride at ${scheduleTime.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' })}`,
+//                             pickup: { address: ride.pickupAddress },
+//                             dropoff: { address: ride.endAddress },
+//                             price: ride.price,
+//                             scheduleTime: scheduleTime.toISOString()
+//                         });
+//                     }
+//                 } catch (err) {
+//                     console.error('Scheduled notification error:', err);
+//                 }
+//             });
+
+//             console.log(`⏰ Ride scheduled for ${scheduleTime.toLocaleString()}`);
+
+//             return res.json({
+//                 code: '1',
+//                 message: 'Scheduled ride booked successfully! Drivers will be notified at the scheduled time.',
+//                 data: {
+//                     rideId: ride._id,
+//                     scheduleTime: scheduleTime.toISOString(),
+//                     isSchedule: true
+//                 }
+//             });
+//         }
+
+//         // ==================== NORMAL (Instant) RIDE ====================
+//         const drivers = nearbyDrivers.map((driver, index) => {
+//             const driverLocation = {
+//                 latitude: driver.location.coordinates[1],
+//                 longitude: driver.location.coordinates[0],
+//             };
+//             const pickupLocation = {
+//                 latitude: Number(ride.pickupLat),
+//                 longitude: Number(ride.pickupLng),
+//             };
+
+//             const distanceInMeters = geolib.getDistance(driverLocation, pickupLocation);
+//             const distanceInKm = (distanceInMeters / 1000).toFixed(1);
+//             const timeInMinutes = Math.round((distanceInKm / 30) * 60);
+
+//             const distanceText = distanceInMeters < 100
+//                 ? `${distanceInMeters} meter away`
+//                 : `${distanceInKm} km away`;
+
+//             const timeText = timeInMinutes < 1
+//                 ? 'less than a minute away'
+//                 : `${timeInMinutes} minutes away`;
+
+//             return { 
+//                 id: driver.id, 
+//                 distance: distanceText, 
+//                 time: timeText, 
+//                 distanceInKm: parseFloat(distanceInKm) 
+//             };
+//         });
+
+//         console.log('📤 Sending immediate notifications for instant ride...');
+//         await notifyDriversFirebase(drivers, ride.toObject(), user);
+
+//         // Socket emit for instant ride
+//         if (global.io) {
+//             const rideDataForSocket = {
+//                 rideId: ride._id.toString(),
+//                 user: { name: ride.user?.name || 'Customer', phone: ride.user?.phone || '' },
+//                 pickup: { address: ride.pickupAddress, lat: ride.pickupLat, lng: ride.pickupLng },
+//                 dropoff: { address: ride.endAddress, lat: ride.endLat, lng: ride.endLng },
+//                 price: ride.price || 0,
+//                 distance: drivers[0]?.distance || 'N/A',
+//                 estimatedTime: drivers[0]?.time || 'N/A'
+//             };
+
+//             global.io.emit('newRideRequest', rideDataForSocket);
+//         }
+
+//         return res.json({ code: '1', message: req.t('success') });
+
+//     } catch (error) {
+//         console.error('❌ bookRide Error:', error);
+//         next(error);
+//     }
+// };
+
 exports.bookRide = async (req, res, next) => {
     try {
         console.log('========== BOOK RIDE API CALLED ==========');
@@ -1117,35 +1407,67 @@ exports.bookRide = async (req, res, next) => {
             endLat: req.body.endLat,
             endLng: req.body.endLng,
             type: req.body.type,
+            useFor: req.body.useFor,
             price: req.body.price,
             isSchedule: req.body.isSchedule
         });
-
         const user = req.user;
-        const isSchedule = req.body.isSchedule === 'true';
 
+        const useFor = (req.body.useFor || '').toLowerCase().trim();
+        if (!['taxi', 'bike'].includes(useFor)) {
+            return next(createError.BadRequest('useFor is required and must be "taxi" or "bike"'));
+        }
+        console.log(`✅ Ride type: ${useFor} | Only ${useFor} drivers will be notified`);
+
+
+        // ✅ FIXED isSchedule (handle all cases)
+        const isSchedule =
+            req.body.isSchedule == true ||
+            req.body.isSchedule == 'true' ||
+            req.body.isSchedule == 1 ||
+            req.body.isSchedule == '1';
+
+        let scheduleTime = null;
+
+        // ✅ Proper validation and date parsing for scheduled ride
+        if (isSchedule) {
+            if (!req.body.scheduleTime) {
+                return next(createError.BadRequest('scheduleTime is required for scheduled ride'));
+            }
+
+            scheduleTime = new Date(req.body.scheduleTime);
+
+            // Check if date is valid
+            if (isNaN(scheduleTime.getTime())) {
+                return next(createError.BadRequest('Invalid scheduleTime format. Please send valid date'));
+            }
+
+            // Check if schedule time is in future
+            if (scheduleTime <= new Date()) {
+                return next(createError.BadRequest('Schedule time must be in the future'));
+            }
+        }
+
+        // Find nearby drivers
         const nearbyDrivers = await Driver.find({
             location: {
                 $near: {
-                    $geometry: {
-                        type: 'Point',
-                        coordinates: [req.body.pickupLng, req.body.pickupLat],
-                    },
-                    $maxDistance: process.env.radiusInMeters || 5000,
+                    $geometry: { type: 'Point', coordinates: [req.body.pickupLng, req.body.pickupLat] },
+                    $maxDistance: process.env.RADIUS_IN_METERS || 5000,
                 },
             },
-            type: req.body.type,
+            useFor: useFor,
+            // type: req.body.type,
             status: 'online',
             isDeleted: false,
         }).limit(5);
 
-        console.log(`✅ Found ${nearbyDrivers.length} nearby drivers`);
-
         if (nearbyDrivers.length === 0) {
-            return next(createError.BadRequest('ride.fail'));
+            return next(createError.BadRequest('No drivers available nearby'));
         }
 
-        const ride = await RideReq.create({
+        // ✅ Create Ride Request (FIXED isSchedule force)
+        const rideData = {
             user: req.user.id,
             pickupAddress: req.body.pickupAddress,
             pickupLat: req.body.pickupLat,
@@ -1155,13 +1477,68 @@ exports.bookRide = async (req, res, next) => {
             endLng: req.body.endLng,
             type: req.body.type,
             price: req.body.price,
-            isSchedule,
-            scheduleTime: isSchedule ? req.body.scheduleTime : undefined,
-        });
+            isSchedule: isSchedule ? true : false
+        };
+
+        // ✅ Only add scheduleTime if scheduled
+        if (isSchedule && scheduleTime) {
+            rideData.scheduleTime = scheduleTime;
+        }
+
+        const ride = await RideReq.create(rideData);
 
         await ride.populate('user', 'name phone');
-        console.log('✅ Ride Request Created | ID:', ride._id.toString());
 
+        console.log(`✅ Ride Request Created | ID: ${ride._id} | Scheduled: ${isSchedule}`);
+        console.log("DEBUG -> isSchedule:", isSchedule, "scheduleTime:", scheduleTime);
+
+        // ==================== SCHEDULED RIDE LOGIC ====================
+        if (isSchedule) {
+            const schedule = require('node-schedule');
+
+            schedule.scheduleJob(scheduleTime, async () => {
+                try {
+                    console.log(`🔔 Scheduled Ride Time Reached! Sending notification for Ride: ${ride._id}`);
+
+                    const drivers = nearbyDrivers.map(driver => ({
+                        id: driver._id,
+                        distance: 'N/A',
+                        time: 'N/A'
+                    }));
+
+                    await notifyDriversFirebase(drivers, ride.toObject(), user);
+
+                    if (global.io) {
+                        global.io.emit('newScheduledRideRequest', {
+                            rideId: ride._id.toString(),
+                            message: `You have a scheduled ride at ${scheduleTime.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' })}`,
+                            pickup: { address: ride.pickupAddress },
+                            dropoff: { address: ride.endAddress },
+                            price: ride.price,
+                            scheduleTime: scheduleTime.toISOString(),
+                            useFor: useFor
+                        });
+                    }
+                } catch (err) {
+                    console.error('Scheduled notification error:', err);
+                }
+            });
+
+            console.log(`⏰ Ride scheduled for ${scheduleTime.toLocaleString()}`);
+
+            return res.json({
+                code: '1',
+                message: 'Scheduled ride booked successfully! Drivers will be notified at the scheduled time.',
+                data: {
+                    rideId: ride._id,
+                    scheduleTime: scheduleTime.toISOString(),
+                    isSchedule: true,
+                    useFor
+                }
+            });
+        }
+
+        // ==================== NORMAL (Instant) RIDE ====================
         const drivers = nearbyDrivers.map((driver, index) => {
             const driverLocation = {
                 latitude: driver.location.coordinates[1],
@@ -1184,44 +1561,98 @@ exports.bookRide = async (req, res, next) => {
                 ? 'less than a minute away'
                 : `${timeInMinutes} minutes away`;
 
-            console.log(`Driver ${index + 1}: ${distanceText} | ${timeText}`);
-
-            return { id: driver.id, distance: distanceText, time: timeText, distanceInKm: parseFloat(distanceInKm) };
+            return {
+                id: driver.id,
+                distance: distanceText,
+                time: timeText,
+                distanceInKm: parseFloat(distanceInKm)
+            };
         });
 
-        console.log('📤 Sending Firebase notifications...');
-        const response = await notifyDriversFirebase(drivers, ride.toObject(), user);
-        console.log('Firebase Response:', response);
+        console.log('📤 Sending immediate notifications for instant ride...');
+        await notifyDriversFirebase(drivers, ride.toObject(), user);
 
-        const rideDataForSocket = {
-            rideId: ride._id.toString(),
-            user: { name: ride.user?.name || 'Customer', phone: ride.user?.phone || '' },
-            pickup: { address: ride.pickupAddress, lat: ride.pickupLat, lng: ride.pickupLng },
-            dropoff: { address: ride.endAddress, lat: ride.endLat, lng: ride.endLng },
-            price: ride.price || 0,
-            distance: drivers[0]?.distance || 'N/A',
-            estimatedTime: drivers[0]?.time || 'N/A'
-        };
+        // Socket emit for instant ride
+        // if (global.io) {
+        //     const rideObject = ride.toObject();
+        //     const rideDataForSocket = {
+        //         // rideId: ride._id.toString(),
+        //         // user: { name: ride.user?.name || 'Customer', phone: ride.user?.phone || '' },
+        //         // pickup: { address: ride.pickupAddress, lat: ride.pickupLat, lng: ride.pickupLng },
+        //         // dropoff: { address: ride.endAddress, lat: ride.endLat, lng: ride.endLng },
+        //         // price: ride.price || 0,
+        //         // distance: drivers[0]?.distance || 'N/A',
+        //         // estimatedTime: drivers[0]?.time || 'N/A',
+        //         // 
+        //         driverId: drivers[0]?.id || null,
+        //         userId: user.id,
+
+        //         ride: rideObject,
+
+        //         rideId: ride._id.toString(),
+
+        //         distance: drivers[0]?.distance || 'N/A',
+        //         time: drivers[0]?.time || 'N/A',
+        //         useFor: useFor,
+
+
+        //     };
+
+        //     global.io.emit('newRideRequest', rideDataForSocket);
+        // }
 
         if (global.io) {
-            global.io.emit('newRideRequest', rideDataForSocket);
-            global.io.to(user.id.toString()).emit('rideRequested', {
-                rideId: ride._id.toString(),
-                message: 'Waiting for driver to accept...'
+            let socketNotified = 0;
+
+            global.io.activeDrivers?.forEach((driverData, driverId) => {
+                if (driverData.useFor !== useFor) {
+                    console.log(`  ⛔ Skip driver ${driverId} (useFor: ${driverData.useFor})`);
+                    return;
+                }
+                const isNearby = nearbyDrivers.some(d => d._id.toString() === driverId);
+                if (!isNearby) {
+                    console.log(`  ⛔ Skip driver ${driverId} — not in nearby list`);
+                    return;
+                }
+                const matchedDriver = drivers.find(d => d.id.toString() === driverId);
+
+                global.io.to(driverData.socketId).emit('newRideRequest', {
+                    driverId: driverId,
+                    userId: user.id,
+                    ride: ride.toObject(),
+                    rideId: ride._id.toString(),
+                    distance: matchedDriver?.distance || 'N/A',
+                    time: matchedDriver?.time || 'N/A',
+                    useFor: useFor,
+                });
+
+                socketNotified++;
+                console.log(`  ✅ Socket sent to ${useFor} driver: ${driverId}`);
             });
-            console.log('✅ Socket events emitted');
+
+            console.log(`✅ activeDrivers map size: ${global.io.activeDrivers?.size || 0}`);
+            console.log(`✅ Socket notifications sent to ${socketNotified} "${useFor}" drivers`);
+
+            if (socketNotified === 0) {
+                console.log(`⚠️ Socket map empty — FCM already sent to ${drivers.length} drivers`);
+            }
         }
 
-        console.log('========== BOOK RIDE COMPLETED ==========\n');
-        return res.json({ code: '1', message: req.t('success') });
+        // return res.json({ code: '1', message: req.t('success'), });
+        return res.json({
+            code: '1',
+            message: req.t('success'),
+            price: ride.price || 0,
+            rideId: ride._id,
+            useFor
+        });
 
     } catch (error) {
         console.error('❌ bookRide Error:', error);
-        if (error.name === 'CastError')
-            return next(createError.BadRequest('Invalid type id.'));
         next(error);
     }
 };
+
 
 exports.tempPayment = async (req, res, next) => {
     try {
@@ -1296,6 +1727,187 @@ exports.cancelRide = async (req, res, next) => {
     }
 };
 
+// exports.getRides = async (req, res, next) => {
+//     try {
+//         let rides = await Ride.find({ user: req.user.id })
+//             .populate('user', 'name phone')
+//             .populate({
+//                 path: 'driver',
+//                 match: { isDeleted: false },
+//                 populate: { path: 'type', select: '-__v -distanceRate -typeFor -capacity' },
+//                 select: 'name profile phone rating',
+//             })
+//             .select('-__v')
+//             .sort('-_id')
+//             .lean();
+
+//         rides = rides.map(ride => {
+//             if (ride.driver?.type)
+//                 ride.type = multilingual(ride.driver?.type, req);
+//             return ride;
+//         });
+
+//         res.json({ code: '1', message: req.t('success'), rides });
+//     } catch (error) {
+//         next(error);
+//     }
+// };
+
+// exports.getRides = async (req, res, next) => {
+//     try {
+//         let rides = await Ride.find({ user: req.user.id })
+//             .populate('user', 'name phone')
+//             .populate({
+//                 path: 'driver',
+//                 match: { isDeleted: false },
+//                 select: 'name profile phone rating useFor', // 👈 IMPORTANT ADD
+//             })
+//             .select('-__v')
+//             .sort('-_id')
+//             .lean();
+
+//         rides = await Promise.all(
+//             rides.map(async (ride) => {
+
+//                 const transaction = await Transaction.findOne({
+//                     $or: [
+//                         { rideId: ride._id },
+//                         { rideId: ride._id.toString() },
+//                         { referenceId: ride._id }
+//                     ]
+//                 })
+//                     .sort({ createdAt: -1 })
+//                     .lean();
+
+//                 // ================= NEW LOGIC =================
+//                 let rideMode = null;
+
+//                 if (ride.driver?.useFor) {
+//                     rideMode = ride.driver.useFor; // taxi / bike
+//                 }
+
+//                 // // Capitalize → Taxi / Bike
+//                 // if (rideMode && typeof rideMode === 'string') {
+//                 //     rideMode =
+//                 //         rideMode.charAt(0).toUpperCase() +
+//                 //         rideMode.slice(1).toLowerCase();
+//                 // }
+//                 // ================= END =================
+
+//                 return {
+//                     ...ride,
+
+//                     // ✅ FINAL OUTPUT
+//                     rideMode, // Taxi / Bike
+
+//                     paymentMethod: transaction?.paymentMethod || null,
+//                     paymentStatus: transaction?.status || null,
+//                     amount: transaction?.amount || null,
+//                     scheduledTime: ride.isSchedule ? ride.scheduleTime : null
+//                 };
+//             })
+//         );
+
+//         res.json({
+//             code: '1',
+//             message: req.t('success'),
+//             rides
+//         });
+
+//     } catch (error) {
+//         console.log('❌ getRides Error:', error);
+//         next(error);
+//     }
+// };
+
+// exports.getRides = async (req, res, next) => {
+//     try {
+//         let rides = await Ride.find({ user: req.user.id })
+//             .populate('user', 'name phone')
+//             .populate({
+//                 path: 'driver',
+//                 match: { isDeleted: false },
+//                 select: 'name profile phone rating useFor',
+//             })
+//             .select('-__v')
+//             .sort('-_id')
+//             .lean();
+
+//         rides = await Promise.all(
+//             rides.map(async (ride) => {
+
+//                 const transaction = await Transaction.findOne({
+//                     $or: [
+//                         { rideId: ride._id },
+//                         { rideId: ride._id.toString() },
+//                         { referenceId: ride._id }
+//                     ]
+//                 })
+//                     .sort({ createdAt: -1 })
+//                     .lean();
+
+//                 // ================= VEHICLE IMAGE LOGIC =================
+//                 let rideMode = null;
+//                 let vehicleImage = null;
+
+//                 if (ride.driver?.useFor) {
+//                     rideMode = ride.driver.useFor.toLowerCase().trim();
+
+//                     if (rideMode === 'taxi' || rideMode === 'car') {
+//                         vehicleImage = "/img/taxi.png";
+//                     }
+//                     else if (rideMode === 'bike') {
+//                         vehicleImage = "/img/bike.png";
+//                     }
+//                 }
+
+//                 // ================= PAYMENT METHOD IMAGE LOGIC =================
+//                 let paymentMethod = transaction?.paymentMethod || null;
+//                 let paymentImage = null;
+
+//                 if (paymentMethod) {
+//                     const method = paymentMethod.toLowerCase().trim();
+
+//                     if (method === 'cash') {
+//                         paymentImage = "/img/cash.png";
+//                     }
+//                     else if (method === 'wallet') {
+//                         paymentImage = "/img/wallet.png";
+//                     }
+//                     else if (method === 'stripe' || method === 'card' || method === 'online') {
+//                         paymentImage = "/img/stripe.png";     // ya card.png
+//                     }
+//                 }
+
+//                 return {
+//                     ...ride,
+
+//                     // ✅ Final Fields
+//                     rideMode,           // taxi / bike
+//                     vehicleImage,       // /img/taxi.png
+
+//                     paymentMethod,      // cash / wallet / stripe
+//                     paymentImage,       // /img/cash.png   ← Naya field
+//                     paymentStatus: transaction?.status || null,
+//                     amount: transaction?.amount || null,
+//                     scheduledTime: ride.isSchedule ? ride.scheduleTime : null
+//                 };
+//             })
+//         );
+
+//         res.json({
+//             code: '1',
+//             message: req.t('success'),
+//             rides
+//         });
+
+//     } catch (error) {
+//         console.log('❌ getRides Error:', error);
+//         next(error);
+//     }
+// };
+
+
 exports.getRides = async (req, res, next) => {
     try {
         let rides = await Ride.find({ user: req.user.id })
@@ -1303,21 +1915,101 @@ exports.getRides = async (req, res, next) => {
             .populate({
                 path: 'driver',
                 match: { isDeleted: false },
-                populate: { path: 'type', select: '-__v -distanceRate -typeFor -capacity' },
-                select: 'name profile phone rating',
+                select: 'name profile phone rating useFor type',  // ✅ type add kiya
+                populate: {
+                    path: 'type',                                  // ✅ driver.type populate
+                    select: 'en fr ar typeFor image'
+                }
             })
             .select('-__v')
             .sort('-_id')
             .lean();
 
-        rides = rides.map(ride => {
-            if (ride.driver?.type)
-                ride.type = multilingual(ride.driver?.type, req);
-            return ride;
+        rides = await Promise.all(
+            rides.map(async (ride) => {
+
+                const transaction = await Transaction.findOne({
+                    $or: [
+                        { rideId: ride._id },
+                        { rideId: ride._id.toString() },
+                        { referenceId: ride._id }
+                    ]
+                }).sort({ createdAt: -1 }).lean();
+
+                // ================= VEHICLE TYPE from driver.type =================
+                let vehicleType = null;
+                let vehicleTypeImage = null;
+                let rideMode = null;
+                let vehicleImage = null;
+
+                if (ride.driver?.type) {
+                    const lang = req.language ||
+                        req.headers['accept-language']?.slice(0, 2) ||
+                        'en';
+
+                    vehicleType = ride.driver.type[lang]?.name
+                        || ride.driver.type.en?.name
+                        || null;
+
+                    vehicleTypeImage = ride.driver.type.image || null;
+
+                    console.log(`Ride ${ride._id} | vehicleType: ${vehicleType}`);
+                }
+
+                // ================= RIDE MODE =================
+                if (ride.driver?.useFor) {
+                    rideMode = ride.driver.useFor.toLowerCase().trim();
+                }
+
+                // Fallback — driver.type.typeFor se
+                if (!rideMode && ride.driver?.type?.typeFor) {
+                    rideMode = ride.driver.type.typeFor.toLowerCase();
+                }
+
+                if (rideMode === 'taxi' || rideMode === 'car') {
+                    vehicleImage = "/img/taxi.png";
+                } else if (rideMode === 'bike') {
+                    vehicleImage = "/img/bike.png";
+                }
+
+                // ================= PAYMENT METHOD IMAGE =================
+                let paymentMethod = transaction?.paymentMethod || null;
+                let paymentImage = null;
+
+                if (paymentMethod) {
+                    const method = paymentMethod.toLowerCase().trim();
+                    if (method === 'cash') {
+                        paymentImage = "/img/cash.png";
+                    } else if (method === 'wallet') {
+                        paymentImage = "/img/wallet.png";
+                    } else if (['stripe', 'card', 'online'].includes(method)) {
+                        paymentImage = "/img/stripe.png";
+                    }
+                }
+
+                return {
+                    ...ride,
+                    rideMode,            // "taxi" / "bike"
+                    vehicleType,         // "Economy" / "Family" / "Bike"
+                    vehicleTypeImage,    // Type image URL
+                    vehicleImage,        // "/img/taxi.png"
+                    paymentMethod,
+                    paymentImage,
+                    paymentStatus: transaction?.status || null,
+                    amount: transaction?.amount || null,
+                    scheduledTime: ride.isSchedule ? ride.scheduleTime : null
+                };
+            })
+        );
+
+        res.json({
+            code: '1',
+            message: req.t('success'),
+            rides
         });
 
-        res.json({ code: '1', message: req.t('success'), rides });
     } catch (error) {
+        console.log('❌ getRides Error:', error);
         next(error);
     }
 };

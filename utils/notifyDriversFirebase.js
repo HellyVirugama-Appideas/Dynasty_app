@@ -1,5 +1,5 @@
 const { sendRideNotification } = require('./sendNotification');
-const notifyDrivers = require('./notifyDrivers');
+const notifyDrivers = require('./notifyDrivers');       
 const Driver = require('../models/driverModel');
 
 module.exports = async function notifyDrivers(drivers, ride, user) {
@@ -34,6 +34,7 @@ module.exports = async function notifyDrivers(drivers, ride, user) {
                 time: time,
                 title: 'New Ride Request',
                 body: `You have a new ride request ${distance} (${time}).`,
+                driver: driverId,
             };
             const response = await sendRideNotification(
                 registrationToken,

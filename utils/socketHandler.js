@@ -350,9 +350,10 @@ module.exports = (io) => {
     global.io.activeDrivers = activeDrivers;
 
     io.on('connection', (socket) => {
-        console.log('New client connected:', socket.id);
+        // console.log('New client connected:', socket.id);
 
         // ==================== JOIN ====================
+        // ==================== JOIN EVENT (Updated - lat/lng support) ====================
         // socket.on('join', (data) => {
         //     try {
         //         console.log('🔑 [JOIN] Received:', data);
@@ -373,27 +374,74 @@ module.exports = (io) => {
         //         if (socket.role === 'driver') {
         //             const useFor = (data.useFor || 'taxi').toLowerCase();
 
-        //             activeDrivers.set(decoded._id.toString(), {
+        //             const driverEntry = {
         //                 socketId: socket.id,
         //                 status: 'online',
-        //                 lat: null,
-        //                 lng: null,
+        //                 lat: data.lat ? Number(data.lat) : null,
+        //                 lng: data.lng ? Number(data.lng) : null,
         //                 useFor: useFor,
         //                 typeFor: useFor === 'bike' ? 'Bike' : 'Taxi'
-        //             });
+        //             };
 
-        //             console.log(`🚗 [DRIVER ADDED] ID: ${decoded._id} | useFor: ${useFor} | Total: ${activeDrivers.size}`);
+        //             activeDrivers.set(decoded._id.toString(), driverEntry);
+
+        //             socket.emit('joinSuccess', { message: 'Joined successfully' });
+
+        //             console.log(`🚗 [DRIVER ADDED] ID: ${decoded._id} | useFor: ${useFor} | Lat: ${driverEntry.lat} | Lng: ${driverEntry.lng} | Total: ${activeDrivers.size}`);
         //         }
 
-        //         socket.emit('joinSuccess', { message: 'Joined successfully' });
 
         //     } catch (err) {
         //         console.error('❌ [JOIN ERROR]:', err.message);
         //         socket.emit('joinError', { message: 'Invalid or expired token' });
         //     }
         // });
-        // ==================== JOIN EVENT (Updated - lat/lng support) ====================
-        socket.on('join', (data) => {
+
+        // socket.on('join', async (data) => {   // ← add async here
+        //     try {
+        //         console.log('🔑 [JOIN] Received:', data);
+
+        //         if (!data?.token) {
+        //             return socket.emit('joinError', { message: 'Token is required' });
+        //         }
+
+        //         const decoded = jwt.verify(data.token, process.env.JWT_SECRET);
+
+        //         socket.userId = decoded._id;
+        //         socket.role = (data.role || 'user').toLowerCase();
+
+        //         socket.join(decoded._id.toString());
+
+        //         if (socket.role === 'driver') {
+        //             const useFor = (data.useFor || 'taxi').toLowerCase();
+
+        //             // ✅ Fetch type from DB
+        //             const dbDriver = await Driver.findById(decoded._id).select('type');
+
+        //             const driverEntry = {
+        //                 socketId: socket.id,
+        //                 status: 'online',
+        //                 lat: data.lat ? Number(data.lat) : null,
+        //                 lng: data.lng ? Number(data.lng) : null,
+        //                 useFor: useFor,
+        //                 typeFor: useFor === 'bike' ? 'Bike' : 'Taxi',
+        //                 type: dbDriver?.type?.toString() || null   // ✅ this was null before
+        //             };
+
+        //             activeDrivers.set(decoded._id.toString(), driverEntry);
+
+        //             socket.emit('joinSuccess', { message: 'Joined successfully' });
+
+        //             console.log(`🚗 [DRIVER ADDED] ID: ${decoded._id} | useFor: ${useFor} | type: ${driverEntry.type} | Total: ${activeDrivers.size}`);
+        //         }
+
+        //     } catch (err) {
+        //         console.error('❌ [JOIN ERROR]:', err.message);
+        //         socket.emit('joinError', { message: 'Invalid or expired token' });
+        //     }
+        // });
+
+        socket.on('join', async (data) => {
             try {
                 console.log('🔑 [JOIN] Received:', data);
 
@@ -408,26 +456,38 @@ module.exports = (io) => {
 
                 socket.join(decoded._id.toString());
 
-                console.log(`✅ [JOIN SUCCESS] ID: ${decoded._id} | Role: ${socket.role}`);
-
                 if (socket.role === 'driver') {
-                    const useFor = (data.useFor || 'taxi').toLowerCase();
+
+                    // ✅ DB से driver fetch करो — useFor और type दोनों
+                    const dbDriver = await Driver.findById(decoded._id).select('type useFor');
+
+                    if (!dbDriver) {
+                        return socket.emit('joinError', { message: 'Driver not found in DB' });
+                    }
+
+                    // ✅ useFor DB से लो — data पर depend मत करो
+                    const useFor = (dbDriver.useFor || data.useFor || 'taxi').toLowerCase().trim();
 
                     const driverEntry = {
                         socketId: socket.id,
                         status: 'online',
                         lat: data.lat ? Number(data.lat) : null,
                         lng: data.lng ? Number(data.lng) : null,
-                        useFor: useFor,
-                        typeFor: useFor === 'bike' ? 'Bike' : 'Taxi'
+                        useFor: useFor,                              // ✅ DB से आया
+                        typeFor: useFor === 'bike' ? 'Bike' : 'Taxi',
+                        type: dbDriver?.type?.toString() || null,   // ✅ DB से आया
                     };
 
                     activeDrivers.set(decoded._id.toString(), driverEntry);
 
-                    console.log(`🚗 [DRIVER ADDED] ID: ${decoded._id} | useFor: ${useFor} | Lat: ${driverEntry.lat} | Lng: ${driverEntry.lng} | Total: ${activeDrivers.size}`);
-                }
+                    socket.emit('joinSuccess', { message: 'Joined successfully', useFor });
 
-                socket.emit('joinSuccess', { message: 'Joined successfully' });
+                    console.log(`🚗 [DRIVER ADDED] ID: ${decoded._id} | useFor: ${useFor} | type: ${driverEntry.type} | Total: ${activeDrivers.size}`);
+                } else {
+                    // User join
+                    console.log(`✅ [USER JOINED] ID: ${decoded._id}`);
+                    socket.emit('joinSuccess', { message: 'Joined successfully' });
+                }
 
             } catch (err) {
                 console.error('❌ [JOIN ERROR]:', err.message);
@@ -643,17 +703,306 @@ module.exports = (io) => {
             }
         });
         // ==================== LIVE TRACKING (Driver sends location) ====================
-        socket.on('sendLiveTracking', (data) => {
-            const { rideId, latitude, longitude, time } = data;
-            // Emit to the user of this ride (you can store rideId → userId mapping if needed)
-            // For simplicity, assuming you join ride room or use user room
-            io.to(data.userId || 'user-room').emit('receiveLiveTracking', {
-                rideId,
-                latitude,
-                longitude,
-                time
-            });
+        // socket.on('sendLiveTracking', async (data) => {
+        //     try {
+        //         const { rideId, latitude, longitude, bearing, speed } = data;
+
+        //         // ==================== VALIDATION ====================
+        //         if (!rideId) {
+        //             console.log('❌ sendLiveTracking: rideId missing');
+        //             return socket.emit('trackingError', { message: 'rideId is required' });
+        //         }
+
+        //         if (latitude == null || longitude == null) {
+        //             console.log('❌ sendLiveTracking: latitude or longitude missing');
+        //             return socket.emit('trackingError', { message: 'latitude and longitude are required' });
+        //         }
+
+        //         console.log(`📍 [LIVE TRACKING RECEIVED] Ride: ${rideId} | Lat: ${latitude}, Lng: ${longitude}`);
+
+        //         // ==================== FIND RIDE & USER ====================
+        //         const ride = await Ride.findById(rideId).select('user status driver');
+
+        //         if (!ride) {
+        //             console.log(`❌ sendLiveTracking: Ride not found - ${rideId}`);
+        //             return socket.emit('trackingError', { message: 'Ride not found' });
+        //         }
+
+        //         if (!['Ongoing', 'start', 'accepted'].includes(ride.status)) {
+        //             console.log(`⚠️  sendLiveTracking: Ride is not active. Current status: ${ride.status}`);
+        //             return socket.emit('trackingError', { message: 'Ride is not active anymore' });
+        //         }
+
+        //         const userId = ride.user.toString();
+
+        //         console.log(`✅ [LIVE TRACKING] Sending to User: ${userId} | Ride: ${rideId}`);
+
+        //         // ==================== SEND TO USER ====================
+        //         io.to(userId).emit('receiveLiveTracking', {
+        //             rideId: rideId.toString(),
+        //             latitude: Number(latitude),
+        //             longitude: Number(longitude),
+        //             bearing: bearing ? Number(bearing) : null,
+        //             speed: speed ? Number(speed) : null,
+        //             timestamp: new Date().toISOString()
+        //         });
+
+        //         // Optional: Driver ko bhi confirmation bhej sakte ho
+        //         socket.emit('trackingSent', {
+        //             success: true,
+        //             rideId,
+        //             message: 'Location sent to user successfully'
+        //         });
+
+        //         console.log(`🚀 Live location successfully sent to user ${userId}`);
+
+        //     } catch (err) {
+        //         console.error('❌ sendLiveTracking Error:', err);
+        //         socket.emit('trackingError', {
+        //             message: 'Failed to send live tracking',
+        //             error: err.message
+        //         });
+        //     }
+        // });
+
+
+        // ==================== LIVE TRACKING (DRIVER → USER) ====================
+        // FIXED + SUPER CLEAR LOGS (Send aur Receive dono alag-alag dikhega)
+        socket.on('sendLiveTracking', async (data) => {
+            try {
+                const { rideId, latitude, longitude, bearing, speed } = data;
+
+                // ====================== 1. SEND LIVE TRACKING RECEIVED FROM DRIVER ======================
+                console.log('🔴 [SEND LIVE TRACKING] === RECEIVED FROM DRIVER ===');
+                console.log(`   Ride ID     : ${rideId}`);
+                console.log(`   Latitude    : ${latitude}`);
+                console.log(`   Longitude   : ${longitude}`);
+                console.log(`   Bearing     : ${bearing || 'N/A'}`);
+                console.log(`   Speed       : ${speed || 'N/A'}`);
+                console.log('   Timestamp   :', new Date().toISOString());
+
+                // Validation
+                if (!rideId) {
+                    console.log('❌ [SEND LIVE TRACKING] ERROR: rideId missing');
+                    return socket.emit('trackingError', { message: 'rideId is required' });
+                }
+                if (latitude == null || longitude == null) {
+                    console.log('❌ [SEND LIVE TRACKING] ERROR: latitude or longitude missing');
+                    return socket.emit('trackingError', { message: 'latitude and longitude are required' });
+                }
+
+                // Find ride & user
+                const ride = await Ride.findById(rideId).select('user status driver');
+
+                if (!ride) {
+                    console.log(`❌ [SEND LIVE TRACKING] ERROR: Ride not found - ${rideId}`);
+                    return socket.emit('trackingError', { message: 'Ride not found' });
+                }
+
+                if (!['Ongoing', 'start', 'accepted'].includes(ride.status)) {
+                    console.log(`⚠️  [SEND LIVE TRACKING] WARNING: Ride is not active. Status: ${ride.status}`);
+                    return socket.emit('trackingError', { message: 'Ride is not active anymore' });
+                }
+
+                const userId = ride.user.toString();
+
+                console.log(`✅ [SEND LIVE TRACKING] SUCCESS - Ride validated | User ID: ${userId}`);
+
+                // ====================== 2. RECEIVE LIVE TRACKING (Emitting to User) ======================
+                const trackingPayload = {
+                    rideId: rideId.toString(),
+                    latitude: Number(latitude),
+                    longitude: Number(longitude),
+                    bearing: bearing ? Number(bearing) : null,
+                    speed: speed ? Number(speed) : null,
+                    timestamp: new Date().toISOString()
+                };
+
+                console.log('📤 [RECEIVE LIVE TRACKING] === EMITTING TO USER ===');
+                console.log(`   To User ID  : ${userId}`);
+                console.log(`   Payload     :`, JSON.stringify(trackingPayload, null, 2));
+
+                // Actual emit (jo user side pe 'receiveLiveTracking' event trigger karega)
+                io.to(userId).emit('receiveLiveTracking', trackingPayload);
+
+                console.log(`✅ [RECEIVE LIVE TRACKING] SUCCESSFULLY SENT TO USER ${userId} for Ride ${rideId}`);
+
+                // Driver ko confirmation
+                socket.emit('trackingSent', {
+                    success: true,
+                    rideId,
+                    message: 'Location sent to user successfully'
+                });
+
+            } catch (err) {
+                console.error('❌ [SEND LIVE TRACKING] CRITICAL ERROR:', err);
+                socket.emit('trackingError', {
+                    message: 'Failed to send live tracking',
+                    error: err.message
+                });
+            }
         });
+
+        // ==================== PICKUP USER ====================
+        // socket.on('pickupUser', async (data) => {
+        //     try {
+        //         const { rideId } = data;
+
+        //         console.log('🚖 [PICKUP USER] Event Received');
+        //         console.log('   Ride ID:', rideId);
+
+        //         if (!rideId) {
+        //             console.log('❌ [PICKUP USER] Error: rideId missing');
+        //             return socket.emit('rideError', { message: 'rideId is required' });
+        //         }
+
+        //         // Fetch ride with full driver details
+        //         const ride = await Ride.findById(rideId)
+        //             .populate('driver', 'name profile rating carType vehicleNumber')
+        //             .select('user driver rideStatus status otp');
+
+        //         if (!ride) {
+        //             console.log('❌ [PICKUP USER] Error: Ride not found');
+        //             return socket.emit('rideError', { message: 'Ride not found' });
+        //         }
+
+        //         console.log('✅ [PICKUP USER] Ride Found');
+        //         console.log('   Current rideStatus:', ride.rideStatus);
+        //         console.log('   Driver ID      :', ride.driver?._id);
+        //         console.log('   Driver Name    :', ride.driver?.name);
+        //         console.log('   Driver Rating  :', ride.driver?.rating);
+        //         console.log('   OTP            :', ride.otp);
+
+        //         // Update ride status
+        //         ride.rideStatus = 'tripStarted';
+        //         ride.status = 'Ongoing';
+        //         await ride.save();
+
+        //         console.log('✅ [PICKUP USER] Status Updated to tripStarted');
+
+        //         // ==================== RESPONSE WITH DRIVER INFO ====================
+        //         const responsePayload = {
+        //             rideStatus: "wayToPickup",        // Aapne jo maanga tha
+        //             driver: {
+        //                 _id: ride.driver?._id?.toString() || "",
+        //                 name: ride.driver?.name || "",
+        //                 profile: ride.driver?.profile || "",     // image
+        //                 rating: ride.driver?.rating || 0,
+        //                 carType: ride.driver?.carType || "",
+        //                 vehicleNumber: ride.driver?.vehicleNumber || "",
+        //                 otp: ride.otp || ""
+        //             }
+        //         };
+
+        //         // Detailed Log - Jo actual response user ko ja raha hai
+        //         console.log('📤 [PICKUP USER] Sending rideStatusNotify to USER:');
+        //         console.log(JSON.stringify(responsePayload, null, 2));
+
+        //         // Emit to User
+        //         io.to(ride.user.toString()).emit('rideStatusNotify', responsePayload);
+
+        //         // Emit to Driver (confirmation)
+        //         console.log('📤 [PICKUP USER] Sending confirmation to DRIVER');
+        //         socket.emit('rideStatusNotify', {
+        //             rideStatus: "tripStarted",
+        //             message: "You have picked up the user successfully",
+        //             rideId: rideId.toString(),
+        //             otp: ride.otp || ""
+        //         });
+
+        //         console.log(`🎉 [PICKUP USER] Process Completed Successfully for Ride: ${rideId}`);
+
+        //     } catch (err) {
+        //         console.error('❌ [PICKUP USER] Critical Error:', err.message);
+        //         console.error(err.stack);
+
+        //         socket.emit('rideError', {
+        //             message: 'Failed to process pickup user',
+        //             error: err.message
+        //         });
+        //     }
+        // });
+
+        // ==================== PICKUP USER ====================
+        socket.on('pickupUser', async (data) => {
+            try {
+                const { rideId } = data;
+
+                console.log('🚖 [PICKUP USER] Event Received');
+                console.log('   Ride ID:', rideId);
+
+                if (!rideId) {
+                    console.log('❌ [PICKUP USER] Error: rideId missing');
+                    return socket.emit('rideError', { message: 'rideId is required' });
+                }
+
+                // Fetch ride with driver details
+                const ride = await Ride.findById(rideId)
+                    .populate('driver', 'name profile rating carType vehicleNumber')
+                    .select('user driver rideStatus status otp');
+
+                if (!ride) {
+                    console.log('❌ [PICKUP USER] Error: Ride not found');
+                    return socket.emit('rideError', { message: 'Ride not found' });
+                }
+
+                if (!ride.driver) {
+                    console.log('❌ [PICKUP USER] Error: Driver not found in ride');
+                    return socket.emit('rideError', { message: 'Driver information not found' });
+                }
+
+                console.log('✅ [PICKUP USER] Ride Found');
+
+                // Update ride status
+                ride.rideStatus = 'tripStarted';
+                ride.status = 'Ongoing';
+                await ride.save();
+
+                console.log('✅ [PICKUP USER] Status Updated to tripStarted');
+
+                // ==================== RESPONSE FOR USER ====================
+                const responsePayload = {
+                    rideStatus: "wayToPickup",           // As you wanted
+                    driverId: ride.driver._id.toString(),
+                    driverName: ride.driver.name || "",
+                    imageUrl: ride.driver.profile || "",        // profile photo
+                    carType: ride.driver.carType || "",
+                    rating: ride.driver.rating || 0,
+                    time: new Date().toISOString(),             // Current timestamp
+                    otp: ride.otp || "",                        // Optional: if needed
+                    rideId: rideId.toString(),
+                    message: "Driver has picked you up"
+                };
+
+                // Detailed Log
+                console.log('📤 [PICKUP USER] Sending rideStatusNotify to USER:');
+                console.log(JSON.stringify(responsePayload, null, 2));
+
+                // Emit to User
+                io.to(ride.user.toString()).emit('rideStatusNotify', responsePayload);
+
+                // ==================== RESPONSE FOR DRIVER ====================
+                console.log('📤 [PICKUP USER] Sending confirmation to DRIVER');
+                socket.emit('rideStatusNotify', {
+                    rideStatus: "tripStarted",
+                    message: "You have picked up the user successfully",
+                    rideId: rideId.toString(),
+                    otp: ride.otp || ""
+                });
+
+                console.log(`🎉 [PICKUP USER] Process Completed Successfully for Ride: ${rideId}`);
+
+            } catch (err) {
+                console.error('❌ [PICKUP USER] Critical Error:', err.message);
+                console.error(err.stack);
+
+                socket.emit('rideError', {
+                    message: 'Failed to process pickup user',
+                    error: err.message
+                });
+            }
+        });
+
         // ==================== RIDE STATUS UPDATES ====================
         socket.on('updateRideStatus', async (data) => {
             const { rideId, rideStatus } = data;

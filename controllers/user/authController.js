@@ -326,79 +326,234 @@ exports.socialLogin = async (req, res, next) => {
     }
 };
 
+// exports.createSocialProfile = async (req, res, next) => {
+//     try {
+//         const { city_id, country_id } = req.body;
+//         const [city, country] = await Promise.all([
+//             City.findOne({ city_id }),
+//             Country.findOne({ country_id }),
+//         ]);
+
+//         // 1. Handle file uploads
+//         const profile = req.files?.profile?.[0] ? `/uploads/${req.files.profile[0].filename}` : undefined;
+//         const licenseFront = req.files?.licenseFront?.[0] ? `/uploads/${req.files.licenseFront[0].filename}` : undefined;
+//         const licenseBack = req.files?.licenseBack?.[0] ? `/uploads/${req.files.licenseBack[0].filename}` : undefined;
+
+//         // 2. Create user
+//         let user = new User({
+//             name: req.body.name,
+//             email: req.body.email,
+//             country_code: req.body.country_code,
+//             phone: req.body.phone,
+//             city: city?.id,
+//             country: country?.id,
+//             googleId: req.body.googleId,
+//             facebookId: req.body.facebookId,
+//             appleId: req.body.appleId,
+//             profile,
+//             licenseFront,
+//             licenseBack,
+//             fcmToken: req.body.fcmToken,
+//         });
+
+//         // 3. Create address
+//         const address = new Address({
+//             userId: user.id,
+//             address: req.body.address,
+//             latitude: req.body.latitude,
+//             longitude: req.body.longitude,
+//             selected: true,
+//         });
+
+//         // 4. Validate
+//         await user.validate();
+//         await address.validate();
+
+//         user.address = address.id;
+//         await Promise.all([user.save(), address.save()]);
+
+//         const token = await user.generateAuthToken();
+//         await user.populate('city country address');
+//         user = multilingualUser(user, req);
+
+//         user.latitude = user.address.latitude;
+//         user.longitude = user.address.longitude;
+//         user.address = user.address.address;
+
+//         // Hide fields
+//         user.password = undefined;
+//         user.__v = undefined;
+
+//         res.status(201).json({
+//             code: '1',
+//             message: req.t('profile'),
+//             token,
+//             user,
+//         });
+
+//     } catch (error) {
+//         // 5. Delete uploaded files on error
+//         const files = [
+//             req.files?.profile?.[0],
+//             req.files?.licenseFront?.[0],
+//             req.files?.licenseBack?.[0]
+//         ].filter(Boolean);
+//         files.forEach(file => deleteFile(file.path));
+
+//         if (error.name === 'JsonWebTokenError')
+//             return next(createError.BadRequest('token.invalid'));
+//         if (error.name === 'TokenExpiredError')
+//             return next(createError.BadRequest('token.expired'));
+
+//         next(error);
+//     }
+// };
+
 exports.createSocialProfile = async (req, res, next) => {
     try {
+        console.log('=== createSocialProfile START ===');
+        console.log('req.body:', JSON.stringify(req.body, null, 2));
+        console.log('req.files:', req.files ? Object.keys(req.files) : 'no files');
+
         const { city_id, country_id } = req.body;
         const [city, country] = await Promise.all([
             City.findOne({ city_id }),
             Country.findOne({ country_id }),
         ]);
 
+        console.log('city found:', city ? city._id : 'NOT FOUND');
+        console.log('country found:', country ? country._id : 'NOT FOUND');
+
         // 1. Handle file uploads
-        const profile = req.files?.profile?.[0] ? `/uploads/${req.files.profile[0].filename}` : undefined;
-        const licenseFront = req.files?.licenseFront?.[0] ? `/uploads/${req.files.licenseFront[0].filename}` : undefined;
-        const licenseBack = req.files?.licenseBack?.[0] ? `/uploads/${req.files.licenseBack[0].filename}` : undefined;
+        const profile = req.files?.profile?.[0] 
+            ? `/uploads/${req.files.profile[0].filename}` 
+            : undefined;
+        const licenseFront = req.files?.licenseFront?.[0] 
+            ? `/uploads/${req.files.licenseFront[0].filename}` 
+            : undefined;
+        const licenseBack = req.files?.licenseBack?.[0] 
+            ? `/uploads/${req.files.licenseBack[0].filename}` 
+            : undefined;
+
+        console.log('profile path:', profile);
+
+        // ✅ FIX: Empty string ko undefined karo taaki MongoDB skip kare
+        const googleId   = req.body.googleId   || undefined;
+        const facebookId = req.body.facebookId || undefined;
+        const appleId    = req.body.appleId    || undefined;
+
+        console.log('googleId from body:', googleId);
+        console.log('facebookId from body:', facebookId);
+        console.log('appleId from body:', appleId);
 
         // 2. Create user
         let user = new User({
-            name: req.body.name,
-            email: req.body.email,
+            name:         req.body.name,
+            email:        req.body.email,
             country_code: req.body.country_code,
-            phone: req.body.phone,
-            city: city?.id,
-            country: country?.id,
-            googleId: req.body.googleId,
-            facebookId: req.body.facebookId,
-            appleId: req.body.appleId,
+            phone:        req.body.phone,
+            city:         city?.id,
+            country:      country?.id,
+            googleId,    // ✅ undefined pass hoga agar empty string aayi
+            facebookId,
+            appleId,
             profile,
             licenseFront,
             licenseBack,
             fcmToken: req.body.fcmToken,
         });
 
+        console.log('user object before save:', {
+            name:        user.name,
+            email:       user.email,
+            phone:       user.phone,
+            country_code:user.country_code,
+            googleId:    user.googleId,
+            facebookId:  user.facebookId,
+            appleId:     user.appleId,
+        });
+
         // 3. Create address
         const address = new Address({
-            userId: user.id,
-            address: req.body.address,
-            latitude: req.body.latitude,
+            userId:    user.id,
+            address:   req.body.address,
+            latitude:  req.body.latitude,
             longitude: req.body.longitude,
-            selected: true,
+            selected:  true,
         });
 
         // 4. Validate
+        console.log('Validating user...');
         await user.validate();
+        console.log('✅ User validation passed');
+
         await address.validate();
+        console.log('✅ Address validation passed');
 
         user.address = address.id;
         await Promise.all([user.save(), address.save()]);
+        console.log('✅ User saved to DB. User _id:', user._id);
+
+        // ✅ DB se re-fetch karke confirm karo ki values save hui
+        const savedUser = await User.findById(user._id).select(
+            'googleId facebookId appleId email phone'
+        );
+        console.log('=== DB se re-fetched user ===');
+        console.log('savedUser.googleId:', savedUser.googleId);
+        console.log('savedUser.facebookId:', savedUser.facebookId);
+        console.log('savedUser.appleId:', savedUser.appleId);
 
         const token = await user.generateAuthToken();
         await user.populate('city country address');
         user = multilingualUser(user, req);
 
-        user.latitude = user.address.latitude;
-        user.longitude = user.address.longitude;
-        user.address = user.address.address;
+        user.latitude  = user.address?.latitude;
+        user.longitude = user.address?.longitude;
+        user.address   = user.address?.address;
 
-        // Hide fields
         user.password = undefined;
-        user.__v = undefined;
+        user.__v      = undefined;
+
+        console.log('=== createSocialProfile SUCCESS ===');
 
         res.status(201).json({
-            code: '1',
+            code:    '1',
             message: req.t('profile'),
             token,
             user,
         });
 
     } catch (error) {
+        console.error('=== createSocialProfile ERROR ===');
+        console.error('Error name:', error.name);
+        console.error('Error message:', error.message);
+        
+        // ✅ Mongoose validation errors detail mein dikhao
+        if (error.name === 'ValidationError') {
+            console.error('Validation errors:');
+            Object.keys(error.errors).forEach(field => {
+                console.error(`  ${field}: ${error.errors[field].message}`);
+            });
+        }
+
+        // ✅ Duplicate key error (phone/email already exists)
+        if (error.code === 11000) {
+            console.error('Duplicate key error:', error.keyValue);
+            return next(createError.Conflict(
+                `${Object.keys(error.keyValue)[0]} already exists`
+            ));
+        }
+
         // 5. Delete uploaded files on error
         const files = [
             req.files?.profile?.[0],
             req.files?.licenseFront?.[0],
-            req.files?.licenseBack?.[0]
+            req.files?.licenseBack?.[0],
         ].filter(Boolean);
-        files.forEach(file => deleteFile(file.path));
+        files.forEach(file => {
+            console.log('Deleting file on error:', file.path);
+            deleteFile(file.path);
+        });
 
         if (error.name === 'JsonWebTokenError')
             return next(createError.BadRequest('token.invalid'));

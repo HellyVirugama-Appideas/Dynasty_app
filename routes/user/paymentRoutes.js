@@ -74,4 +74,10 @@ router.post(
 // Stripe webhook (no authentication needed - Stripe signs it)
 // router.post('/stripe/webhook', paymentController.stripeWebhook);
 
+router.post(
+    "/cash",
+    checkUser,
+    paymentController.payRideWithCash
+)
+
 module.exports = router;

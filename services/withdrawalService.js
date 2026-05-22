@@ -21,6 +21,7 @@ class WithdrawalService {
                 country: 'US', // You should set this based on driver's country
                 email: driver.email,
                 capabilities: {
+                    card_payments: { requested: true },
                     transfers: { requested: true },
                 },
                 business_type: 'individual',
@@ -127,7 +128,8 @@ class WithdrawalService {
      * Validate withdrawal request
      */
     async validateWithdrawalRequest(driverId, amount) {
-        const driver = await Driver.findById(driverId);
+       const driver = await Driver.findById(driverId).select('+approved +blocked');
+
         if (!driver) {
             throw createError.NotFound('Driver not found');
         }

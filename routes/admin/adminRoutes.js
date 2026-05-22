@@ -32,7 +32,7 @@ router.get('/banner', adminController.getBanners);
 router
     .route('/banner/add')
     .get(adminController.getAddBanner)
-    .post(upload.single('image'), adminController.postAddBanner);
+    .post(upload.single('image'), adminController.postAddBanner);   
 router
     .route('/banner/edit/:id')
     .get(adminController.getEditBanner)

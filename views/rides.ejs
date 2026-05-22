@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html class="loading" lang="en" data-textdirection="ltr">
+
+<head>
+    <%- include('_layouts/head') %>
+    <title>Rides Management | <%= title %></title>
+    
+    <!-- DataTable CSS -->
+    <link rel="stylesheet" type="text/css" href="/app-assets/vendors/data-tables/css/jquery.dataTables.min.css">
+    <link rel="stylesheet" type="text/css" href="/app-assets/vendors/data-tables/extensions/responsive/css/responsive.dataTables.min.css">
+    <link rel="stylesheet" type="text/css" href="/app-assets/vendors/data-tables/css/select.dataTables.min.css">
+    <link rel="stylesheet" type="text/css" href="/app-assets/css/pages/data-tables.css">
+    
+    <style>
+        .stat-box {
+            border-radius: 12px; padding: 16px 18px; color: white;
+            box-shadow: 0 4px 14px rgba(0,0,0,0.12); cursor: pointer;
+            transition: transform .2s;
+            text-decoration: none; display: block;
+        }
+        .stat-box:hover { transform: translateY(-4px); }
+        .stat-box p { margin:0; font-size:0.82rem; opacity:0.9; }
+        .stat-box h4 { margin:4px 0 0; font-size:1.8rem; font-weight:700; color:white; }
+
+        .filter-bar { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:18px; align-items:center; }
+        .filter-btn {
+            padding:8px 18px; border-radius:25px; border:2px solid #e0e0e0;
+            font-weight:600; font-size:0.85rem; cursor:pointer; text-decoration:none;
+            color:#555; background:#fff; transition:all .2s;
+        }
+        .filter-btn.active { 
+            background:linear-gradient(135deg,#667eea,#764ba2); 
+            color:white; border-color:transparent; 
+        }
+
+        /* === Table Row Height & Padding Fix === */
+        #page-length-option tbody tr {
+            height: 58px !important;
+        }
+        #page-length-option td {
+            padding: 14px 10px !important;
+            vertical-align: middle !important;
+        }
+        #page-length-option th {
+            padding: 14px 10px !important;
+        }
+
+        .status-badge {
+            padding: 5px 14px;
+            border-radius: 20px;
+            font-size: 0.78rem;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+        .s-waytopickup { background: #f3e5f5; color: #6a1b9a; }
+        .s-tripstarted { background: #e0f2f1; color: #00695c; }
+        .s-waytodone   { background: #e8f5e9; color: #1b5e20; }
+        .s-ongoing     { background: #e3f2fd; color: #1565c0; }
+        .s-completed   { background: #e8f5e9; color: #1b5e20; }
+        .s-cancelled   { background: #ffebee; color: #c62828; }
+        .s-upcoming    { background: #fff3e0; color: #ef6c00; }
+    </style>
+</head>
+
+<body class="vertical-layout page-header-light vertical-menu-collapsible vertical-dark-menu preload-transitions 2-columns"
+    data-open="click" data-menu="vertical-dark-menu" data-col="2-columns">
+
+    <%- include('_layouts/sidenavbar') %>
+
+    <div id="main">
+        <div class="row">
+            <div id="breadcrumbs-wrapper" data-image="/app-assets/images/gallery/breadcrumb-bg.jpg">
+                <div class="container">
+                    <div class="row">
+                        <div class="col s12 m6 l6">
+                            <h5 class="breadcrumbs-title mt-0 mb-0">Rides Management</h5>
+                        </div>
+                        <div class="col s12 m6 l6 right-align-md">
+                            <ol class="breadcrumbs mb-0">
+                                <li class="breadcrumb-item"><a href="/admin">Home</a></li>
+                                <li class="breadcrumb-item active">Rides</li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col s12">
+                <div class="container">
+                    <div class="section section-data-tables">
+                        <div class="row">
+                            <!-- Stats Row -->
+                            <div class="row">
+                                <div class="col s6 m4 l2" style="margin-bottom:12px;">
+                                    <a href="/admin/rides?status=all" class="stat-box" style="background:linear-gradient(135deg,#667eea,#764ba2);">
+                                        <p>Total</p>
+                                        <h4><%= totalCount %></h4>
+                                    </a>
+                                </div>
+                                <!-- Baaki stats boxes same rakhe hain -->
+                                <div class="col s6 m4 l2" style="margin-bottom:12px;">
+                                    <a href="/admin/rides?status=Ongoing" class="stat-box" style="background:linear-gradient(135deg,#2196f3,#0d47a1);">
+                                        <p>Ongoing</p>
+                                        <h4><%= ongoingCount %></h4>
+                                    </a>
+                                </div>
+                                <div class="col s6 m4 l2" style="margin-bottom:12px;">
+                                    <a href="/admin/rides?status=Upcoming" class="stat-box" style="background:linear-gradient(135deg,#ff9800,#e65100);">
+                                        <p>Upcoming</p>
+                                        <h4><%= upcomingCount %></h4>
+                                    </a>
+                                </div>
+                                <div class="col s6 m4 l2" style="margin-bottom:12px;">
+                                    <a href="/admin/rides?status=Completed" class="stat-box" style="background:linear-gradient(135deg,#4caf50,#1b5e20);">
+                                        <p>Completed</p>
+                                        <h4><%= completedCount %></h4>
+                                    </a>
+                                </div>
+                                <div class="col s6 m4 l2" style="margin-bottom:12px;">
+                                    <a href="/admin/rides?status=Cancelled" class="stat-box" style="background:linear-gradient(135deg,#f44336,#b71c1c);">
+                                        <p>Cancelled</p>
+                                        <h4><%= cancelledCount %></h4>
+                                    </a>
+                                </div>
+                                <div class="col s6 m4 l2" style="margin-bottom:12px;">
+                                    <a href="/admin/rides?status=Expired" class="stat-box" style="background:linear-gradient(135deg,#9c27b0,#4a148c);">
+                                        <p>Expired</p>
+                                        <h4><%= expiredCount %></h4>
+                                    </a>
+                                </div>
+                            </div>
+
+                            <!-- Filter Bar -->
+                            <div class="filter-bar">
+                                <span style="font-weight:600;color:#555;">Filter:</span>
+                                <a href="/admin/rides?status=all" class="filter-btn <%= statusFilter === 'all' ? 'active' : '' %>">All</a>
+                                <a href="/admin/rides?status=Ongoing" class="filter-btn <%= statusFilter === 'Ongoing' ? 'active' : '' %>">Ongoing</a>
+                                <a href="/admin/rides?status=Upcoming" class="filter-btn <%= statusFilter === 'Upcoming' ? 'active' : '' %>">Upcoming</a>
+                                <a href="/admin/rides?status=Completed" class="filter-btn <%= statusFilter === 'Completed' ? 'active' : '' %>">Completed</a>
+                                <a href="/admin/rides?status=Cancelled" class="filter-btn <%= statusFilter === 'Cancelled' ? 'active' : '' %>">Cancelled</a>
+                                <a href="/admin/rides?status=Expired" class="filter-btn <%= statusFilter === 'Expired' ? 'active' : '' %>">Expired</a>
+                            </div>
+
+                            <div class="col s12">
+                                <div class="card">
+                                    <div class="card-content">
+                                        <%- messages('messages', locals) %>
+
+                                        <div class="row">
+                                            <div class="col s12 overflow">
+                                                <table id="page-length-option" class="display">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>#</th>
+                                                            <th>User</th>
+                                                            <th>Driver</th>
+                                                            <th>Pickup</th>
+                                                            <th>Drop</th>
+                                                            <th>Price</th>
+                                                            <th>Payment</th>
+                                                            <th>Status</th>
+                                                            <th>Scheduled</th>
+                                                            <th>Date</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <% rides.forEach((ride, i) => { %>
+                                                        <tr>
+                                                            <td><%= (currentPage - 1) * 20 + i + 1 %></td>
+                                                            <td>
+                                                                <% if (ride.user) { %>
+                                                                    <strong><%= ride.user.name || 'N/A' %></strong><br>
+                                                                    <!-- <small class="grey-text"><%= ride.user.phone || '' %></small> -->
+                                                                <% } else { %><span class="grey-text">Deleted</span><% } %>
+                                                            </td>
+                                                            <td>
+                                                                <% if (ride.driver) { %>
+                                                                    <strong><%= ride.driver.name || 'N/A' %></strong><br>
+                                                                    <!-- <small class="grey-text"><%= ride.driver.phone || '' %></small> -->
+                                                                <% } else { %><span class="grey-text">Unassigned</span><% } %>
+                                                            </td>
+                                                            <td><small><%= ride.pickupAddress ? ride.pickupAddress.substring(0,35) + '...' : '-' %></small></td>
+                                                            <td><small><%= ride.endAddress ? ride.endAddress.substring(0,35) + '...' : '-' %></small></td>
+                                                            <td><strong>₹<%= (ride.price || 0).toFixed(2) %></strong></td>
+                                                            <td><small><%= ride.paymentMethod || '-' %></small></td>
+                                                            <td>
+                                                                <span class="status-badge s-<%= (ride.rideStatus || ride.status || '').toLowerCase() %>">
+                                                                    <%= ride.rideStatus || ride.status || 'N/A' %>
+                                                                </span>
+                                                            </td>
+                                                            <td>
+                                                                <% if (ride.isSchedule && ride.scheduleTime) { %>
+                                                                    <small class="orange-text"><i class="material-icons tiny">schedule</i> <%= new Date(ride.scheduleTime).toLocaleDateString('en-IN',{day:'2-digit',month:'short'}) %></small>
+                                                                <% } else { %>
+                                                                    <span class="grey-text">-</span>
+                                                                <% } %>
+                                                            </td>
+                                                            <td><small><%= ride.createdAt ? new Date(ride.createdAt).toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'}) : '-' %></small></td>
+                                                        </tr>
+                                                        <% }) %>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <%- include('_layouts/commonJs') %>
+
+    <!-- DataTable Scripts -->
+    <script src="/app-assets/vendors/data-tables/js/jquery.dataTables.min.js"></script>
+    <script src="/app-assets/js/scripts/data-tables.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            if ($.fn.DataTable.isDataTable('#page-length-option')) {
+                $('#page-length-option').DataTable().destroy();
+            }
+
+            $('#page-length-option').DataTable({
+                "pageLength": 10,
+                "responsive": true,
+                "columnDefs": [
+                    { "orderable": false, "targets": [6, 7, 8] }
+                ],
+                "drawCallback": function() {
+                    // Extra safety for styling
+                    $('.dataTables_wrapper .dataTables_paginate').addClass('pagination');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

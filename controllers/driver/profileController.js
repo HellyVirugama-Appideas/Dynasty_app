@@ -85,28 +85,55 @@ exports.editProfile = async (req, res, next) => {
     }
 };
 
+// exports.deleteProfile = async (req, res, next) => {
+//     try {
+//         const driver = await Driver.findByIdAndUpdate(req.driver.id, {
+//             isDeleted: true,
+//         });
+//         if (!driver) return next(createError.Unauthorized('Driver not found!'));
+
+//         await Car.findOneAndUpdate(
+//             { driver: req.driver.id, isDeleted: false },
+//             { isDeleted: true }
+//         );
+
+//         const suffix = uniqueSuffix();
+
+//         await Driver.findByIdAndUpdate(req.driver.id, {
+//             email: driver.email + `${suffix}`,
+//         });
+
+//         res.json({ code: '1', message: req.t('deleted') });
+//     } catch (error) {
+//         if (error.name == 'CastError')
+//             return next(createError.NotFound('Driver not found.'));
+//         next(error);
+//     }
+// };
+
 exports.deleteProfile = async (req, res, next) => {
     try {
-        const driver = await Driver.findByIdAndUpdate(req.driver.id, {
-            isDeleted: true,
-        });
+        const driver = await Driver.findById(req.driver.id);
         if (!driver) return next(createError.Unauthorized('Driver not found!'));
 
+        const suffix = uniqueSuffix(); // e.g. _deleted_1714820000000
+
+        await Driver.findByIdAndUpdate(req.driver.id, {
+            isDeleted: true,
+            email: driver.email + suffix,
+            phone: driver.phone + suffix,        // ← Yeh line add karo
+            // Optional: fcmToken clear kar sakte ho
+            fcmToken: null,
+        });
+
+        // Car bhi soft delete
         await Car.findOneAndUpdate(
             { driver: req.driver.id, isDeleted: false },
             { isDeleted: true }
         );
 
-        const suffix = uniqueSuffix();
-
-        await Driver.findByIdAndUpdate(req.driver.id, {
-            email: driver.email + `${suffix}`,
-        });
-
         res.json({ code: '1', message: req.t('deleted') });
     } catch (error) {
-        if (error.name == 'CastError')
-            return next(createError.NotFound('Driver not found.'));
         next(error);
     }
 };

@@ -113,6 +113,33 @@
                                         <span class="menu-title <%= url.startsWith('/admin/driver') ? 'theme-text' : 'black-text' %>">Driver Management</span>
                                     </a>
                                 </li>
+                                                                <li class="bold <%= url.startsWith('/admin/rides') || url.startsWith('/admin/bookings') ? 'active' : '' %>">
+                                    <a class="dropdown-menu waves-effect waves-cyan" data-target="ridesDropdown">
+                                        <i class="material-icons <%= url.startsWith('/admin/rides') || url.startsWith('/admin/bookings') ? 'theme-text' : 'black-text' %>">directions_car</i>
+                                        <span>
+                                            <span class="dropdown-title <%= url.startsWith('/admin/rides') || url.startsWith('/admin/bookings') ? 'theme-text' : 'black-text' %>">Rides &amp; Bookings</span>
+                                            <i class="material-icons right <%= url.startsWith('/admin/rides') || url.startsWith('/admin/bookings') ? 'theme-text' : 'black-text' %>" style="font-size:18px !important">keyboard_arrow_down</i>
+                                        </span>
+                                    </a>
+                                    <ul class="dropdown-content dropdown-horizontal-list" id="ridesDropdown">
+                                        <li><a href="/admin/rides" class="<%= url.startsWith('/admin/rides') ? 'active' : '' %>"><span>Taxi Rides</span></a></li>
+                                        <li><a href="/admin/bookings" class="<%= url.startsWith('/admin/bookings') ? 'active' : '' %>"><span>Car Rent Bookings</span></a></li>
+                                    </ul>
+                                </li>
+
+                                <li class="bold <%= url.startsWith('/admin/transactions') ? 'active' : '' %>">
+                                    <a class="waves-effect waves-cyan" href="/admin/transactions">
+                                      <i class="material-icons <%= url.startsWith('/admin/transactions') ? 'theme-text' : 'black-text' %>">receipt</i>
+                                        <span class="menu-title <%= url.startsWith('/admin/transactions') ? 'theme-text' : 'black-text' %>">Transactions</span>
+                                    </a>
+                                </li>
+
+                                <li class="bold <%= url.startsWith('/admin/commission') ? 'active' : '' %>">
+                                    <a class="waves-effect waves-cyan" href="/admin/commission">
+                                        <i class="material-icons <%= url.startsWith('/admin/commission') ? 'theme-text' : 'black-text' %>">monetization_on</i>
+                                        <span class="menu-title <%= url.startsWith('/admin/commission') ? 'theme-text' : 'black-text' %>">Commission</span>
+                                    </a>
+                                </li>
 
                             </ul>
                         </div>

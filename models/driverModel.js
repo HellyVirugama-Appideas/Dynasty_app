@@ -58,7 +58,7 @@ const driverSchema = new mongoose.Schema(
             type: { type: String, enum: ['Point'] },
             coordinates: { type: [Number] },
         },
-        useFor: { type: String, enum: ['taxi', 'rental'], default: 'taxi' },
+        useFor: { type: String, enum: ['taxi',"bike", 'rental'], default: 'taxi' },
         rating: { type: Number, default: 0 },
         approved: {
             type: Boolean,
@@ -227,13 +227,28 @@ driverSchema.methods.generateAuthToken = async function () {
 };
 
 // Check if driver can withdraw funds
+// driverSchema.methods.canWithdraw = function () {
+//     return (
+//         this.approved === true &&
+//         this.blocked === false &&
+//         this.stripePayoutsEnabled === true
+
+//         // && this.bankAccount?.verified &&
+//         // this.kycStatus === 'approved'
+//     );
+// };
+
 driverSchema.methods.canWithdraw = function () {
+    console.log("CAN WITHDRAW CHECK:", {
+        approved: this.approved,
+        blocked: this.blocked,
+        stripePayoutsEnabled: this.stripePayoutsEnabled
+    });
+
     return (
-        this.approved &&
-        !this.blocked &&
-        this.stripePayoutsEnabled &&
-        this.bankAccount?.verified &&
-        this.kycStatus === 'approved'
+        this.approved === true &&
+        this.blocked === false &&
+        this.stripePayoutsEnabled === true
     );
 };
 
